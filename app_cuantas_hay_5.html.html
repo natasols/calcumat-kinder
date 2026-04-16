@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Didactimat - ¿Cuántas hay?</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
+
+/* LOGO */
+.logo{
+    width:120px;
+    margin-top:20px;
+}
+
+/* PORTADA */
+.portada{
+    margin-top:80px;
+}
+
+.boton{
+    margin-top:30px;
+    padding:15px 40px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    min-width:180px;
+}
+
+/* MARCO DE 5 */
+.marco{
+    display:grid;
+    grid-template-columns: repeat(5,80px);
+    gap:8px;
+    justify-content:center;
+    margin-top:40px;
+}
+
+.casilla{
+    width:80px;
+    height:80px;
+    border:2px solid black;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* FICHAS */
+.ficha{
+    width:50px;
+    height:50px;
+    background:red;
+    border-radius:50%;
+}
+
+/* OPCIONES */
+.opciones{
+    margin-top:30px;
+}
+
+.opciones button{
+    margin:5px;
+    padding:10px 15px;
+    font-size:18px;
+    min-width:60px;
+}
+
+/* RESULTADO */
+.final{
+    margin-top:80px;
+}
+
+.final button{
+    margin-top:20px;
+    padding:15px 40px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    min-width:180px;
+}
+</style>
+</head>
+
+<body>
+
+<img src="logo.png" class="logo">
+
+<div id="pantalla"></div>
+
+<script>
+let ejercicio=0;
+let correctas=0;
+let respuestaCorrecta=0;
+
+/* PORTADA */
+function portada(){
+    document.getElementById("pantalla").innerHTML = `
+    <div class="portada">
+        <h1>Didactimat</h1>
+        <p><b>Nivel:</b> Kinder</p>
+        <p><b>Habilidad:</b> reconocer cantidades hasta 5</p>
+        <button class="boton" onclick="iniciar()">INICIAR</button>
+    </div>`;
+}
+
+/* INICIAR */
+function iniciar(){
+    ejercicio=0;
+    correctas=0;
+    siguiente();
+}
+
+/* GENERAR EJERCICIO */
+function siguiente(){
+    if(ejercicio==20){
+        final();
+        return;
+    }
+
+    ejercicio++;
+
+    let cantidad = Math.floor(Math.random()*5)+1; // 1 a 5
+    respuestaCorrecta = cantidad;
+
+    let posiciones = Array(5).fill(0);
+
+    // distribuir fichas (no siempre seguidas)
+    let indices = [];
+    while(indices.length < cantidad){
+        let r = Math.floor(Math.random()*5);
+        if(!indices.includes(r)) indices.push(r);
+    }
+
+    indices.forEach(i => posiciones[i]=1);
+
+    let html = `<h2>¿Cuántas hay?</h2>`;
+    html += `<p>Ejercicio ${ejercicio} de 20</p>`;
+    html += `<div class="marco">`;
+
+    posiciones.forEach(c=>{
+        html += `<div class="casilla">${c?'<div class="ficha"></div>':''}</div>`;
+    });
+
+    html += `</div><div class="opciones">`;
+
+    for(let i=1;i<=5;i++){
+        html += `<button onclick="responder(${i})">${i}</button>`;
+    }
+
+    html += `</div>`;
+
+    document.getElementById("pantalla").innerHTML = html;
+}
+
+/* RESPONDER */
+function responder(valor){
+    if(valor==respuestaCorrecta){
+        correctas++;
+    }
+    siguiente();
+}
+
+/* FINAL */
+function final(){
+    document.getElementById("pantalla").innerHTML = `
+    <div class="final">
+        <h1>RESULTADOS</h1>
+        <p>Respuestas correctas: ${correctas} de 20</p>
+        <button onclick="portada()">REINICIAR</button>
+    </div>`;
+}
+
+/* INICIO */
+portada();
+</script>
+
+</body>
+</html>
