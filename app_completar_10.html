@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -39,6 +39,7 @@ body{
     border:none;
     border-radius:10px;
     cursor:pointer;
+    width:auto; /* 👈 SOLUCIÓN BOTÓN */
 }
 
 /* APP */
@@ -103,15 +104,34 @@ button{
     font-size:16px;
 }
 
+/* RESULTADOS (NUEVO DISEÑO BONITO) */
+
 .final{
-    padding:40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+}
+
+.final h1{
+    font-size:40px;
+}
+
+.final p{
+    font-size:24px;
+    margin:10px;
 }
 
 .final button{
     margin-top:20px;
-    padding:12px 30px;
-    font-size:18px;
-    width:auto; /* 👈 SOLUCIÓN BOTÓN CORTADO */
+    padding:15px 40px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -143,6 +163,13 @@ button{
 
 </div>
 
+<!-- RESULTADOS -->
+<div id="final" class="final" style="display:none;">
+    <h1>RESULTADOS</h1>
+    <p id="resultadoTexto"></p>
+    <button onclick="location.reload()">REINICIAR</button>
+</div>
+
 <script>
 let cantidad = 0;
 let ejercicio = 1;
@@ -156,17 +183,17 @@ function iniciar(){
 function generar(){
 
     if(ejercicio > 20){
-        document.body.innerHTML = `
-        <div class="final">
-        <h1>Resultados</h1>
-        <p>Respuestas correctas: ${correctas} de 20</p>
-        <button onclick="location.reload()">Reiniciar</button>
-        </div>
-        `;
+        document.getElementById("app").style.display="none";
+        document.getElementById("final").style.display="flex";
+
+        document.getElementById("resultadoTexto").innerText =
+        "Respuestas correctas: " + correctas + " de 20";
+
         return;
     }
 
-    document.getElementById("contador").innerText = "Ejercicio " + ejercicio + " de 20";
+    document.getElementById("contador").innerText =
+    "Ejercicio " + ejercicio + " de 20";
 
     const marco = document.getElementById("marco");
     marco.innerHTML = "";
