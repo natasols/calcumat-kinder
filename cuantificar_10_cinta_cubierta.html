@@ -16,23 +16,6 @@ body{
     margin-top:20px;
 }
 
-/* PORTADA */
-.portada{
-    margin-top:60px;
-}
-
-.boton{
-    margin:10px;
-    padding:15px 25px;
-    font-size:18px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
-
-/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,70px);
@@ -52,7 +35,6 @@ body{
     position:relative;
 }
 
-/* FICHAS */
 .ficha{
     width:55px;
     height:55px;
@@ -60,9 +42,28 @@ body{
     border-radius:50%;
 }
 
-/* BOTONES */
+.ficha-extra{
+    width:55px;
+    height:55px;
+    background:red;
+    border-radius:50%;
+    position:absolute;
+    top:-65px;
+}
+
+.boton{
+    margin:8px;
+    padding:12px 18px;
+    font-size:16px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
 .opciones{
-    margin-top:50px;
+    margin-top:60px;
 }
 </style>
 </head>
@@ -77,27 +78,14 @@ let ejercicio = 0;
 let total = 20;
 let cantidad = 0;
 let aciertos = 0;
+let ultimoIndex = 0;
 
-/* PORTADA */
-function mostrarPortada(){
-    document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
-        <div class="portada">
-            <h2>Nivel: Kinder</h2>
-            <p>Habilidad: cuantificar hasta 10 en cinta cubierta</p>
-            <button class="boton" onclick="iniciar()">INICIAR</button>
-        </div>
-    `;
-}
-
-/* INICIO */
 function iniciar(){
     ejercicio = 0;
     aciertos = 0;
     nuevoEjercicio();
 }
 
-/* EJERCICIO */
 function nuevoEjercicio(){
 
     ejercicio++;
@@ -108,6 +96,7 @@ function nuevoEjercicio(){
     }
 
     cantidad = Math.floor(Math.random()*9)+1; // 1 a 9
+    ultimoIndex = cantidad - 1;
 
     let html = `
         <img src="logo.png" class="logo">
@@ -119,15 +108,9 @@ function nuevoEjercicio(){
     for(let i=1;i<=10;i++){
 
         if(i <= cantidad){
-            html += `
-                <div class="casilla">
-                    <div class="ficha"></div>
-                </div>
-            `;
+            html += `<div class="casilla"><div class="ficha"></div></div>`;
         }else{
-            html += `
-                <div class="casilla">${i}</div>
-            `;
+            html += `<div class="casilla">${i}</div>`;
         }
     }
 
@@ -142,27 +125,39 @@ function nuevoEjercicio(){
     document.getElementById("app").innerHTML = html;
 }
 
-/* VERIFICAR */
 function verificar(resp){
 
     if(resp == cantidad){
+
         aciertos++;
-        setTimeout(nuevoEjercicio,800);
+
+        // mostrar número oculto + ficha arriba
+        let casillas = document.querySelectorAll(".casilla");
+
+        let casilla = casillas[ultimoIndex];
+
+        // mostrar número
+        casilla.innerHTML = `
+            ${ultimoIndex+1}
+            <div class="ficha-extra"></div>
+        `;
+
+        setTimeout(nuevoEjercicio,1200);
+
     }else{
         alert("Intenta nuevamente");
     }
 }
 
-/* FINAL */
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
         <h1>RESULTADOS</h1>
         <p>Respuestas correctas: ${aciertos} de 20</p>
-        <button class="boton" onclick="mostrarPortada()">REINICIAR</button>
+        <button class="boton" onclick="iniciar()">REINICIAR</button>
     `;
 }
 
-mostrarPortada();
+iniciar();
 
 </script>
 
