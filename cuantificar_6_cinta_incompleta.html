@@ -181,16 +181,20 @@ function verificar(resp){
         let casillas = document.querySelectorAll(".casilla");
 
         let casillaFicha = casillas[cantidad - 1];
+        let casillaSiguiente = casillas[cantidad];
 
-        // 🔴 tomar la ficha real
+        // 🔴 mover ficha original
         let ficha = casillaFicha.querySelector(".punto");
-
-        // 🔥 mover la ficha hacia arriba
         ficha.style.position = "absolute";
         ficha.style.top = "-60px";
 
-        // 🔢 mostrar el número debajo
+        // 🔢 mostrar número bajo la ficha
         casillaFicha.innerHTML += `<span>${cantidad}</span>`;
+
+        // 🔢 completar la casilla siguiente
+        if(casillaSiguiente){
+            casillaSiguiente.innerText = cantidad + 1;
+        }
 
     }else{
 
