@@ -137,18 +137,17 @@ function nuevoEjercicio(){
 
     let cinta = document.getElementById("cinta");
 
+    /* 🔥 CONSTRUCCIÓN CORRECTA */
     for(let i=1;i<=6;i++){
 
         let div = document.createElement("div");
         div.className="casilla";
 
-        if(i < cantidad){
+        if(i <= cantidad){
+            // 🔴 TODAS las fichas visibles
             div.innerHTML = `<div class="punto"></div>`;
-        }
-        else if(i === cantidad){
-            div.innerHTML = ""; // 🔥 número oculto
-        }
-        else{
+        }else{
+            // 🔢 números después de las fichas
             div.innerText = i;
         }
 
