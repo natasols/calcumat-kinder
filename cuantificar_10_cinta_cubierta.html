@@ -149,12 +149,12 @@ function nuevoEjercicio(){
     document.getElementById("app").innerHTML = html;
 }
 
-/* VERIFICAR */
+/* VERIFICAR (1 SOLO INTENTO) */
 function verificar(resp){
 
     let mensaje = document.getElementById("mensaje");
 
-    // bloquear todos los botones
+    // bloquear botones
     let botones = document.querySelectorAll(".boton");
     botones.forEach(b => b.disabled = true);
 
@@ -177,30 +177,7 @@ function verificar(resp){
 
     }
 
-    // pasar al siguiente SIEMPRE (bien o mal)
     setTimeout(nuevoEjercicio,1200);
-}
-
-    let mensaje = document.getElementById("mensaje");
-
-    if(resp == cantidad){
-
-        aciertos++;
-        mensaje.innerText = "¡Bien!";
-
-        let casillas = document.querySelectorAll(".casilla");
-        let casilla = casillas[ultimoIndex];
-
-        casilla.innerHTML = `
-            ${ultimoIndex+1}
-            <div class="ficha-extra"></div>
-        `;
-
-        setTimeout(nuevoEjercicio,1200);
-
-    }else{
-        mensaje.innerText = "Intenta nuevamente";
-    }
 }
 
 /* FINAL */
