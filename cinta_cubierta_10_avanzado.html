@@ -1,3 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder – Cinta cubierta 10 (avanzado)</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
+
+.logo{
+    width:120px;
+    margin-top:20px;
+}
+
+.portada{
+    margin-top:80px;
+}
+
+.boton{
+    margin:8px;
+    padding:12px 18px;
+    font-size:16px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.cinta{
+    display:grid;
+    grid-template-columns: repeat(10,70px);
+    justify-content:center;
+    margin-top:40px;
+}
+
+.casilla{
+    width:70px;
+    height:70px;
+    border:2px solid black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:26px;
+    background:white;
+    position:relative; /* 🔥 clave para levantar ficha */
+}
+
+.punto{
+    width:50px;
+    height:50px;
+    background:red;
+    border-radius:50%;
+}
+
+.opciones{
+    margin-top:40px;
+}
+
+.mensaje{
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* 🔊 VOZ */
+function hablar(texto){
+    let mensaje = new SpeechSynthesisUtterance(texto);
+    mensaje.lang = "es-ES";
+    mensaje.rate = 0.8;
+    mensaje.pitch = 1.1;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.startsWith("es"));
+    if(voz) mensaje.voice = voz;
+
+    speechSynthesis.speak(mensaje);
+}
+
+/* VARIABLES */
+let ejercicio = 0;
+let total = 20;
+let cantidad = 0;
+let aciertos = 0;
+let anterior = -1;
+
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <div class="portada">
+            <h2>Nivel: Kinder</h2>
+            <p>Habilidad: cuantificar hasta 10 en cinta cubierta (avanzado)</p>
+            <button class="boton" onclick="iniciar()">INICIAR</button>
+        </div>
+    `;
+}
+
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    aciertos = 0;
+    nuevoEjercicio();
+}
+
+/* EJERCICIO */
+function nuevoEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    do{
+        cantidad = Math.floor(Math.random()*9)+1; // 1 a 9
+    }while(cantidad === anterior);
+
+    anterior = cantidad;
+
+    let html = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántas hay?</h2>
+        <p>Ejercicio ${ejercicio} de 20</p>
+        <div class="cinta">
+    `;
+
+    for(let i=1;i<=10;i++){
+
+        if(i <= cantidad){
+            html += `<div class="casilla"><div class="punto"></div></div>`;
+        } 
+        else if(i === cantidad + 1){
+            html += `<div class="casilla"></div>`; // 🔥 casilla vacía
+        }
+        else{
+            html += `<div class="casilla">${i}</div>`;
+        }
+    }
+
+    html += `</div><div class="opciones">`;
+
+    for(let i=1;i<=10;i++){
+        html += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
+    }
+
+    html += `</div><div id="mensaje" class="mensaje"></div>`;
+
+    document.getElementById("app").innerHTML = html;
+}
+
+/* VERIFICAR */
 function verificar(resp){
 
     let mensaje = document.getElementById("mensaje");
@@ -9,7 +174,6 @@ function verificar(resp){
 
         aciertos++;
         mensaje.innerText = "¡Bien!";
-
         hablar("Bien. Hay " + cantidad + " fichas");
 
         let casillas = document.querySelectorAll(".casilla");
@@ -17,15 +181,15 @@ function verificar(resp){
         let casillaFicha = casillas[cantidad - 1];
         let casillaSiguiente = casillas[cantidad];
 
-        // 🔴 mover ficha original (no duplicar)
+        // 🔴 levantar ficha original
         let ficha = casillaFicha.querySelector(".punto");
         ficha.style.position = "absolute";
         ficha.style.top = "-60px";
 
-        // 🔢 mostrar número bajo la ficha
+        // 🔢 mostrar número debajo
         casillaFicha.innerHTML += `<span>${cantidad}</span>`;
 
-        // 🔢 completar casilla siguiente (la que estaba vacía)
+        // 🔢 completar casilla siguiente
         if(casillaSiguiente){
             casillaSiguiente.innerText = cantidad + 1;
         }
@@ -38,3 +202,20 @@ function verificar(resp){
 
     setTimeout(nuevoEjercicio,1500);
 }
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <h1>RESULTADOS</h1>
+        <p>Respuestas correctas: ${aciertos} de 20</p>
+        <button class="boton" onclick="mostrarPortada()">REINICIAR</button>
+    `;
+}
+
+/* INICIO */
+mostrarPortada();
+
+</script>
+
+</body>
+</html>
