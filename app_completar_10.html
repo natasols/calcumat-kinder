@@ -179,6 +179,38 @@ function verificar(resp){
 
     let mensaje = document.getElementById("mensaje");
 
+    let botones = document.querySelectorAll(".boton");
+    botones.forEach(b => b.disabled = true);
+
+    if(resp == cantidad){
+
+        aciertos++;
+        mensaje.innerText = "¡Bien!";
+
+        let casillas = document.querySelectorAll(".casilla");
+
+        if(typeof ultimoIndex !== "undefined"){
+            let casilla = casillas[ultimoIndex];
+
+            casilla.innerHTML = `
+                ${ultimoIndex+1}
+                <div class="ficha-extra"></div>
+            `;
+        }
+
+        hablar("Bien. Hay " + cantidad + " fichas");
+
+    }else{
+
+        mensaje.innerText = "Intenta nuevamente";
+        hablar("Intenta nuevamente");
+    }
+
+    setTimeout(nuevoEjercicio,1800);
+}resp){
+
+    let mensaje = document.getElementById("mensaje");
+
     if(resp == respuestaCorrecta){
 
         aciertos++;
