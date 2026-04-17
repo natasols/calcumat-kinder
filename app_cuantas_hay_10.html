@@ -2,259 +2,218 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactimat – Completar 10</title>
+<title>Didactimat – ¿Cuántas hay? (hasta 10)</title>
+
 <style>
 body{
     font-family: Arial;
     text-align:center;
-    background:white;
-    margin:0;
 }
 
-/* PORTADA */
+.logo{
+    width:120px;
+    margin-top:20px;
+}
+
 .portada{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+    margin-top:80px;
 }
 
-.portada h1{
-    font-size:40px;
-}
-
-.portada p{
-    font-size:22px;
+.boton{
     margin:10px;
-}
-
-.iniciar{
-    margin-top:30px;
-    padding:15px 40px;
-    font-size:22px;
+    padding:15px 25px;
+    font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
     border-radius:10px;
     cursor:pointer;
-    width:auto; /* 👈 SOLUCIÓN BOTÓN */
-}
-
-/* APP */
-
-.logo{
-    width:120px;
-    margin-top:15px;
 }
 
 .marco{
     display:grid;
-    grid-template-columns: repeat(5, 70px);
-    grid-template-rows: repeat(2, 70px);
+    grid-template-columns: repeat(5,80px);
+    grid-template-rows: repeat(2,80px);
     gap:8px;
     justify-content:center;
-    margin:20px;
+    margin-top:30px;
 }
 
-.celda{
-    width:70px;
-    height:70px;
+.casilla{
+    width:80px;
+    height:80px;
     border:2px solid black;
-    background:#eee;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+    background:#ddd;
 }
 
 .punto{
     width:40px;
     height:40px;
-    background:red;
     border-radius:50%;
+    background:red;
 }
 
-.botones{
-    display:grid;
-    grid-template-columns: repeat(5, 55px);
-    gap:8px;
-    justify-content:center;
-}
-
-button{
-    width:55px;
-    height:55px;
-    font-size:18px;
-    border-radius:10px;
-    border:none;
-    background:#4CAF50;
-    color:white;
-    cursor:pointer;
-}
-
-#mensaje{
-    margin-top:15px;
+.mensaje{
     font-size:22px;
-    font-weight:bold;
-}
-
-#contador{
-    margin-top:5px;
-    font-size:16px;
-}
-
-/* RESULTADOS (NUEVO DISEÑO BONITO) */
-
-.final{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    height:100vh;
-}
-
-.final h1{
-    font-size:40px;
-}
-
-.final p{
-    font-size:24px;
-    margin:10px;
-}
-
-.final button{
-    margin-top:20px;
-    padding:15px 40px;
-    font-size:20px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    min-width:180px;
+    margin-top:15px;
+    height:30px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- PORTADA -->
-<div id="portada" class="portada">
-    <h1>Didactimat</h1>
-    <p><strong>Nivel:</strong> Kinder</p>
-    <p><strong>Habilidad:</strong> reconocer de inmediato cantidades hasta 10</p>
-    <button class="iniciar" onclick="iniciar()">INICIAR</button>
-</div>
-
-<!-- APP -->
-<div id="app" style="display:none;">
-
-<img src="logo.png" class="logo">
-
-<h2>¿Cuántos puntos hay?</h2>
-
-<div id="contador"></div>
-
-<div class="marco" id="marco"></div>
-
-<div class="botones" id="botones"></div>
-
-<div id="mensaje"></div>
-
-</div>
-
-<!-- RESULTADOS -->
-<div id="final" class="final" style="display:none;">
-    <h1>RESULTADOS</h1>
-    <p id="resultadoTexto"></p>
-    <button onclick="location.reload()">REINICIAR</button>
-</div>
+<div id="pantalla"></div>
 
 <script>
-let cantidad = 0;
-let ejercicio = 1;
-let correctas = 0;
 
-function iniciar(){
-    document.getElementById("portada").style.display="none";
-    document.getElementById("app").style.display="block";
+/* 🔊 VOZ */
+function hablar(texto){
+    let mensaje = new SpeechSynthesisUtterance(texto);
+    mensaje.lang = "es-ES";
+    mensaje.rate = 0.8;
+    mensaje.pitch = 1.1;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.startsWith("es"));
+    if(voz) mensaje.voice = voz;
+
+    speechSynthesis.speak(mensaje);
 }
 
-function generar(){
+/* VARIABLES */
+let ejercicio = 0;
+let total = 20;
+let cantidad = 0;
+let aciertos = 0;
+let anterior = -1;
 
-    if(ejercicio > 20){
-        document.getElementById("app").style.display="none";
-        document.getElementById("final").style.display="flex";
+/* PORTADA */
+function iniciarApp(){
+    document.getElementById("pantalla").innerHTML = `
+        <div class="portada">
+            <img src="logo.png" class="logo">
+            <h1>Didactimat</h1>
+            <p><b>Nivel:</b> Kinder</p>
+            <p><b>Habilidad:</b> reconocer cantidades hasta 10</p>
+            <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+        </div>
+    `;
+}
 
-        document.getElementById("resultadoTexto").innerText =
-        "Respuestas correctas: " + correctas + " de 20";
+/* NUEVO EJERCICIO */
+function nuevoEjercicio(){
 
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
         return;
     }
 
-    document.getElementById("contador").innerText =
-    "Ejercicio " + ejercicio + " de 20";
+    do{
+        cantidad = Math.floor(Math.random()*10)+1; // 1 a 10
+    }while(cantidad === anterior);
 
-    const marco = document.getElementById("marco");
-    marco.innerHTML = "";
+    anterior = cantidad;
 
-    let extra = Math.floor(Math.random()*5)+1;
-    cantidad = 5 + extra;
+    let html = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántas hay?</h2>
+        <p>Ejercicio ${ejercicio} de 20</p>
+        <div id="marco" class="marco"></div>
+        <div id="botones"></div>
+        <div id="mensaje" class="mensaje"></div>
+    `;
 
-    let cincoArriba = Math.random() < 0.5;
+    document.getElementById("pantalla").innerHTML = html;
 
-    for(let i=0;i<10;i++){
-        let celda = document.createElement("div");
-        celda.className = "celda";
+    let marco = document.getElementById("marco");
 
-        let poner = false;
+    /* distribución tipo 5 + n */
+    let arriba = Array(5).fill(0);
+    let abajo = Array(5).fill(0);
 
-        if(cincoArriba){
-            if(i < 5) poner = true;
-            if(i >=5 && i < 5+extra) poner = true;
+    let extra = Math.max(0, cantidad - 5);
+    let arribaCompleta = cantidad > 5 ? Math.random() < 0.5 : true;
+
+    if(cantidad <= 5){
+        for(let i=0;i<cantidad;i++) arriba[i]=1;
+    }else{
+        if(arribaCompleta){
+            arriba = Array(5).fill(1);
+            for(let i=0;i<extra;i++) abajo[i]=1;
         }else{
-            if(i >=5) poner = true;
-            if(i < extra) poner = true;
+            abajo = Array(5).fill(1);
+            for(let i=0;i<extra;i++) arriba[i]=1;
         }
-
-        if(poner){
-            let punto = document.createElement("div");
-            punto.className = "punto";
-            celda.appendChild(punto);
-        }
-
-        marco.appendChild(celda);
     }
 
-    document.getElementById("mensaje").innerText="";
-}
+    let distribucion = arriba.concat(abajo);
 
-function crearBotones(){
-    const cont = document.getElementById("botones");
+    distribucion.forEach(v=>{
+        let div = document.createElement("div");
+        div.className="casilla";
+        if(v===1){
+            div.innerHTML='<div class="punto"></div>';
+        }
+        marco.appendChild(div);
+    });
+
+    let botones = document.getElementById("botones");
 
     for(let i=1;i<=10;i++){
-        let btn = document.createElement("button");
-        btn.innerText = i;
-
-        btn.onclick = function(){
-            if(i === cantidad){
-                correctas++;
-                document.getElementById("mensaje").innerText="¡Muy bien!";
-            }else{
-                document.getElementById("mensaje").innerText="Intenta de nuevo";
-                return;
-            }
-
-            ejercicio++;
-            setTimeout(generar,800);
-        };
-
-        cont.appendChild(btn);
+        botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
     }
 }
 
-crearBotones();
-generar();
+/* VERIFICAR */
+function verificar(resp){
+
+    let mensaje = document.getElementById("mensaje");
+
+    let botones = document.querySelectorAll(".boton");
+    botones.forEach(b => b.disabled = true);
+
+    if(resp == cantidad){
+
+        aciertos++;
+
+        mensaje.innerText = "¡Bien!";
+
+        hablar("Bien. Hay " + cantidad + " fichas");
+
+    }else{
+
+        mensaje.innerText = "Intenta nuevamente";
+
+        hablar("Intenta nuevamente");
+    }
+
+    setTimeout(nuevoEjercicio,1500);
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("pantalla").innerHTML = `
+        <h1>RESULTADOS</h1>
+        <p>Respuestas correctas: ${aciertos} de 20</p>
+        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+    `;
+}
+
+function reiniciar(){
+    ejercicio = 0;
+    aciertos = 0;
+    iniciarApp();
+}
+
+/* INICIO */
+iniciarApp();
+
 </script>
 
 </body>
