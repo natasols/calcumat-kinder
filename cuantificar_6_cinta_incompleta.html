@@ -174,7 +174,21 @@ function verificar(resp){
 
         aciertos++;
         mensaje.innerText = "¡Bien!";
+
         hablar("Bien. Hay " + cantidad + " fichas");
+
+        let casillas = document.querySelectorAll(".casilla");
+
+        let casilla = casillas[cantidad - 1]; // última ficha
+
+        // 🔥 mostrar número + levantar ficha
+        casilla.innerHTML = `
+            ${cantidad}
+            <div class="punto" style="
+                position:absolute;
+                top:-60px;
+            "></div>
+        `;
 
     }else{
 
