@@ -154,6 +154,35 @@ function verificar(resp){
 
     let mensaje = document.getElementById("mensaje");
 
+    // bloquear todos los botones
+    let botones = document.querySelectorAll(".boton");
+    botones.forEach(b => b.disabled = true);
+
+    if(resp == cantidad){
+
+        aciertos++;
+        mensaje.innerText = "¡Bien!";
+
+        let casillas = document.querySelectorAll(".casilla");
+        let casilla = casillas[ultimoIndex];
+
+        casilla.innerHTML = `
+            ${ultimoIndex+1}
+            <div class="ficha-extra"></div>
+        `;
+
+    }else{
+
+        mensaje.innerText = "Intenta nuevamente";
+
+    }
+
+    // pasar al siguiente SIEMPRE (bien o mal)
+    setTimeout(nuevoEjercicio,1200);
+}
+
+    let mensaje = document.getElementById("mensaje");
+
     if(resp == cantidad){
 
         aciertos++;
