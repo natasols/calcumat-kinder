@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#f5f5f5;
+}
+
+/* CONTENEDOR */
+.contenedor{
+    margin-top:60px;
+}
+
+/* LOGO */
+.logo{
+    width:120px;
+    margin-bottom:20px;
+}
+
+/* TITULO */
+h1{
+    margin-bottom:10px;
+}
+
+/* SUBTITULO */
+.subtitulo{
+    font-size:18px;
+    margin-bottom:30px;
+}
+
+/* BOTONES */
+.boton{
+    display:block;
+    margin:12px auto;
+    padding:15px 20px;
+    width:260px;
+    font-size:16px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.boton:hover{
+    background:#45a049;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <img src="logo.png" class="logo">
+
+    <h1>Calcumat</h1>
+
+    <div class="subtitulo">
+        Nivel: Kinder<br>
+        Actividades matemáticas
+    </div>
+
+    <button class="boton" onclick="ir('app_cuantas_hay_5.html')">
+        ¿Cuántas hay? (hasta 5)
+    </button>
+
+    <button class="boton" onclick="ir('app_completar_5.html')">
+        Completar 5
+    </button>
+
+    <button class="boton" onclick="ir('app_cuantas_hay_10.html')">
+        ¿Cuántas hay? (hasta 10)
+    </button>
+
+    <button class="boton" onclick="ir('app_completar_10.html')">
+        Completar 10
+    </button>
+
+</div>
+
+<script>
+
+function ir(pagina){
+    window.location.href = pagina;
+}
+
+</script>
+
+</body>
+</html>
