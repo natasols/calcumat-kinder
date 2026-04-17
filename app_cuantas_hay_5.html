@@ -2,45 +2,40 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactimat - ¿Cuántas hay?</title>
+<title>Didactimat – ¿Cuántas hay? (hasta 5)</title>
 
 <style>
 body{
     font-family: Arial;
     text-align:center;
-    background:white;
 }
 
-/* LOGO */
 .logo{
     width:120px;
     margin-top:20px;
 }
 
-/* PORTADA */
 .portada{
     margin-top:80px;
 }
 
 .boton{
-    margin-top:30px;
-    padding:15px 40px;
-    font-size:20px;
+    margin:10px;
+    padding:15px 25px;
+    font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
     border-radius:10px;
     cursor:pointer;
-    min-width:180px;
 }
 
-/* MARCO DE 5 */
 .marco{
     display:grid;
     grid-template-columns: repeat(5,80px);
     gap:8px;
     justify-content:center;
-    margin-top:40px;
+    margin-top:30px;
 }
 
 .casilla{
@@ -48,148 +43,157 @@ body{
     height:80px;
     border:2px solid black;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+    background:#ddd;
 }
 
-/* FICHAS */
-.ficha{
-    width:50px;
-    height:50px;
-    background:red;
+.punto{
+    width:40px;
+    height:40px;
     border-radius:50%;
+    background:red;
 }
 
-/* OPCIONES */
-.opciones{
-    margin-top:30px;
-}
-
-.opciones button{
-    margin:5px;
-    padding:10px 15px;
-    font-size:18px;
-    min-width:60px;
-}
-
-/* MENSAJE */
 .mensaje{
+    font-size:22px;
     margin-top:15px;
-    font-size:20px;
-}
-
-/* RESULTADO */
-.final{
-    margin-top:80px;
-}
-
-.final button{
-    margin-top:20px;
-    padding:15px 40px;
-    font-size:20px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    min-width:180px;
+    height:30px;
 }
 </style>
 </head>
 
 <body>
 
-<img src="logo.png" class="logo">
-
 <div id="pantalla"></div>
 
 <script>
-let ejercicio=0;
-let correctas=0;
-let respuestaCorrecta=0;
+
+/* 🔊 VOZ */
+function hablar(texto){
+    let mensaje = new SpeechSynthesisUtterance(texto);
+    mensaje.lang = "es-ES";
+    mensaje.rate = 0.8;
+    mensaje.pitch = 1.1;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.startsWith("es"));
+    if(voz) mensaje.voice = voz;
+
+    speechSynthesis.speak(mensaje);
+}
+
+/* VARIABLES */
+let ejercicio = 0;
+let total = 20;
+let cantidad = 0;
+let aciertos = 0;
+let anterior = -1;
 
 /* PORTADA */
-function portada(){
+function iniciarApp(){
     document.getElementById("pantalla").innerHTML = `
-    <div class="portada">
-        <h1>Didactimat</h1>
-        <p><b>Nivel:</b> Kinder</p>
-        <p><b>Habilidad:</b> reconocer cantidades hasta 5</p>
-        <button class="boton" onclick="iniciar()">INICIAR</button>
-    </div>`;
+        <div class="portada">
+            <img src="logo.png" class="logo">
+            <h1>Didactimat</h1>
+            <p><b>Nivel:</b> Kinder</p>
+            <p><b>Habilidad:</b> reconocer cantidades hasta 5</p>
+            <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+        </div>
+    `;
 }
 
-/* INICIAR */
-function iniciar(){
-    ejercicio=0;
-    correctas=0;
-    siguiente();
-}
-
-/* GENERAR EJERCICIO */
-function siguiente(){
-    if(ejercicio==20){
-        final();
-        return;
-    }
+/* NUEVO EJERCICIO */
+function nuevoEjercicio(){
 
     ejercicio++;
 
-    let cantidad = Math.floor(Math.random()*5)+1;
-    respuestaCorrecta = cantidad;
-
-    let posiciones = Array(5).fill(0);
-
-    let indices = [];
-    while(indices.length < cantidad){
-        let r = Math.floor(Math.random()*5);
-        if(!indices.includes(r)) indices.push(r);
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
     }
 
-    indices.forEach(i => posiciones[i]=1);
+    do{
+        cantidad = Math.floor(Math.random()*5)+1; // 1 a 5
+    }while(cantidad === anterior);
 
-    let html = `<h2>¿Cuántas hay?</h2>`;
-    html += `<p>Ejercicio ${ejercicio} de 20</p>`;
-    html += `<div class="marco">`;
+    anterior = cantidad;
 
-    posiciones.forEach(c=>{
-        html += `<div class="casilla">${c?'<div class="ficha"></div>':''}</div>`;
-    });
-
-    html += `</div><div class="opciones">`;
-
-    for(let i=1;i<=5;i++){
-        html += `<button onclick="responder(${i})">${i}</button>`;
-    }
-
-    html += `</div><div id="mensaje" class="mensaje"></div>`;
+    let html = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántas hay?</h2>
+        <p>Ejercicio ${ejercicio} de 20</p>
+        <div id="marco" class="marco"></div>
+        <div id="botones"></div>
+        <div id="mensaje" class="mensaje"></div>
+    `;
 
     document.getElementById("pantalla").innerHTML = html;
+
+    let marco = document.getElementById("marco");
+
+    for(let i=0;i<5;i++){
+        let div = document.createElement("div");
+        div.className="casilla";
+
+        if(i < cantidad){
+            div.innerHTML='<div class="punto"></div>';
+        }
+
+        marco.appendChild(div);
+    }
+
+    let botones = document.getElementById("botones");
+
+    for(let i=1;i<=5;i++){
+        botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
+    }
 }
 
-/* RESPONDER */
-function responder(valor){
-    if(valor == respuestaCorrecta){
-        correctas++;
-        document.getElementById("mensaje").innerHTML = "<span style='color:green'><b>¡Bien!</b></span>";
-        setTimeout(siguiente, 800);
-    } else {
-        document.getElementById("mensaje").innerHTML = "<span style='color:red'><b>Intenta nuevamente</b></span>";
+/* VERIFICAR */
+function verificar(resp){
+
+    let mensaje = document.getElementById("mensaje");
+
+    let botones = document.querySelectorAll(".boton");
+    botones.forEach(b => b.disabled = true);
+
+    if(resp == cantidad){
+
+        aciertos++;
+
+        mensaje.innerText = "¡Bien!";
+
+        hablar("Bien. Hay " + cantidad + " fichas");
+
+    }else{
+
+        mensaje.innerText = "Intenta nuevamente";
+
+        hablar("Intenta nuevamente");
     }
+
+    setTimeout(nuevoEjercicio,1500);
 }
 
 /* FINAL */
-function final(){
+function mostrarFinal(){
     document.getElementById("pantalla").innerHTML = `
-    <div class="final">
         <h1>RESULTADOS</h1>
-        <p>Respuestas correctas: ${correctas} de 20</p>
-        <button onclick="portada()">REINICIAR</button>
-    </div>`;
+        <p>Respuestas correctas: ${aciertos} de 20</p>
+        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+    `;
+}
+
+function reiniciar(){
+    ejercicio = 0;
+    aciertos = 0;
+    iniciarApp();
 }
 
 /* INICIO */
-portada();
+iniciarApp();
+
 </script>
 
 </body>
