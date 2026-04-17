@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -17,15 +16,14 @@ body{
     margin-top:20px;
 }
 
-/* PORTADA */
-#portada{
-    margin-top:100px;
+.portada{
+    margin-top:80px;
 }
 
-.iniciar{
-    margin-top:30px;
+.boton{
+    margin:10px;
     padding:15px 25px;
-    font-size:20px;
+    font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
@@ -33,28 +31,11 @@ body{
     cursor:pointer;
 }
 
-/* PUNTOS */
-.puntos{
-    display:grid;
-    grid-template-columns: repeat(6,80px);
-    justify-content:center;
-    margin-top:40px;
-}
-
-.punto{
-    width:60px;
-    height:60px;
-    border-radius:50%;
-    background:red;
-    margin:auto;
-}
-
-/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
-    margin-top:10px;
+    margin-top:30px;
 }
 
 .casilla{
@@ -64,79 +45,71 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
+    font-size:28px;
     background:white;
+    position:relative;
 }
 
-.numero{
-    font-size:30px;
+.punto{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:red;
 }
 
-/* BOTONES */
-#botones{
-    margin-top:50px;
+.opciones{
+    margin-top:30px;
 }
 
-.boton{
-    margin:8px;
-    padding:12px 18px;
-    font-size:18px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
-
-.feedback{
-    font-size:20px;
+.mensaje{
+    font-size:22px;
     margin-top:15px;
     height:30px;
 }
 </style>
-
 </head>
 
 <body>
 
-<!-- PORTADA -->
-
-<div id="portada">
-    <img src="logo.png" class="logo">
-    <h1>Calcumat Kinder</h1>
-    <p><strong>Nivel:</strong> Kinder</p>
-    <p><strong>Habilidad:</strong> cuantificar hasta 6 en cinta incompleta</p>
-    <button class="iniciar" onclick="iniciar()">INICIAR</button>
-</div>
-
-<!-- APP -->
-
-<div id="app" style="display:none;">
-    <img src="logo.png" class="logo">
-    <h2>¿Cuántos hay?</h2>
-    <p id="info"></p>
-
-<div id="puntos" class="puntos"></div>
-<div id="cinta" class="cinta"></div>
-
-<div id="botones"></div>
-<div id="feedback" class="feedback"></div>
-
-</div>
+<div id="pantalla"></div>
 
 <script>
 
+/* 🔊 VOZ */
+function hablar(texto){
+    let mensaje = new SpeechSynthesisUtterance(texto);
+    mensaje.lang = "es-ES";
+    mensaje.rate = 0.8;
+    mensaje.pitch = 1.1;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.startsWith("es"));
+    if(voz) mensaje.voice = voz;
+
+    speechSynthesis.speak(mensaje);
+}
+
+/* VARIABLES */
 let ejercicio = 0;
 let total = 20;
 let cantidad = 0;
 let aciertos = 0;
-let respondido = false;
+let anterior = -1;
 
-function iniciar(){
-    document.getElementById("portada").style.display="none";
-    document.getElementById("app").style.display="block";
-    nuevoEjercicio();
+/* PORTADA */
+function iniciarApp(){
+    document.getElementById("pantalla").innerHTML = `
+        <div class="portada">
+            <img src="logo.png" class="logo">
+            <h1>Calcumat Kinder</h1>
+            <p><b>Nivel:</b> Kinder</p>
+            <p><b>Habilidad:</b> cuantificar hasta 6 en cinta incompleta</p>
+            <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+        </div>
+    `;
 }
 
+/* NUEVO EJERCICIO */
 function nuevoEjercicio(){
 
     ejercicio++;
@@ -146,76 +119,93 @@ function nuevoEjercicio(){
         return;
     }
 
-    respondido = false;
-    document.getElementById("feedback").innerText = "";
+    do{
+        cantidad = Math.floor(Math.random()*6)+1;
+    }while(cantidad === anterior);
 
-    cantidad = Math.floor(Math.random()*6)+1;
+    anterior = cantidad;
 
-    document.getElementById("info").innerText = "Ejercicio " + ejercicio + " de 20";
+    let html = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántas hay?</h2>
+        <p>Ejercicio ${ejercicio} de 20</p>
+        <div id="cinta" class="cinta"></div>
+        <div id="botones" class="opciones"></div>
+        <div id="mensaje" class="mensaje"></div>
+    `;
+
+    document.getElementById("pantalla").innerHTML = html;
 
     let cinta = document.getElementById("cinta");
-    let puntos = document.getElementById("puntos");
-
-    cinta.innerHTML = "";
-    puntos.innerHTML = "";
 
     for(let i=1;i<=6;i++){
 
-        // PUNTOS
-        let puntoDiv = document.createElement("div");
+        let div = document.createElement("div");
+        div.className="casilla";
+
         if(i <= cantidad){
-            puntoDiv.innerHTML = '<div class="punto"></div>';
+            div.innerHTML = `<div class="punto"></div>`;
         }
-        puntos.appendChild(puntoDiv);
-
-        // CINTA
-        let casilla = document.createElement("div");
-        casilla.className="casilla";
-
-        if(i === cantidad){
-            casilla.innerHTML = '<div class="numero"></div>'; // 🔥 número oculto
-        }else{
-            casilla.innerHTML = '<div class="numero">'+i+'</div>';
+        else if(i === cantidad){
+            div.innerHTML = ""; // casilla en blanco (número oculto)
+        }
+        else{
+            div.innerText = i;
         }
 
-        cinta.appendChild(casilla);
+        cinta.appendChild(div);
     }
 
     let botones = document.getElementById("botones");
-    botones.innerHTML="";
 
     for(let i=1;i<=6;i++){
         botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
     }
 }
 
+/* VERIFICAR */
 function verificar(resp){
 
-    if(respondido) return;
+    let mensaje = document.getElementById("mensaje");
 
-    respondido = true;
+    let botones = document.querySelectorAll(".boton");
+    botones.forEach(b => b.disabled = true);
 
     if(resp == cantidad){
+
         aciertos++;
-        document.getElementById("feedback").innerText = "¡Bien!";
+
+        mensaje.innerText = "¡Bien!";
+
+        hablar("Bien. Hay " + cantidad + " fichas");
+
     }else{
-        document.getElementById("feedback").innerText = "Intenta nuevamente";
+
+        mensaje.innerText = "Intenta nuevamente";
+
+        hablar("Intenta nuevamente");
     }
 
-    setTimeout(()=>{
-        nuevoEjercicio();
-    },1200);
+    setTimeout(nuevoEjercicio,1500);
 }
 
+/* FINAL */
 function mostrarFinal(){
-
-    document.body.innerHTML = `
-        <img src="logo.png" class="logo">
+    document.getElementById("pantalla").innerHTML = `
         <h1>RESULTADOS</h1>
         <p>Respuestas correctas: ${aciertos} de 20</p>
-        <button class="boton" onclick="location.reload()">REINICIAR</button>
+        <button class="boton" onclick="reiniciar()">REINICIAR</button>
     `;
 }
+
+function reiniciar(){
+    ejercicio = 0;
+    aciertos = 0;
+    iniciarApp();
+}
+
+/* INICIO */
+iniciarApp();
 
 </script>
 
