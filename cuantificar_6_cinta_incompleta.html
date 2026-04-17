@@ -88,7 +88,6 @@ function hablar(texto){
     speechSynthesis.speak(mensaje);
 }
 
-/* VARIABLES */
 let ejercicio = 0;
 let total = 20;
 let cantidad = 0;
@@ -108,7 +107,7 @@ function iniciarApp(){
     `;
 }
 
-/* NUEVO EJERCICIO */
+/* EJERCICIO */
 function nuevoEjercicio(){
 
     ejercicio++;
@@ -119,7 +118,8 @@ function nuevoEjercicio(){
     }
 
     do{
-        cantidad = Math.floor(Math.random()*6)+1;
+        cantidad = Math.floor(Math.random()*5)+1; 
+        // 👈 importante: hasta 5 para que siempre haya espacio vacío
     }while(cantidad === anterior);
 
     anterior = cantidad;
@@ -137,17 +137,18 @@ function nuevoEjercicio(){
 
     let cinta = document.getElementById("cinta");
 
-    /* 🔥 CONSTRUCCIÓN CORRECTA */
     for(let i=1;i<=6;i++){
 
         let div = document.createElement("div");
         div.className="casilla";
 
         if(i <= cantidad){
-            // 🔴 TODAS las fichas visibles
             div.innerHTML = `<div class="punto"></div>`;
-        }else{
-            // 🔢 números después de las fichas
+        }
+        else if(i === cantidad + 1){
+            div.innerHTML = ""; // 🔥 casilla vacía correcta
+        }
+        else{
             div.innerText = i;
         }
 
@@ -199,7 +200,6 @@ function reiniciar(){
     iniciarApp();
 }
 
-/* INICIO */
 iniciarApp();
 
 </script>
