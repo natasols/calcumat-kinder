@@ -1,99 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Calcumat Kinder</title>
+<h2>Calcumat Kinder</h2>
+<p>Desarrollando el sentido de la cantidad</p>
 
-<style>
+<h3>Nivel 1 – Cinta (hasta 6)</h3>
+<button onclick="ir('cuantificar_6_cinta_descubierta.html')">1. Cinta descubierta 6</button>
+<button onclick="ir('cuantificar_6_cinta_incompleta.html')">2. Cinta incompleta 6 (avanzado)</button>
 
-body{
-    font-family: Arial;
-    text-align:center;
-    background:white;
-}
+<h3>Nivel 2 – Cinta (hasta 10)</h3>
+<button onclick="ir('cinta_cubierta_10.html')">3. Cinta cubierta 10</button>
+<button onclick="ir('cinta_cubierta_10_avanzado.html')">4. Cinta cubierta 10 (avanzado)</button>
 
-/* CONTENEDOR */
-.contenedor{
-    margin-top:60px;
-}
+<h3>Nivel 3 – Marco de 5</h3>
+<button onclick="ir('app_cuantas_hay_5.html')">5. ¿Cuántas hay? (hasta 5)</button>
+<button onclick="ir('app_completar_5.html')">6. Completar 5</button>
 
-/* LOGO */
-.logo{
-    width:120px;
-    margin-bottom:20px;
-}
-
-/* TITULO */
-h1{
-    margin-bottom:10px;
-}
-
-/* SUBTITULO */
-.subtitulo{
-    font-size:18px;
-    margin-bottom:30px;
-}
-
-/* BOTONES */
-.boton{
-    display:block;
-    margin:12px auto;
-    padding:15px 20px;
-    width:260px;
-    font-size:16px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    transition:0.2s;
-}
-
-.boton:hover{
-    background:#45a049;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="contenedor">
-
-    <img src="logo.png" class="logo">
-
-    <h1>Calcumat</h1>
-
-    <div class="subtitulo">
-        Nivel: Kinder<br>
-        Desarrollando el sentido de la cantidad
-    </div>
-
-    <button class="boton" onclick="ir('app_cuantas_hay_5.html')">
-        1. ¿Cuántas hay? (hasta 5)
-    </button>
-
-    <button class="boton" onclick="ir('app_completar_5.html')">
-        2. Completar 5
-    </button>
-
-    <button class="boton" onclick="ir('app_cuantas_hay_10.html')">
-        3. ¿Cuántas hay? (hasta 10)
-    </button>
-
-    <button class="boton" onclick="ir('app_completar_10.html')">
-        4. Completar 10
-    </button>
-
-</div>
-
-<script>
-
-function ir(pagina){
-    window.location.href = pagina;
-}
-
-</script>
-
-</body>
-</html>
+<h3>Nivel 4 – Marco de 10</h3>
+<button onclick="ir('app_cuantas_hay_10.html')">7. ¿Cuántas hay? (hasta 10)</button>
+<button onclick="ir('app_completar_10.html')">8. Completar 10</button>
