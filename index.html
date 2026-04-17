@@ -1,18 +1,130 @@
-<h2>Calcumat Kinder</h2>
-<p>Desarrollando el sentido de la cantidad</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder</title>
 
-<h3>Nivel 1 – Cinta (hasta 6)</h3>
-<button onclick="ir('cuantificar_6_cinta_descubierta.html')">1. Cinta descubierta 6</button>
-<button onclick="ir('cuantificar_6_cinta_incompleta.html')">2. Cinta incompleta 6 (avanzado)</button>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+    margin:0;
+}
 
-<h3>Nivel 2 – Cinta (hasta 10)</h3>
-<button onclick="ir('cinta_cubierta_10.html')">3. Cinta cubierta 10</button>
-<button onclick="ir('cinta_cubierta_10_avanzado.html')">4. Cinta cubierta 10 (avanzado)</button>
+/* CONTENEDOR */
+.contenedor{
+    max-width:500px;
+    margin:auto;
+    padding:20px;
+}
 
-<h3>Nivel 3 – Marco de 5</h3>
-<button onclick="ir('app_cuantas_hay_5.html')">5. ¿Cuántas hay? (hasta 5)</button>
-<button onclick="ir('app_completar_5.html')">6. Completar 5</button>
+/* LOGO */
+.logo{
+    width:120px;
+    margin-top:20px;
+}
 
-<h3>Nivel 4 – Marco de 10</h3>
-<button onclick="ir('app_cuantas_hay_10.html')">7. ¿Cuántas hay? (hasta 10)</button>
-<button onclick="ir('app_completar_10.html')">8. Completar 10</button>
+/* TITULOS */
+h1{
+    margin-top:10px;
+}
+
+.subtitulo{
+    margin-bottom:30px;
+    color:#444;
+}
+
+/* NIVELES */
+.nivel{
+    margin-top:30px;
+}
+
+.nivel h3{
+    margin-bottom:10px;
+}
+
+/* BOTONES */
+.boton{
+    display:block;
+    width:100%;
+    margin:8px 0;
+    padding:15px;
+    font-size:16px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.boton:hover{
+    background:#45a049;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <img src="logo.png" class="logo">
+
+    <h1>Calcumat Kinder</h1>
+    <p class="subtitulo">Desarrollando el sentido de la cantidad</p>
+
+    <!-- NIVEL 1 -->
+    <div class="nivel">
+        <h3>Nivel 1 – Cinta (hasta 6)</h3>
+        <button class="boton" onclick="ir('cuantificar_6_cinta_descubierta.html')">
+            1. Cinta descubierta 6
+        </button>
+        <button class="boton" onclick="ir('cuantificar_6_cinta_incompleta.html')">
+            2. Cinta incompleta 6 (avanzado)
+        </button>
+    </div>
+
+    <!-- NIVEL 2 -->
+    <div class="nivel">
+        <h3>Nivel 2 – Cinta (hasta 10)</h3>
+        <button class="boton" onclick="ir('cinta_cubierta_10.html')">
+            3. Cinta cubierta 10
+        </button>
+        <button class="boton" onclick="ir('cinta_cubierta_10_avanzado.html')">
+            4. Cinta cubierta 10 (avanzado)
+        </button>
+    </div>
+
+    <!-- NIVEL 3 -->
+    <div class="nivel">
+        <h3>Nivel 3 – Marco de 5</h3>
+        <button class="boton" onclick="ir('app_cuantas_hay_5.html')">
+            5. ¿Cuántas hay? (hasta 5)
+        </button>
+        <button class="boton" onclick="ir('app_completar_5.html')">
+            6. Completar 5
+        </button>
+    </div>
+
+    <!-- NIVEL 4 -->
+    <div class="nivel">
+        <h3>Nivel 4 – Marco de 10</h3>
+        <button class="boton" onclick="ir('app_cuantas_hay_10.html')">
+            7. ¿Cuántas hay? (hasta 10)
+        </button>
+        <button class="boton" onclick="ir('app_completar_10.html')">
+            8. Completar 10
+        </button>
+    </div>
+
+</div>
+
+<script>
+function ir(pagina){
+    window.location.href = pagina;
+}
+</script>
+
+</body>
+</html>
