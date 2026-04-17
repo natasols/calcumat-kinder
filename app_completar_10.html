@@ -76,7 +76,9 @@ body{
 <div id="pantalla"></div>
 
 <script>
-    function hablar(texto){
+
+/* 🔊 VOZ */
+function hablar(texto){
     let mensaje = new SpeechSynthesisUtterance(texto);
     mensaje.lang = "es-ES";
     mensaje.rate = 0.8;
@@ -89,6 +91,7 @@ body{
     speechSynthesis.speak(mensaje);
 }
 
+/* VARIABLES */
 let ejercicio = 0;
 let total = 20;
 let cantidad = 0;
@@ -103,7 +106,7 @@ function iniciarApp(){
             <img src="logo.png" class="logo">
             <h1>Didactimat</h1>
             <p><b>Nivel:</b> Kinder</p>
-            <p><b>Habilidad:</b> reconocer cantidades y completar hasta 10</p>
+            <p><b>Habilidad:</b> completar hasta 10</p>
             <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
         </div>
     `;
@@ -119,7 +122,7 @@ function nuevoEjercicio(){
         return;
     }
 
-    /* evita repetir mismo número */
+    /* evita repetir número */
     do{
         cantidad = Math.floor(Math.random()*4)+6; // 6 a 9
     }while(cantidad === anterior);
@@ -145,7 +148,6 @@ function nuevoEjercicio(){
     let abajo = Array(5).fill(0);
 
     let extra = cantidad - 5;
-
     let arribaCompleta = Math.random() < 0.5;
 
     if(arribaCompleta){
@@ -182,50 +184,24 @@ function verificar(resp){
     let botones = document.querySelectorAll(".boton");
     botones.forEach(b => b.disabled = true);
 
-    if(resp == cantidad){
-
-        aciertos++;
-        mensaje.innerText = "¡Bien!";
-
-        let casillas = document.querySelectorAll(".casilla");
-
-        if(typeof ultimoIndex !== "undefined"){
-            let casilla = casillas[ultimoIndex];
-
-            casilla.innerHTML = `
-                ${ultimoIndex+1}
-                <div class="ficha-extra"></div>
-            `;
-        }
-
-        hablar("Bien. Hay " + cantidad + " fichas");
-
-    }else{
-
-        mensaje.innerText = "Intenta nuevamente";
-        hablar("Intenta nuevamente");
-    }
-
-    setTimeout(nuevoEjercicio,1800);
-}resp){
-
-    let mensaje = document.getElementById("mensaje");
-
     if(resp == respuestaCorrecta){
 
         aciertos++;
 
-        mensaje.innerHTML = "¡Bien!";
+        mensaje.innerText = "¡Bien!";
 
         mostrarSolucion();
 
-        setTimeout(()=>{
-            nuevoEjercicio();
-        },1200);
+        hablar("Bien. Faltan " + respuestaCorrecta + " fichas");
 
     }else{
-        mensaje.innerHTML = "Intenta nuevamente";
+
+        mensaje.innerText = "Intenta nuevamente";
+
+        hablar("Intenta nuevamente");
     }
+
+    setTimeout(nuevoEjercicio,1500);
 }
 
 /* MOSTRAR SOLUCIÓN */
@@ -246,7 +222,6 @@ function mostrarSolucion(){
 
 /* FINAL */
 function mostrarFinal(){
-
     document.getElementById("pantalla").innerHTML = `
         <h1>RESULTADOS</h1>
         <p>Respuestas correctas: ${aciertos} de 20</p>
