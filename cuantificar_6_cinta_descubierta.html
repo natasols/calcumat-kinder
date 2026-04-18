@@ -27,14 +27,13 @@ body{
     cursor:pointer;
 }
 
-/* CONTADOR */
 .contador{
     margin-top:10px;
     font-size:16px;
     color:#555;
 }
 
-/* FILA PUNTOS */
+/* FILA */
 .fila-puntos{
     display:grid;
     grid-template-columns: repeat(6,80px);
@@ -50,7 +49,6 @@ body{
     justify-content:center;
 }
 
-/* CASILLA */
 .casilla{
     width:80px;
     height:60px;
@@ -59,17 +57,20 @@ body{
     justify-content:center;
     align-items:center;
     font-size:28px;
+    position:relative;
 }
 
-/* 🔥 NUEVO RESALTADO (SUAVE Y CENTRADO) */
-.correcto{
-    background:#A5D6A7; /* verde suave */
-    color:#1B5E20;
-    border:2px solid #66BB6A;
-    box-sizing:border-box;
+/* 🔥 NUEVO: CÍRCULO SUAVE */
+.correcto::after{
+    content:"";
+    position:absolute;
+    width:50px;
+    height:50px;
+    border:3px solid #4CAF50;
+    border-radius:50%;
 }
 
-/* PUNTO */
+/* PUNTOS */
 .punto{
     width:45px;
     height:45px;
@@ -100,10 +101,23 @@ let ejercicio = 0;
 let total = 20;
 let aciertos = 0;
 
-/* VOZ */
+/* 🔊 VOZ MEJORADA */
 function hablar(texto){
+
     let m = new SpeechSynthesisUtterance(texto);
-    m.lang = "es-ES";
+
+    let voces = speechSynthesis.getVoices();
+
+    let voz =
+        voces.find(v => v.lang === "es-CL" && v.name.toLowerCase().includes("female")) ||
+        voces.find(v => v.lang === "es-MX") ||
+        voces.find(v => v.lang.startsWith("es"));
+
+    if(voz) m.voice = voz;
+
+    m.rate = 0.9;
+    m.pitch = 1.2;
+
     speechSynthesis.speak(m);
 }
 
@@ -133,7 +147,7 @@ function nuevoEjercicio(){
     `;
 }
 
-/* MOSTRAR + RELOJ */
+/* INICIAR */
 function iniciarEjercicio(){
 
     let puntos = document.getElementById("puntos");
@@ -215,7 +229,6 @@ function reiniciar(){
     nuevoEjercicio();
 }
 
-/* INICIO */
 nuevoEjercicio();
 
 </script>
