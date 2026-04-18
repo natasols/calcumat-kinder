@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder – Cinta hasta 10</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
+
+.logo{
+    width:120px;
+    margin-top:20px;
+}
+
+.boton{
+    margin:10px;
+    padding:15px 25px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.contador{
+    margin-top:10px;
+    font-size:16px;
+    color:#555;
+}
+
+/* FILA */
+.fila-puntos{
+    display:grid;
+    grid-template-columns: repeat(10,60px);
+    justify-content:center;
+    margin-top:30px;
+    margin-bottom:18px;
+}
+
+/* CINTA */
+.cinta{
+    display:grid;
+    grid-template-columns: repeat(10,60px);
+    justify-content:center;
+}
+
+.casilla{
+    width:60px;
+    height:55px;
+    border:2px solid black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:24px;
+    position:relative;
+}
+
+/* CÍRCULO */
+.correcto::after{
+    content:"";
+    position:absolute;
+    width:40px;
+    height:40px;
+    border:3px solid #4CAF50;
+    border-radius:50%;
+}
+
+/* PUNTOS */
+.punto{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    background:red;
+    margin:auto;
+}
+
+.reloj{
+    font-size:60px;
+    margin-top:20px;
+}
+
+.oculto{
+    visibility:hidden;
+}
+</style>
+</head>
+
+<body>
+
+<div id="pantalla"></div>
+
+<script>
+
+let cantidad = 0;
+let ejercicio = 0;
+let total = 20;
+
+/* VOZ */
+function hablar(texto){
+    let m = new SpeechSynthesisUtterance(texto);
+
+    let voces = speechSynthesis.getVoices();
+
+    let voz =
+        voces.find(v => v.lang === "es-CL") ||
+        voces.find(v => v.lang.startsWith("es"));
+
+    if(voz) m.voice = voz;
+
+    m.rate = 0.9;
+    m.pitch = 1.2;
+
+    speechSynthesis.speak(m);
+}
+
+/* 🔥 GENERAR CON PRIORIZACIÓN */
+function generarCantidad(){
+
+    let r = Math.random();
+
+    if(r < 0.8){
+        return Math.floor(Math.random()*7)+4; // 4 a 10
+    }else{
+        return Math.floor(Math.random()*3)+1; // 1 a 3
+    }
+}
+
+/* NUEVO EJERCICIO */
+function nuevoEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    cantidad = generarCantidad();
+
+    document.getElementById("pantalla").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántas hay?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div id="puntos"></div>
+        <div id="cinta"></div>
+
+        <div id="botonera">
+            <button class="boton" onclick="iniciarEjercicio()">INICIAR EJERCICIO</button>
+        </div>
+    `;
+}
+
+/* INICIAR */
+function iniciarEjercicio(){
+
+    let puntos = document.getElementById("puntos");
+    let cinta = document.getElementById("cinta");
+
+    puntos.className = "fila-puntos";
+    cinta.className = "cinta";
+
+    puntos.innerHTML = "";
+    cinta.innerHTML = "";
+
+    for(let i=1;i<=10;i++){
+
+        let cont = document.createElement("div");
+
+        if(i<=cantidad){
+            let p = document.createElement("div");
+            p.className="punto";
+            cont.appendChild(p);
+        }
+
+        puntos.appendChild(cont);
+
+        let cas = document.createElement("div");
+        cas.className="casilla";
+        cas.id="num"+i;
+        cas.innerText=i;
+
+        cinta.appendChild(cas);
+    }
+
+    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultarTodo,3000);
+}
+
+/* OCULTAR */
+function ocultarTodo(){
+
+    document.getElementById("puntos").classList.add("oculto");
+    document.getElementById("cinta").classList.add("oculto");
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="mostrarRespuesta()">VERIFICAR</button>
+    `;
+}
+
+/* VERIFICAR */
+function mostrarRespuesta(){
+
+    document.getElementById("puntos").classList.remove("oculto");
+    document.getElementById("cinta").classList.remove("oculto");
+
+    let correcto = document.getElementById("num"+cantidad);
+    correcto.classList.add("correcto");
+
+    hablar("Había " + cantidad);
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="nuevoEjercicio()">SIGUIENTE</button>
+    `;
+}
+
+/* FINAL */
+function mostrarFinal(){
+
+    document.getElementById("pantalla").innerHTML = `
+        <h1>¡Felicitaciones!</h1>
+        <p>¡Buen trabajo pensando sin contar!</p>
+        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+    `;
+}
+
+function reiniciar(){
+    ejercicio = 0;
+    nuevoEjercicio();
+}
+
+nuevoEjercicio();
+
+</script>
+
+</body>
+</html>
