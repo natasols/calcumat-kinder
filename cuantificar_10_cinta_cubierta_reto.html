@@ -88,8 +88,6 @@ let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
 
-let retos = []; // 🔥 guardamos qué ejercicios serán reto
-
 /* VOZ */
 function hablar(texto){
     let m = new SpeechSynthesisUtterance(texto);
@@ -108,28 +106,6 @@ function hablar(texto){
     speechSynthesis.speak(m);
 }
 
-/* 🔥 GENERAR RETOS (3 distintos) */
-function generarRetos(){
-
-    let set = new Set();
-
-    while(set.size < 3){
-        set.add(Math.floor(Math.random()*20)+1);
-    }
-
-    retos = Array.from(set);
-}
-
-/* GENERAR CANTIDAD */
-function generarCantidad(esReto){
-
-    if(esReto){
-        return Math.floor(Math.random()*5)+6; // 6 a 10
-    }else{
-        return Math.floor(Math.random()*10)+1;
-    }
-}
-
 /* NUEVO EJERCICIO */
 function nuevoEjercicio(){
 
@@ -140,9 +116,19 @@ function nuevoEjercicio(){
         return;
     }
 
-    let esReto = retos.includes(ejercicio);
+    /* 🔥 AVISO ANTES DE RETOS */
+    if(ejercicio === 18){
+        mostrarAvisoReto();
+        return;
+    }
 
-    cantidad = generarCantidad(esReto);
+    let esReto = ejercicio >= 18;
+
+    if(esReto){
+        cantidad = Math.floor(Math.random()*5)+6; // 6 a 10
+    }else{
+        cantidad = Math.floor(Math.random()*10)+1;
+    }
 
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
@@ -155,6 +141,19 @@ function nuevoEjercicio(){
             <button class="boton" onclick="iniciarEjercicio(${esReto})">INICIAR EJERCICIO</button>
         </div>
     `;
+}
+
+/* 🔥 PANTALLA DE AVISO */
+function mostrarAvisoReto(){
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>¡Ahora viene el desafío!</h2>
+        <p>Miren con mucha atención y piensen sin contar.</p>
+        <button class="boton" onclick="nuevoEjercicio()">CONTINUAR</button>
+    `;
+
+    hablar("Ahora viene el desafío");
 }
 
 /* INICIAR */
@@ -231,12 +230,10 @@ function mostrarFinal(){
 
 function reiniciar(){
     ejercicio = 0;
-    generarRetos();
     nuevoEjercicio();
 }
 
 /* INICIO */
-generarRetos();
 nuevoEjercicio();
 
 </script>
