@@ -43,16 +43,16 @@ body{
     height:80px;
     border:2px solid black;
     display:flex;
-    justify-content:center;
-    align-items:flex-start; /* 🔥 número arriba */
+    flex-direction:column;           /* 🔥 clave */
+    justify-content:space-between;   /* 🔥 separa número y ficha */
+    align-items:center;
     font-size:28px;
     background:white;
-    position:relative;
-    padding-top:5px;
+    padding:5px 0;
 }
 
 .numero{
-    z-index:2; /* 🔥 asegura que esté sobre la ficha */
+    font-weight:bold;
 }
 
 .punto{
@@ -60,8 +60,6 @@ body{
     height:45px;
     border-radius:50%;
     background:red;
-    position:absolute;
-    bottom:5px; /* 🔥 ficha abajo */
 }
 
 .opciones{
@@ -150,13 +148,13 @@ function nuevoEjercicio(){
         let div = document.createElement("div");
         div.className="casilla";
 
-        // 🔢 número SIEMPRE visible
+        // 🔢 número
         let numero = document.createElement("div");
         numero.className = "numero";
         numero.innerText = i;
         div.appendChild(numero);
 
-        // 🔴 ficha solo si corresponde
+        // 🔴 ficha
         if(i <= cantidad){
             let punto = document.createElement("div");
             punto.className = "punto";
