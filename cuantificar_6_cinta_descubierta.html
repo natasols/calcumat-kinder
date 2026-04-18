@@ -139,19 +139,25 @@ function nuevoEjercicio(){
     let cinta = document.getElementById("cinta");
 
     for(let i=1;i<=6;i++){
-        let div = document.createElement("div");
-        div.className="casilla";
+    let div = document.createElement("div");
+    div.className="casilla";
 
-        if(i <= cantidad){
-            div.innerHTML = `<div class="punto"></div>`;
-        }else{
-            div.innerText = i;
-        }
+    // 🔢 SIEMPRE mostrar el número
+    div.innerText = i;
 
-        cinta.appendChild(div);
+    if(i <= cantidad){
+        // 🔴 agregar ficha SIN borrar número
+        let punto = document.createElement("div");
+        punto.className = "punto";
+
+        // opcional: hacerla un poco transparente
+        punto.style.opacity = "0.85";
+
+        div.appendChild(punto);
     }
 
-    let botones = document.getElementById("botones");
+    cinta.appendChild(div);
+}
 
     for(let i=1;i<=6;i++){
         botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
