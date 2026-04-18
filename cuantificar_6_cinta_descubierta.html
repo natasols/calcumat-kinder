@@ -31,15 +31,16 @@ body{
     cursor:pointer;
 }
 
-/* 🔴 FILA DE PUNTOS (arriba) */
+/* 🔴 FILA DE PUNTOS */
 .fila-puntos{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
     margin-top:30px;
+    margin-bottom:18px; /* 👈 separación estética */
 }
 
-/* 🔢 CINTA NUMÉRICA (abajo) */
+/* 🔢 CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
@@ -58,18 +59,28 @@ body{
     background:white;
 }
 
-/* NÚMEROS */
 .numero{
     font-weight:bold;
 }
 
-/* 🔴 FICHAS */
+/* 🔴 FICHAS CON ANIMACIÓN */
 .punto{
     width:45px;
     height:45px;
     border-radius:50%;
     background:red;
     margin:auto;
+
+    opacity:0;
+    transform:scale(0.6);
+    animation: aparecer 0.2s ease-out forwards;
+}
+
+@keyframes aparecer{
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
 }
 
 .opciones{
