@@ -44,17 +44,24 @@ body{
     border:2px solid black;
     display:flex;
     justify-content:center;
-    align-items:center;
+    align-items:flex-start; /* 🔥 número arriba */
     font-size:28px;
     background:white;
     position:relative;
+    padding-top:5px;
+}
+
+.numero{
+    z-index:2; /* 🔥 asegura que esté sobre la ficha */
 }
 
 .punto{
-    width:50px;
-    height:50px;
+    width:45px;
+    height:45px;
     border-radius:50%;
     background:red;
+    position:absolute;
+    bottom:5px; /* 🔥 ficha abajo */
 }
 
 .opciones{
@@ -109,7 +116,7 @@ function iniciarApp(){
     `;
 }
 
-/* NUEVO EJERCICIO */
+/* EJERCICIO */
 function nuevoEjercicio(){
 
     ejercicio++;
@@ -139,25 +146,27 @@ function nuevoEjercicio(){
     let cinta = document.getElementById("cinta");
 
     for(let i=1;i<=6;i++){
-    let div = document.createElement("div");
-    div.className="casilla";
 
-    // 🔢 SIEMPRE mostrar el número
-    div.innerText = i;
+        let div = document.createElement("div");
+        div.className="casilla";
 
-    if(i <= cantidad){
-        // 🔴 agregar ficha SIN borrar número
-        let punto = document.createElement("div");
-        punto.className = "punto";
+        // 🔢 número SIEMPRE visible
+        let numero = document.createElement("div");
+        numero.className = "numero";
+        numero.innerText = i;
+        div.appendChild(numero);
 
-        // opcional: hacerla un poco transparente
-        punto.style.opacity = "0.85";
+        // 🔴 ficha solo si corresponde
+        if(i <= cantidad){
+            let punto = document.createElement("div");
+            punto.className = "punto";
+            div.appendChild(punto);
+        }
 
-        div.appendChild(punto);
+        cinta.appendChild(div);
     }
 
-    cinta.appendChild(div);
-}
+    let botones = document.getElementById("botones");
 
     for(let i=1;i<=6;i++){
         botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
@@ -175,15 +184,12 @@ function verificar(resp){
     if(resp == cantidad){
 
         aciertos++;
-
         mensaje.innerText = "¡Bien!";
-
         hablar("Bien. Hay " + cantidad + " fichas");
 
     }else{
 
         mensaje.innerText = "Intenta nuevamente";
-
         hablar("Intenta nuevamente");
     }
 
@@ -205,13 +211,8 @@ function reiniciar(){
     iniciarApp();
 }
 
-/* INICIO */
 iniciarApp();
 
-</script>
-
-</body>
-</html>
 </script>
 
 </body>
