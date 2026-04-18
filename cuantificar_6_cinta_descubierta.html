@@ -27,6 +27,14 @@ body{
     cursor:pointer;
 }
 
+/* CONTADOR */
+.contador{
+    margin-top:10px;
+    font-size:16px;
+    color:#555;
+}
+
+/* FILA PUNTOS */
 .fila-puntos{
     display:grid;
     grid-template-columns: repeat(6,80px);
@@ -35,12 +43,14 @@ body{
     margin-bottom:18px;
 }
 
+/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
 }
 
+/* CASILLA */
 .casilla{
     width:80px;
     height:60px;
@@ -51,19 +61,15 @@ body{
     font-size:28px;
 }
 
-/* 🔥 RESALTADO CORRECTO */
+/* 🔥 NUEVO RESALTADO (SUAVE Y CENTRADO) */
 .correcto{
-    background:#4CAF50;
-    color:white;
-    border-radius:10px;
-    animation: aparecer 0.3s ease;
+    background:#A5D6A7; /* verde suave */
+    color:#1B5E20;
+    border:2px solid #66BB6A;
+    box-sizing:border-box;
 }
 
-@keyframes aparecer{
-    from{transform:scale(0.7);}
-    to{transform:scale(1);}
-}
-
+/* PUNTO */
 .punto{
     width:45px;
     height:45px;
@@ -90,6 +96,9 @@ body{
 <script>
 
 let cantidad = 0;
+let ejercicio = 0;
+let total = 20;
+let aciertos = 0;
 
 /* VOZ */
 function hablar(texto){
@@ -98,13 +107,22 @@ function hablar(texto){
     speechSynthesis.speak(m);
 }
 
+/* NUEVO EJERCICIO */
 function nuevoEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
 
     cantidad = Math.floor(Math.random()*6)+1;
 
     document.getElementById("pantalla").innerHTML = `
         <img src="logo.png" class="logo">
         <h2>¿Cuántas hay?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
 
         <div id="puntos"></div>
         <div id="cinta"></div>
@@ -115,6 +133,7 @@ function nuevoEjercicio(){
     `;
 }
 
+/* MOSTRAR + RELOJ */
 function iniciarEjercicio(){
 
     let puntos = document.getElementById("puntos");
@@ -140,7 +159,7 @@ function iniciarEjercicio(){
 
         let cas = document.createElement("div");
         cas.className="casilla";
-        cas.id="num"+i; /* 🔥 clave */
+        cas.id="num"+i;
         cas.innerText=i;
 
         cinta.appendChild(cas);
@@ -151,6 +170,7 @@ function iniciarEjercicio(){
     setTimeout(ocultarTodo,4000);
 }
 
+/* OCULTAR */
 function ocultarTodo(){
 
     document.getElementById("puntos").classList.add("oculto");
@@ -161,14 +181,16 @@ function ocultarTodo(){
     `;
 }
 
+/* VERIFICAR */
 function mostrarRespuesta(){
 
     document.getElementById("puntos").classList.remove("oculto");
     document.getElementById("cinta").classList.remove("oculto");
 
-    /* 🔥 RESALTAR RESPUESTA */
     let correcto = document.getElementById("num"+cantidad);
     correcto.classList.add("correcto");
+
+    aciertos++;
 
     hablar("Había " + cantidad);
 
@@ -177,6 +199,23 @@ function mostrarRespuesta(){
     `;
 }
 
+/* FINAL */
+function mostrarFinal(){
+
+    document.getElementById("pantalla").innerHTML = `
+        <h1>RESULTADOS</h1>
+        <p>Respuestas correctas: ${aciertos} de ${total}</p>
+        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+    `;
+}
+
+function reiniciar(){
+    ejercicio = 0;
+    aciertos = 0;
+    nuevoEjercicio();
+}
+
+/* INICIO */
 nuevoEjercicio();
 
 </script>
