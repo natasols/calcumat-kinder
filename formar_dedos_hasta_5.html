@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder – Formar cantidad con dedos</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
+
+.logo{
+    width:120px;
+    margin-top:20px;
+}
+
+.contenedor-manos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:60px;
+    margin-top:40px;
+}
+
+.mano{
+    width:180px;
+}
+
+.boton{
+    margin:10px;
+    padding:12px 22px;
+    font-size:16px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.mensaje{
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.contador{
+    margin-top:10px;
+    color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* 🔊 VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-ES";
+    msg.rate = 0.85;
+    msg.pitch = 1.2;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.startsWith("es"));
+    if(voz) msg.voice = voz;
+
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
+let ejercicio = 0;
+let total = 12; // menos ejercicios porque son más profundos
+let numero = 0;
+
+let configActual;
+let configAlternativa;
+
+/* CONFIGURACIONES VÁLIDAS */
+const configuraciones = {
+    2: [[1,1]],
+    3: [[2,1]],
+    4: [[3,1],[2,2]],
+    5: [[4,1],[3,2]]
+};
+
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>Nivel: Kinder</h2>
+        <p>Formar cantidades con los dedos (hasta 5)</p>
+        <button class="boton" onclick="iniciar()">INICIAR</button>
+    `;
+}
+
+/* INICIAR */
+function iniciar(){
+    ejercicio = 0;
+    nuevoEjercicio();
+}
+
+/* NUEVO EJERCICIO */
+function nuevoEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    // elegir número desde 2 a 5
+    numero = Math.floor(Math.random()*4)+2;
+
+    let posibles = configuraciones[numero];
+
+    // elegir config inicial
+    configActual = posibles[Math.floor(Math.random()*posibles.length)];
+
+    // elegir alternativa distinta
+    if(posibles.length > 1){
+        do{
+            configAlternativa = posibles[Math.floor(Math.random()*posibles.length)];
+        }while(configAlternativa[0] === configActual[0]);
+    }else{
+        configAlternativa = configActual;
+    }
+
+    mostrarFaseCopia();
+}
+
+/* FASE 1: COPIAR */
+function mostrarFaseCopia(){
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>Muestra esta cantidad</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div class="contenedor-manos">
+            <img src="mano_${configActual[0]}.png" class="mano">
+            <img src="mano_${configActual[1]}.png" class="mano">
+        </div>
+
+        <p class="mensaje">Muéstralo con tus manos</p>
+
+        <button class="boton" onclick="faseDistinto()">SIGUIENTE</button>
+    `;
+
+    hablar("Muéstralo con tus manos");
+}
+
+/* FASE 2: DISTINTO */
+function faseDistinto(){
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>¿Puedes hacerlo de otra forma?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div class="contenedor-manos">
+            <img src="mano_${configActual[0]}.png" class="mano">
+            <img src="mano_${configActual[1]}.png" class="mano">
+        </div>
+
+        <button class="boton" onclick="verificar()">VERIFICAR</button>
+    `;
+
+    hablar("¿Puedes hacerlo de otra forma?");
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>También se puede hacer así</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div class="contenedor-manos">
+            <img src="mano_${configAlternativa[0]}.png" class="mano">
+            <img src="mano_${configAlternativa[1]}.png" class="mano">
+        </div>
+
+        <button class="boton" onclick="nuevoEjercicio()">SIGUIENTE</button>
+    `;
+
+    hablar("También se puede hacer así");
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <h1>¡Felicitaciones!</h1>
+        <p>Has terminado los ejercicios</p>
+        <button class="boton" onclick="mostrarPortada()">REINICIAR</button>
+    `;
+
+    hablar("Felicitaciones. Terminaste la actividad");
+}
+
+/* INICIO */
+mostrarPortada();
+
+</script>
+
+</body>
+</html>
