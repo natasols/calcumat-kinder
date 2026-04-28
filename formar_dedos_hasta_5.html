@@ -22,6 +22,11 @@ body{
     margin:10px 0;
 }
 
+.numero svg{
+    width:120px;
+    height:160px;
+}
+
 .manos{
     display:flex;
     justify-content:center;
@@ -83,6 +88,22 @@ let numeroActual = 0;
 let subPaso = 0;
 let subPasoDosManos = 0;
 
+/* FUNCIÓN PARA MOSTRAR NÚMERO */
+function renderNumero(n){
+
+    if(n == 4){
+        return `
+        <svg viewBox="0 0 100 140">
+            <line x1="70" y1="10" x2="70" y2="130" stroke="#d32f2f" stroke-width="12"/>
+            <line x1="20" y1="80" x2="80" y2="80" stroke="#d32f2f" stroke-width="12"/>
+            <line x1="20" y1="80" x2="70" y2="10" stroke="#d32f2f" stroke-width="12"/>
+        </svg>
+        `;
+    }
+
+    return n;
+}
+
 /* SECUENCIA */
 function generarSecuencia(){
     secuencia = [...numeros];
@@ -128,7 +149,7 @@ function pantallaNumero(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
         <div class="contador">Ejercicio ${index} de 4</div>
-        <div class="numero">${numeroActual}</div>
+        <div class="numero">${renderNumero(numeroActual)}</div>
         <div class="texto">Forma el ${numeroActual} con una mano</div>
         <button class="boton" onclick="verificar()">Verificar</button>
     `;
@@ -193,7 +214,7 @@ function siguienteForma(total){
 function pantallaDosManos(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
-        <div class="numero">${numeroActual}</div>
+        <div class="numero">${renderNumero(numeroActual)}</div>
         <div class="texto">Ahora forma el ${numeroActual} con dos manos</div>
         <button class="boton" onclick="mostrarRespuestaDosManos()">Verificar</button>
     `;
