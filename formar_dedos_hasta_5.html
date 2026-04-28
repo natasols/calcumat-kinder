@@ -204,6 +204,9 @@ function siguienteForma(total){
 
 /* DOS MANOS */
 function pantallaDosManos(){
+
+    subPaso = 0; // 🔥 ARREGLO CLAVE
+
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
         <div class="numero">${numeroActual}</div>
@@ -214,7 +217,7 @@ function pantallaDosManos(){
     hablar("Ahora forma el " + numeroActual + " con dos manos");
 }
 
-/* RESPUESTAS CORRECTAS */
+/* RESPUESTAS */
 function mostrarRespuesta(){
 
     let combinaciones = [];
@@ -232,7 +235,7 @@ function mostrarRespuesta(){
         combinaciones = [[1,1]];
     }
 
-    let c = combinaciones[subPaso] || combinaciones[0];
+    let c = combinaciones[subPaso];
 
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
