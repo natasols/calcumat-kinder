@@ -17,13 +17,9 @@ body{
 }
 
 .numero{
-    width:120px;
-    margin:20px auto;
-}
-
-.numero-texto{
     font-size:150px;
     color:#d32f2f;
+    margin:20px 0;
 }
 
 .manos{
@@ -94,7 +90,7 @@ function hablar(texto){
 
 speechSynthesis.onvoiceschanged = () => {};
 
-/* 🔢 VARIABLES */
+/* VARIABLES */
 let numeros = [2,3,4,5];
 let secuencia = [];
 let index = 0;
@@ -102,7 +98,7 @@ let numeroActual = 0;
 let subPaso = 0;
 let totalEjercicios = 4;
 
-/* 🔀 MEZCLA SIN REPETICIÓN */
+/* SECUENCIA SIN REPETICIÓN */
 function generarSecuencia(){
     secuencia = [...numeros];
     for(let i=secuencia.length-1;i>0;i--){
@@ -111,7 +107,7 @@ function generarSecuencia(){
     }
 }
 
-/* 🏁 PORTADA */
+/* PORTADA */
 function portada(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
@@ -120,14 +116,14 @@ function portada(){
     `;
 }
 
-/* 🚀 INICIO */
+/* INICIO */
 function iniciar(){
     generarSecuencia();
     index = 0;
     siguienteNumero();
 }
 
-/* 🔢 SIGUIENTE */
+/* SIGUIENTE */
 function siguienteNumero(){
 
     if(index >= totalEjercicios){
@@ -141,31 +137,12 @@ function siguienteNumero(){
     pantallaNumero();
 }
 
-/* 🎨 NÚMERO KINDER */
-function renderNumero(n){
-
-    if(n == 4){
-        return `
-        <svg viewBox="0 0 100 140">
-            <line x1="25" y1="75" x2="65" y2="15"
-                  stroke="#d32f2f" stroke-width="10" stroke-linecap="round"/>
-            <line x1="25" y1="75" x2="75" y2="75"
-                  stroke="#d32f2f" stroke-width="10" stroke-linecap="round"/>
-            <line x1="65" y1="15" x2="65" y2="125"
-                  stroke="#d32f2f" stroke-width="10" stroke-linecap="round"/>
-        </svg>
-        `;
-    }
-
-    return `<div class="numero-texto">${n}</div>`;
-}
-
-/* 🧩 PANTALLA 1 */
+/* PANTALLA 1 */
 function pantallaNumero(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
         <div class="contador">Ejercicio ${index} de ${totalEjercicios}</div>
-        <div class="numero">${renderNumero(numeroActual)}</div>
+        <div class="numero">${numeroActual}</div>
         <div class="texto">Forma el ${numeroActual} con una mano</div>
         <button class="boton" onclick="verificar()">Verificar</button>
     `;
@@ -173,13 +150,13 @@ function pantallaNumero(){
     hablar("Forma el " + numeroActual + " con una mano");
 }
 
-/* ✔ VERIFICAR */
+/* VERIFICAR */
 function verificar(){
     subPaso = 0;
     mostrarFormasUnaMano();
 }
 
-/* 🖐 UNA MANO */
+/* UNA MANO */
 function mostrarFormasUnaMano(){
 
     let formas = [];
@@ -214,7 +191,7 @@ function mostrarFormasUnaMano(){
     hablar(textos[subPaso]);
 }
 
-/* ➡ SIGUIENTE FORMA */
+/* SIGUIENTE FORMA */
 function siguienteForma(total){
     subPaso++;
 
@@ -225,11 +202,11 @@ function siguienteForma(total){
     }
 }
 
-/* ✌ DOS MANOS */
+/* DOS MANOS */
 function pantallaDosManos(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
-        <div class="numero">${renderNumero(numeroActual)}</div>
+        <div class="numero">${numeroActual}</div>
         <div class="texto">Ahora forma el ${numeroActual} con dos manos</div>
         <button class="boton" onclick="mostrarRespuesta()">Verificar</button>
     `;
@@ -237,7 +214,7 @@ function pantallaDosManos(){
     hablar("Ahora forma el " + numeroActual + " con dos manos");
 }
 
-/* 🧠 RESPUESTAS DOS MANOS */
+/* RESPUESTAS CORRECTAS */
 function mostrarRespuesta(){
 
     let combinaciones = [];
@@ -272,7 +249,7 @@ function mostrarRespuesta(){
     hablar("También se puede hacer así");
 }
 
-/* ➡ SIGUIENTE COMBINACIÓN */
+/* SIGUIENTE COMBINACIÓN */
 function siguienteCombinacion(total){
     subPaso++;
 
@@ -283,7 +260,7 @@ function siguienteCombinacion(total){
     }
 }
 
-/* 🎉 FINAL */
+/* FINAL */
 function final(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
@@ -294,7 +271,7 @@ function final(){
     hablar("Muy bien, lo hiciste excelente");
 }
 
-/* 🚀 START */
+/* START */
 portada();
 
 </script>
