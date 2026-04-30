@@ -5,28 +5,42 @@
 <title>Calcumat Kinder – Cinta cubierta 6</title>
 
 <style>
+
 body{
-    font-family: Arial;
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
     text-align:center;
     background:white;
 }
 
-.logo{
+/* LOGOS */
+.logo-portada{
+    width:260px;
+    margin-top:40px;
+}
+
+.logo-app{
     width:120px;
     margin-top:20px;
 }
 
+/* PORTADA */
+.portada{
+    margin-top:60px;
+}
+
+/* BOTONES */
 .boton{
-    margin:10px;
+    margin:12px;
     padding:15px 25px;
     font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
 }
 
+/* CONTADOR */
 .contador{
     margin-top:10px;
     font-size:16px;
@@ -38,10 +52,10 @@ body{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
-    margin-top:50px;
+    margin-top:40px;
 }
 
-/* CASILLA */
+/* CASILLA (CUADRADA) */
 .casilla{
     width:80px;
     height:80px;
@@ -55,16 +69,16 @@ body{
 
 /* FICHA */
 .ficha{
-    width:60px;
-    height:60px;
+    width:70px;
+    height:70px;
     background:red;
     border-radius:50%;
 }
 
 /* FICHA LEVANTADA */
 .ficha-extra{
-    width:60px;
-    height:60px;
+    width:70px;
+    height:70px;
     background:red;
     border-radius:50%;
     position:absolute;
@@ -81,6 +95,7 @@ body{
 .oculto{
     visibility:hidden;
 }
+
 </style>
 </head>
 
@@ -90,36 +105,46 @@ body{
 
 <script>
 
+/* 🔊 VOZ ESTABLE */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    msg.rate = 0.9;
+
+    let voces = speechSynthesis.getVoices();
+
+    let voz = voces.find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
 let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
 
-/* VOZ */
-function hablar(texto){
-
-    let m = new SpeechSynthesisUtterance(texto);
-
-    let voces = speechSynthesis.getVoices();
-
-    let voz =
-        voces.find(v => v.lang === "es-CL") ||
-        voces.find(v => v.lang.startsWith("es"));
-
-    if(voz) m.voice = voz;
-
-    m.rate = 0.9;
-    m.pitch = 1.2;
-
-    speechSynthesis.speak(m);
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <div class="portada">
+            <img src="logo.png" class="logo-portada">
+            <h2>Cuantificar hasta 6</h2>
+            <p>Cinta numerada · Parte 2</p>
+            <button class="boton" onclick="iniciar()">Comenzar</button>
+        </div>
+    `;
 }
 
-/* GENERAR */
-function generarCantidad(){
-    return Math.floor(Math.random()*6)+1;
+/* INICIAR */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
 }
 
 /* NUEVO EJERCICIO */
-function nuevoEjercicio(){
+function siguienteEjercicio(){
 
     ejercicio++;
 
@@ -128,22 +153,24 @@ function nuevoEjercicio(){
         return;
     }
 
-    cantidad = generarCantidad();
+    cantidad = Math.floor(Math.random()*6)+1;
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo_manos.png" class="logo-app">
         <h2>¿Cuántas hay?</h2>
         <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
 
         <div id="cinta"></div>
 
         <div id="botonera">
-            <button class="boton" onclick="iniciarEjercicio()">INICIAR EJERCICIO</button>
+            <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
         </div>
     `;
+
+    hablar("Observa con atención");
 }
 
-/* INICIAR */
+/* INICIAR EJERCICIO */
 function iniciarEjercicio(){
 
     let cinta = document.getElementById("cinta");
@@ -175,7 +202,7 @@ function ocultarTodo(){
     document.getElementById("cinta").classList.add("oculto");
 
     document.getElementById("botonera").innerHTML = `
-        <button class="boton" onclick="mostrarRespuesta()">VERIFICAR</button>
+        <button class="boton" onclick="mostrarRespuesta()">Verificar</button>
     `;
 }
 
@@ -183,7 +210,6 @@ function ocultarTodo(){
 function mostrarRespuesta(){
 
     let cinta = document.getElementById("cinta");
-
     cinta.classList.remove("oculto");
 
     let casillas = document.querySelectorAll(".casilla");
@@ -198,7 +224,7 @@ function mostrarRespuesta(){
     hablar("Había " + cantidad);
 
     document.getElementById("botonera").innerHTML = `
-        <button class="boton" onclick="nuevoEjercicio()">SIGUIENTE</button>
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
     `;
 }
 
@@ -206,19 +232,19 @@ function mostrarRespuesta(){
 function mostrarFinal(){
 
     document.getElementById("app").innerHTML = `
-        <h1>¡Felicitaciones!</h1>
-        <p>¡Buen trabajo pensando sin contar!</p>
-        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+        <div class="portada">
+            <img src="logo.png" class="logo-portada">
+            <h2>¡Muy bien!</h2>
+            <p>Terminaste la rutina</p>
+            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
+        </div>
     `;
+
+    hablar("Muy bien. Terminaste la actividad");
 }
 
-function reiniciar(){
-    ejercicio = 0;
-    nuevoEjercicio();
-}
-
-/* INICIO */
-nuevoEjercicio();
+/* START */
+mostrarPortada();
 
 </script>
 
