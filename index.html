@@ -5,85 +5,116 @@
 <title>Calcumat Kinder</title>
 
 <style>
+
 body{
-    font-family: 'Nunito', 'Segoe UI', sans-serif;
-    text-align:center;
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
     background:white;
     margin:0;
 }
 
-/* CONTENEDOR */
-.contenedor{
+/* CONTENEDOR GENERAL */
+.wrapper{
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding-top:40px;
+    padding:20px;
 }
 
 /* LOGO */
 .logo{
-    width:320px;
-    margin-bottom:20px;
+    width:280px;
+    margin-top:30px;
+    margin-bottom:10px;
 }
 
 /* TITULO */
 .titulo{
-    font-size:32px;
+    font-size:28px;
     margin-bottom:30px;
 }
 
-/* BOTONES */
-.boton{
-    width:260px;
-    padding:16px;
-    margin:10px;
+/* TARJETAS */
+.tarjeta{
+    width:320px;
+    background:#f9f9f9;
+    border-radius:18px;
+    padding:20px;
+    margin:10px 0;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+/* TEXTO TARJETA */
+.nombre{
     font-size:20px;
+    margin-bottom:10px;
+}
+
+/* BOTON */
+.boton{
+    padding:12px 20px;
+    font-size:16px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:14px;
+    border-radius:10px;
     cursor:pointer;
 }
 
-.boton:hover{
-    transform:scale(1.05);
+/* FLECHA */
+.flecha{
+    font-size:28px;
+    margin:5px 0;
+    color:#888;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="contenedor">
+<div class="wrapper">
 
     <img src="logo.png" class="logo">
 
-    <div class="titulo">Calcumat Kinder</div>
+    <div class="titulo">Rutina de cálculo mental</div>
 
-    <!-- ACTIVIDADES -->
-    <button class="boton" onclick="ir('formar_dedos_hasta_5.html')">
-        Formar números con los dedos
-    </button>
+    <!-- 1 -->
+    <div class="tarjeta">
+        <div class="nombre">Formar números con los dedos</div>
+        <button class="boton" onclick="ir('formar_dedos_hasta_5.html')">Comenzar</button>
+    </div>
 
-    <button class="boton" onclick="ir('cuantas_hay_10.html')">
-        ¿Cuántas hay?
-    </button>
+    <div class="flecha">⬇️</div>
 
-    <button class="boton" onclick="ir('completar_5.html')">
-        Completar 5
-    </button>
+    <!-- 2 -->
+    <div class="tarjeta">
+        <div class="nombre">Cuantificar hasta 6 en el dado</div>
+        <button class="boton" onclick="ir('cuantificar_6_dado.html')">Comenzar</button>
+    </div>
 
-    <button class="boton" onclick="ir('cinta_cubierta_10.html')">
-        Cinta cubierta hasta 10
-    </button>
+    <div class="flecha">⬇️</div>
+
+    <!-- 3 -->
+    <div class="tarjeta">
+        <div class="nombre">Cuantificar hasta 6: cinta numerada (parte 1)</div>
+        <button class="boton" onclick="ir('cuantificar_6_cinta_descubierta_v2.html')">Comenzar</button>
+    </div>
+
+    <div class="flecha">⬇️</div>
+
+    <!-- 4 -->
+    <div class="tarjeta">
+        <div class="nombre">Cuantificar hasta 6: cinta numerada (parte 2)</div>
+        <button class="boton" onclick="ir('cuantificar_6_cinta_cubierta.html')">Comenzar</button>
+    </div>
 
 </div>
 
 <script>
-
-function ir(pagina){
-    window.location.href = pagina;
+function ir(url){
+    window.location.href = url;
 }
-
 </script>
 
 </body>
