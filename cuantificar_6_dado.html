@@ -8,8 +8,15 @@
 
 body{
     font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
-    text-align:center;
     background:white;
+    margin:0;
+}
+
+/* CONTENEDOR GENERAL */
+.wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 }
 
 /* LOGOS */
@@ -19,44 +26,30 @@ body{
 }
 
 .logo-app{
-    width:220px;
-    margin-top:20px;
+    width:200px;
+    margin-top:30px;
 }
 
-/* PORTADA */
-.portada{
-    margin-top:60px;
+/* TITULOS */
+h2{
+    margin:10px 0 5px 0;
 }
 
-/* BOTÓN */
-.boton{
-    margin:12px;
-    padding:15px 25px;
-    font-size:18px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-}
-
-/* CONTADOR */
 .contador{
-    margin-top:10px;
-    font-size:16px;
     color:#555;
+    margin-bottom:20px;
 }
 
-/* CONTENEDOR CENTRAL MEJORADO */
+/* ZONA CENTRAL PERFECTAMENTE ALINEADA */
 .contenedor{
     display:flex;
-    justify-content:center;
     align-items:center;
-    gap:80px; /* 🔥 MÁS ESPACIO */
-    margin-top:50px;
+    justify-content:center;
+    gap:80px;
+    margin:30px 0;
 }
 
-/* DADO MÁS GRANDE */
+/* DADO */
 .dado{
     width:160px;
     height:160px;
@@ -67,7 +60,7 @@ body{
     grid-template-rows: repeat(3,1fr);
 }
 
-/* PUNTOS MÁS GRANDES */
+/* PUNTOS */
 .punto{
     width:28px;
     height:28px;
@@ -76,38 +69,49 @@ body{
     margin:auto;
 }
 
-/* MANOS MÁS GRANDES Y A LA IZQUIERDA */
+/* MANOS */
+.zona-manos{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
 .manos{
     width:130px;
 }
 
-/* ESPEJO */
 .espejo{
     transform: scaleX(-1);
 }
 
-/* AGRUPACIÓN DE MANOS */
-.zona-manos{
-    display:flex;
-    gap:10px;
-    align-items:center;
-}
-
-/* NÚMERO MÁS GRANDE */
+/* NUMERO */
 .resultado{
     font-size:110px;
     color:#e53935;
+    min-width:80px;
+    text-align:center;
 }
 
-/* OCULTO */
-.oculto{
-    visibility:hidden;
+/* BOTON */
+.boton{
+    margin-top:10px;
+    padding:15px 25px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
 }
 
 /* RELOJ */
 .reloj{
     font-size:60px;
     margin-top:20px;
+}
+
+.oculto{
+    visibility:hidden;
 }
 
 </style>
@@ -123,7 +127,6 @@ body{
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
-    msg.rate = 0.9;
 
     let voces = speechSynthesis.getVoices();
     let voz = voces.find(v => v.lang.includes("es"));
@@ -142,7 +145,7 @@ let total = 10;
 /* PORTADA */
 function mostrarPortada(){
     document.getElementById("app").innerHTML = `
-        <div class="portada">
+        <div class="wrapper">
             <img src="logo.png" class="logo-portada">
             <h2>Cuantificar hasta 6 en el dado</h2>
             <button class="boton" onclick="iniciar()">Comenzar</button>
@@ -192,7 +195,7 @@ function iniciar(){
     siguienteEjercicio();
 }
 
-/* NUEVO EJERCICIO */
+/* NUEVO */
 function siguienteEjercicio(){
 
     ejercicio++;
@@ -205,18 +208,23 @@ function siguienteEjercicio(){
     numero = Math.floor(Math.random()*6)+1;
 
     document.getElementById("app").innerHTML = `
-        <img src="logo_manos.png" class="logo-app">
-        <h2>¿Cuántos puntos hay?</h2>
-        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+        <div class="wrapper">
 
-        <div class="contenedor">
-            <div id="zonaManos" class="zona-manos"></div>
-            <div id="dado" class="dado"></div>
-            <div id="numero" class="resultado"></div>
-        </div>
+            <img src="logo_manos.png" class="logo-app">
 
-        <div id="botonera">
-            <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
+            <h2>¿Cuántos puntos hay?</h2>
+            <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+            <div class="contenedor">
+                <div class="zona-manos" id="zonaManos"></div>
+                <div id="dado" class="dado"></div>
+                <div id="numero" class="resultado"></div>
+            </div>
+
+            <div id="botonera">
+                <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
+            </div>
+
         </div>
     `;
 }
@@ -225,7 +233,6 @@ function siguienteEjercicio(){
 function animarDado(final){
 
     let dado = document.getElementById("dado");
-
     let cambios = 0;
 
     let intervalo = setInterval(() => {
@@ -282,7 +289,7 @@ function verificar(){
 /* FINAL */
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
-        <div class="portada">
+        <div class="wrapper">
             <img src="logo.png" class="logo-portada">
             <h2>¡Muy bien!</h2>
             <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
