@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – Dado hasta 6</title>
+
+<style>
+
+body{
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    text-align:center;
+    background:white;
+}
+
+/* LOGOS */
+.logo-portada{
+    width:260px;
+    margin-top:40px;
+}
+
+.logo-app{
+    width:220px;
+    margin-top:20px;
+}
+
+/* PORTADA */
+.portada{
+    margin-top:60px;
+}
+
+/* BOTÓN */
+.boton{
+    margin:12px;
+    padding:15px 25px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+/* CONTADOR */
+.contador{
+    margin-top:10px;
+    font-size:16px;
+    color:#555;
+}
+
+/* DADO */
+.dado{
+    width:120px;
+    height:120px;
+    border:3px solid black;
+    border-radius:20px;
+    margin:40px auto;
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+}
+
+/* PUNTOS */
+.punto{
+    width:22px;
+    height:22px;
+    background:black;
+    border-radius:50%;
+    margin:auto;
+}
+
+/* OCULTO */
+.oculto{
+    visibility:hidden;
+}
+
+/* RESULTADO GRANDE */
+.resultado{
+    font-size:80px;
+    color:#e53935;
+    margin-top:20px;
+}
+
+/* RELOJ */
+.reloj{
+    font-size:60px;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    msg.rate = 0.9;
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.includes("es"));
+
+    if(voz) msg.voice = voz;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
+let numero = 0;
+let ejercicio = 0;
+let total = 20;
+
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <div class="portada">
+            <img src="logo.png" class="logo-portada">
+            <h2>Subitizar hasta 6</h2>
+            <p>Dado · Parte 1</p>
+            <button class="boton" onclick="iniciar()">Comenzar</button>
+        </div>
+    `;
+}
+
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
+/* GENERAR DADO */
+function generarDado(n){
+
+    let posiciones = {
+        1:[5],
+        2:[1,9],
+        3:[1,5,9],
+        4:[1,3,7,9],
+        5:[1,3,5,7,9],
+        6:[1,3,4,6,7,9]
+    };
+
+    let html = "";
+
+    for(let i=1;i<=9;i++){
+        if(posiciones[n].includes(i)){
+            html += `<div class="punto"></div>`;
+        }else{
+            html += `<div></div>`;
+        }
+    }
+
+    return html;
+}
+
+/* NUEVO EJERCICIO */
+function siguienteEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    numero = Math.floor(Math.random()*6)+1;
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo_manos.png" class="logo-app">
+        <h2>¿Cuántos puntos hay?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div id="dado" class="dado"></div>
+
+        <div id="botonera">
+            <button class="boton" onclick="mostrarDado()">Iniciar ejercicio</button>
+        </div>
+    `;
+}
+
+/* MOSTRAR DADO */
+function mostrarDado(){
+
+    let dado = document.getElementById("dado");
+    dado.innerHTML = generarDado(numero);
+
+    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultarDado,3000);
+}
+
+/* OCULTAR */
+function ocultarDado(){
+
+    document.getElementById("dado").classList.add("oculto");
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let dado = document.getElementById("dado");
+
+    dado.classList.remove("oculto");
+
+    document.getElementById("app").innerHTML += `
+        <div class="resultado">${numero}</div>
+    `;
+
+    hablar("Hay " + numero);
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <div class="portada">
+            <img src="logo.png" class="logo-portada">
+            <h2>¡Muy bien!</h2>
+            <p>Terminaste la rutina</p>
+            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
+        </div>
+    `;
+
+    hablar("Muy bien. Terminaste la actividad");
+}
+
+/* START */
+mostrarPortada();
+
+</script>
+
+</body>
+</html>
