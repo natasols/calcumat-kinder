@@ -47,48 +47,55 @@ body{
     color:#555;
 }
 
-/* CONTENEDOR CENTRAL */
+/* CONTENEDOR CENTRAL MEJORADO */
 .contenedor{
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:40px;
-    margin-top:40px;
+    gap:80px; /* 🔥 MÁS ESPACIO */
+    margin-top:50px;
 }
 
-/* DADO */
+/* DADO MÁS GRANDE */
 .dado{
-    width:120px;
-    height:120px;
-    border:3px solid black;
-    border-radius:20px;
+    width:160px;
+    height:160px;
+    border:4px solid black;
+    border-radius:25px;
     display:grid;
     grid-template-columns: repeat(3,1fr);
     grid-template-rows: repeat(3,1fr);
 }
 
-/* PUNTOS */
+/* PUNTOS MÁS GRANDES */
 .punto{
-    width:22px;
-    height:22px;
+    width:28px;
+    height:28px;
     background:black;
     border-radius:50%;
     margin:auto;
 }
 
-/* MANOS */
+/* MANOS MÁS GRANDES Y A LA IZQUIERDA */
 .manos{
-    width:100px;
+    width:130px;
 }
 
-/* ESPEJO (mano izquierda) */
+/* ESPEJO */
 .espejo{
     transform: scaleX(-1);
 }
 
-/* RESULTADO */
+/* AGRUPACIÓN DE MANOS */
+.zona-manos{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+/* NÚMERO MÁS GRANDE */
 .resultado{
-    font-size:70px;
+    font-size:110px;
     color:#e53935;
 }
 
@@ -143,7 +150,7 @@ function mostrarPortada(){
     `;
 }
 
-/* GENERAR DADO */
+/* DADO */
 function generarDado(n){
 
     let posiciones = {
@@ -203,7 +210,7 @@ function siguienteEjercicio(){
         <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
 
         <div class="contenedor">
-            <div id="zonaManos"></div>
+            <div id="zonaManos" class="zona-manos"></div>
             <div id="dado" class="dado"></div>
             <div id="numero" class="resultado"></div>
         </div>
