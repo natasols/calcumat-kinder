@@ -12,7 +12,7 @@ body{
     margin:0;
 }
 
-/* CONTENEDOR GENERAL */
+/* CONTENEDOR */
 .wrapper{
     display:flex;
     flex-direction:column;
@@ -23,49 +23,55 @@ body{
 /* LOGO */
 .logo{
     width:280px;
-    margin-top:30px;
-    margin-bottom:10px;
+    margin-top:20px;
+    margin-bottom:20px;
 }
 
 /* TITULO */
 .titulo{
-    font-size:28px;
+    font-size:26px;
     margin-bottom:30px;
 }
 
-/* TARJETAS */
+/* FILA */
+.fila{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+/* TARJETA */
 .tarjeta{
-    width:320px;
+    width:240px;
+    height:140px;
     background:#f9f9f9;
     border-radius:18px;
     padding:20px;
-    margin:10px 0;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
     text-align:center;
-}
-
-/* TEXTO TARJETA */
-.nombre{
-    font-size:20px;
-    margin-bottom:10px;
-}
-
-/* BOTON */
-.boton{
-    padding:12px 20px;
-    font-size:16px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     cursor:pointer;
+    transition:0.2s;
 }
 
-/* FLECHA */
+.tarjeta:hover{
+    transform:scale(1.05);
+    box-shadow:0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* TEXTO */
+.nombre{
+    font-size:18px;
+}
+
+/* FLECHA BONITA */
 .flecha{
-    font-size:28px;
-    margin:5px 0;
-    color:#888;
+    font-size:30px;
+    color:#bbb;
 }
 
 </style>
@@ -79,34 +85,30 @@ body{
 
     <div class="titulo">Rutina de cálculo mental</div>
 
-    <!-- 1 -->
-    <div class="tarjeta">
-        <div class="nombre">Formar números con los dedos</div>
-        <button class="boton" onclick="ir('formar_dedos_hasta_5.html')">Comenzar</button>
-    </div>
+    <div class="fila">
 
-    <div class="flecha">⬇️</div>
+        <div class="tarjeta" onclick="ir('formar_dedos_hasta_5.html')">
+            <div class="nombre">Formar números con los dedos</div>
+        </div>
 
-    <!-- 2 -->
-    <div class="tarjeta">
-        <div class="nombre">Cuantificar hasta 6 en el dado</div>
-        <button class="boton" onclick="ir('cuantificar_6_dado.html')">Comenzar</button>
-    </div>
+        <div class="flecha">➜</div>
 
-    <div class="flecha">⬇️</div>
+        <div class="tarjeta" onclick="ir('cuantificar_6_dado.html')">
+            <div class="nombre">Cuantificar en el dado</div>
+        </div>
 
-    <!-- 3 -->
-    <div class="tarjeta">
-        <div class="nombre">Cuantificar hasta 6: cinta numerada (parte 1)</div>
-        <button class="boton" onclick="ir('cuantificar_6_cinta_descubierta_v2.html')">Comenzar</button>
-    </div>
+        <div class="flecha">➜</div>
 
-    <div class="flecha">⬇️</div>
+        <div class="tarjeta" onclick="ir('cuantificar_6_cinta_descubierta_v2.html')">
+            <div class="nombre">Cinta numerada · Parte 1</div>
+        </div>
 
-    <!-- 4 -->
-    <div class="tarjeta">
-        <div class="nombre">Cuantificar hasta 6: cinta numerada (parte 2)</div>
-        <button class="boton" onclick="ir('cuantificar_6_cinta_cubierta.html')">Comenzar</button>
+        <div class="flecha">➜</div>
+
+        <div class="tarjeta" onclick="ir('cuantificar_6_cinta_cubierta.html')">
+            <div class="nombre">Cinta numerada · Parte 2</div>
+        </div>
+
     </div>
 
 </div>
