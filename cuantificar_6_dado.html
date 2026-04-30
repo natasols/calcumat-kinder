@@ -47,13 +47,21 @@ body{
     color:#555;
 }
 
+/* CONTENEDOR CENTRAL */
+.contenedor{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-top:40px;
+}
+
 /* DADO */
 .dado{
     width:120px;
     height:120px;
     border:3px solid black;
     border-radius:20px;
-    margin:40px auto 10px auto;
     display:grid;
     grid-template-columns: repeat(3,1fr);
     grid-template-rows: repeat(3,1fr);
@@ -68,16 +76,25 @@ body{
     margin:auto;
 }
 
-/* OCULTO */
-.oculto{
-    visibility:hidden;
+/* MANOS */
+.manos{
+    width:100px;
+}
+
+/* ESPEJO (mano izquierda) */
+.espejo{
+    transform: scaleX(-1);
 }
 
 /* RESULTADO */
 .resultado{
-    font-size:80px;
+    font-size:70px;
     color:#e53935;
-    margin-top:10px;
+}
+
+/* OCULTO */
+.oculto{
+    visibility:hidden;
 }
 
 /* RELOJ */
@@ -126,12 +143,6 @@ function mostrarPortada(){
     `;
 }
 
-/* INICIO */
-function iniciar(){
-    ejercicio = 0;
-    siguienteEjercicio();
-}
-
 /* GENERAR DADO */
 function generarDado(n){
 
@@ -147,14 +158,60 @@ function generarDado(n){
     let html = "";
 
     for(let i=1;i<=9;i++){
-        if(posiciones[n].includes(i)){
-            html += `<div class="punto"></div>`;
-        }else{
-            html += `<div></div>`;
-        }
+        html += posiciones[n].includes(i)
+            ? `<div class="punto"></div>`
+            : `<div></div>`;
     }
 
     return html;
+}
+
+/* MANOS */
+function obtenerManos(n){
+
+    if(n === 6){
+        return `
+            <img src="mano_3.png" class="manos espejo">
+            <img src="mano_3.png" class="manos">
+        `;
+    }
+
+    return `<img src="mano_${n}.png" class="manos">`;
+}
+
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
+/* NUEVO EJERCICIO */
+function siguienteEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    numero = Math.floor(Math.random()*6)+1;
+
+    document.getElementById("app").innerHTML = `
+        <img src="logo_manos.png" class="logo-app">
+        <h2>¿Cuántos puntos hay?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div class="contenedor">
+            <div id="zonaManos"></div>
+            <div id="dado" class="dado"></div>
+            <div id="numero" class="resultado"></div>
+        </div>
+
+        <div id="botonera">
+            <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
+        </div>
+    `;
 }
 
 /* ANIMACIÓN */
@@ -179,31 +236,6 @@ function animarDado(final){
     }, 80);
 }
 
-/* NUEVO EJERCICIO */
-function siguienteEjercicio(){
-
-    ejercicio++;
-
-    if(ejercicio > total){
-        mostrarFinal();
-        return;
-    }
-
-    numero = Math.floor(Math.random()*6)+1;
-
-    document.getElementById("app").innerHTML = `
-        <img src="logo_manos.png" class="logo-app">
-        <h2>¿Cuántos puntos hay?</h2>
-        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
-
-        <div id="dado" class="dado"></div>
-
-        <div id="botonera">
-            <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
-        </div>
-    `;
-}
-
 /* INICIAR */
 function iniciarEjercicio(){
 
@@ -211,11 +243,11 @@ function iniciarEjercicio(){
 
     document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
 
-    setTimeout(ocultarDado,3000);
+    setTimeout(ocultar,3000);
 }
 
 /* OCULTAR */
-function ocultarDado(){
+function ocultar(){
 
     document.getElementById("dado").classList.add("oculto");
 
@@ -227,14 +259,11 @@ function ocultarDado(){
 /* VERIFICAR */
 function verificar(){
 
-    let dado = document.getElementById("dado");
+    document.getElementById("dado").classList.remove("oculto");
 
-    dado.classList.remove("oculto");
+    document.getElementById("numero").innerText = numero;
 
-    /* 👉 número justo debajo del dado */
-    dado.insertAdjacentHTML("afterend", `
-        <div class="resultado">${numero}</div>
-    `);
+    document.getElementById("zonaManos").innerHTML = obtenerManos(numero);
 
     hablar("Hay " + numero);
 
@@ -249,12 +278,9 @@ function mostrarFinal(){
         <div class="portada">
             <img src="logo.png" class="logo-portada">
             <h2>¡Muy bien!</h2>
-            <p>Terminaste la rutina</p>
             <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
         </div>
     `;
-
-    hablar("Muy bien. Terminaste la actividad");
 }
 
 /* START */
