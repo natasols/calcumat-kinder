@@ -21,14 +21,14 @@ body{
     height:100vh;
 }
 
-/* LOGO */
+/* LOGOS */
 .logo{
-    width:240px;
-    margin-bottom:20px;
+    width:360px; /* MÁS GRANDE */
+    margin-bottom:30px;
 }
 
-.logo.pequeno{
-    width:120px;
+.logo-mini{
+    width:90px;
     margin-top:20px;
 }
 
@@ -79,7 +79,6 @@ body{
     border-radius:14px;
     cursor:pointer;
     margin-top:25px;
-    transition:0.2s;
 }
 
 .boton:hover{
@@ -94,7 +93,7 @@ body{
 
 <script>
 
-/* 🔊 VOZ FEMENINA */
+/* VOZ */
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
@@ -105,8 +104,7 @@ function hablar(texto){
     let voz = voces.find(v =>
         v.lang.includes("es") &&
         (v.name.toLowerCase().includes("female") ||
-         v.name.toLowerCase().includes("google") ||
-         v.name.toLowerCase().includes("mujer"))
+         v.name.toLowerCase().includes("google"))
     );
 
     if(voz) msg.voice = voz;
@@ -114,8 +112,6 @@ function hablar(texto){
     speechSynthesis.cancel();
     speechSynthesis.speak(msg);
 }
-
-speechSynthesis.onvoiceschanged = () => {};
 
 /* VARIABLES */
 let numeros = [2,3,4,5];
@@ -125,7 +121,7 @@ let numeroActual = 0;
 let subPaso = 0;
 let totalEjercicios = 4;
 
-/* SECUENCIA SIN REPETICIÓN */
+/* SECUENCIA */
 function generarSecuencia(){
     secuencia = [...numeros];
     for(let i=secuencia.length-1;i>0;i--){
@@ -152,7 +148,7 @@ function iniciar(){
     siguienteNumero();
 }
 
-/* SIGUIENTE NÚMERO */
+/* SIGUIENTE */
 function siguienteNumero(){
 
     if(index >= totalEjercicios){
@@ -166,10 +162,10 @@ function siguienteNumero(){
     pantallaNumero();
 }
 
-/* PANTALLA UNA MANO */
+/* UNA MANO */
 function pantallaNumero(){
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo pequeno">
+        <img src="logo_manos.png" class="logo-mini">
         <div class="contador">Ejercicio ${index} de ${totalEjercicios}</div>
         <div class="numero">${numeroActual}</div>
         <div class="texto">Forma el ${numeroActual} con una mano</div>
@@ -185,7 +181,7 @@ function verificar(){
     mostrarFormasUnaMano();
 }
 
-/* FORMAS UNA MANO */
+/* FORMAS */
 function mostrarFormasUnaMano(){
 
     let formas = [];
@@ -200,15 +196,9 @@ function mostrarFormasUnaMano(){
         formas = ["mano_" + numeroActual + ".png"];
     }
 
-    let textos = [
-        "Una forma es esta",
-        "También puedes hacerlo así",
-        "Otra forma es esta"
-    ];
-
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo pequeno">
-        <div class="texto">${textos[subPaso]}</div>
+        <img src="logo_manos.png" class="logo-mini">
+        <div class="texto">Una forma es esta</div>
         <div class="manos">
             <img src="${formas[subPaso]}" class="mano">
         </div>
@@ -216,8 +206,6 @@ function mostrarFormasUnaMano(){
             ${subPaso < formas.length-1 ? "Otra forma" : "Siguiente"}
         </button>
     `;
-
-    hablar(textos[subPaso]);
 }
 
 /* SIGUIENTE FORMA */
@@ -231,22 +219,19 @@ function siguienteForma(total){
     }
 }
 
-/* PANTALLA DOS MANOS */
+/* DOS MANOS */
 function pantallaDosManos(){
-
     subPaso = 0;
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo pequeno">
+        <img src="logo_manos.png" class="logo-mini">
         <div class="numero">${numeroActual}</div>
         <div class="texto">Ahora forma el ${numeroActual} con dos manos</div>
         <button class="boton" onclick="mostrarRespuesta()">Verificar</button>
     `;
-
-    hablar("Ahora forma el " + numeroActual + " con dos manos");
 }
 
-/* RESPUESTAS DOS MANOS */
+/* RESPUESTAS */
 function mostrarRespuesta(){
 
     let combinaciones = [];
@@ -260,14 +245,11 @@ function mostrarRespuesta(){
     else if(numeroActual == 3){
         combinaciones = [[1,2]];
     }
-    else{
-        combinaciones = [[1,1]];
-    }
 
     let c = combinaciones[subPaso];
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo pequeno">
+        <img src="logo_manos.png" class="logo-mini">
         <div class="texto">Una forma es esta</div>
         <div class="manos">
             <img src="mano_${c[0]}.png" class="mano izq">
@@ -277,8 +259,6 @@ function mostrarRespuesta(){
             ${subPaso < combinaciones.length-1 ? "Otra forma" : "Siguiente"}
         </button>
     `;
-
-    hablar("También se puede hacer así");
 }
 
 /* SIGUIENTE COMBINACIÓN */
@@ -296,11 +276,9 @@ function siguienteCombinacion(total){
 function final(){
     document.getElementById("app").innerHTML = `
         <img src="logo.png" class="logo">
-        <div class="texto">¡Muy bien! Lo hiciste excelente 👏</div>
+        <div class="texto">¡Muy bien! 👏</div>
         <button class="boton" onclick="portada()">Volver a jugar</button>
     `;
-
-    hablar("Muy bien, lo hiciste excelente");
 }
 
 /* START */
