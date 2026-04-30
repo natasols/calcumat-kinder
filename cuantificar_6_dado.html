@@ -73,7 +73,7 @@ body{
     visibility:hidden;
 }
 
-/* RESULTADO GRANDE */
+/* RESULTADO */
 .resultado{
     font-size:80px;
     color:#e53935;
@@ -113,15 +113,14 @@ function hablar(texto){
 /* VARIABLES */
 let numero = 0;
 let ejercicio = 0;
-let total = 20;
+let total = 10;
 
 /* PORTADA */
 function mostrarPortada(){
     document.getElementById("app").innerHTML = `
         <div class="portada">
             <img src="logo.png" class="logo-portada">
-            <h2>Subitizar hasta 6</h2>
-            <p>Dado · Parte 1</p>
+            <h2>Cuantificar hasta 6 en el dado</h2>
             <button class="boton" onclick="iniciar()">Comenzar</button>
         </div>
     `;
@@ -158,6 +157,28 @@ function generarDado(n){
     return html;
 }
 
+/* ANIMACIÓN DADO */
+function animarDado(final){
+
+    let dado = document.getElementById("dado");
+
+    let cambios = 0;
+
+    let intervalo = setInterval(() => {
+
+        let random = Math.floor(Math.random()*6)+1;
+        dado.innerHTML = generarDado(random);
+
+        cambios++;
+
+        if(cambios > 10){
+            clearInterval(intervalo);
+            dado.innerHTML = generarDado(final);
+        }
+
+    }, 80);
+}
+
 /* NUEVO EJERCICIO */
 function siguienteEjercicio(){
 
@@ -178,16 +199,15 @@ function siguienteEjercicio(){
         <div id="dado" class="dado"></div>
 
         <div id="botonera">
-            <button class="boton" onclick="mostrarDado()">Iniciar ejercicio</button>
+            <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
         </div>
     `;
 }
 
-/* MOSTRAR DADO */
-function mostrarDado(){
+/* INICIAR */
+function iniciarEjercicio(){
 
-    let dado = document.getElementById("dado");
-    dado.innerHTML = generarDado(numero);
+    animarDado(numero);
 
     document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
 
