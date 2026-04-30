@@ -53,7 +53,7 @@ body{
     height:120px;
     border:3px solid black;
     border-radius:20px;
-    margin:40px auto;
+    margin:40px auto 10px auto;
     display:grid;
     grid-template-columns: repeat(3,1fr);
     grid-template-rows: repeat(3,1fr);
@@ -77,7 +77,7 @@ body{
 .resultado{
     font-size:80px;
     color:#e53935;
-    margin-top:20px;
+    margin-top:10px;
 }
 
 /* RELOJ */
@@ -157,7 +157,7 @@ function generarDado(n){
     return html;
 }
 
-/* ANIMACIÓN DADO */
+/* ANIMACIÓN */
 function animarDado(final){
 
     let dado = document.getElementById("dado");
@@ -231,9 +231,10 @@ function verificar(){
 
     dado.classList.remove("oculto");
 
-    document.getElementById("app").innerHTML += `
+    /* 👉 número justo debajo del dado */
+    dado.insertAdjacentHTML("afterend", `
         <div class="resultado">${numero}</div>
-    `;
+    `);
 
     hablar("Hay " + numero);
 
