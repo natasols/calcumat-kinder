@@ -6,50 +6,62 @@
 
 <style>
 body{
-    font-family: Arial;
+    font-family: 'Nunito','Segoe UI',sans-serif;
     text-align:center;
     background:white;
+    margin:0;
 }
 
+/* LOGOS */
 .logo{
-    width:120px;
+    width:320px;
     margin-top:20px;
 }
 
+.logo-mini{
+    width:150px;
+    margin-top:20px;
+}
+
+/* BOTONES */
 .boton{
     margin:10px;
-    padding:15px 25px;
-    font-size:18px;
+    padding:14px 26px;
+    font-size:20px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
 }
 
+/* CONTADOR */
 .contador{
     margin-top:10px;
-    font-size:16px;
+    font-size:18px;
     color:#555;
 }
 
+/* FILA PUNTOS */
 .fila-puntos{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
     margin-top:30px;
-    margin-bottom:18px;
+    margin-bottom:20px;
 }
 
+/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
 }
 
+/* CASILLAS CUADRADAS */
 .casilla{
     width:80px;
-    height:60px;
+    height:80px; /* 🔥 CUADRADO PERFECTO */
     border:2px solid black;
     display:flex;
     justify-content:center;
@@ -58,29 +70,31 @@ body{
     position:relative;
 }
 
-/* CÍRCULO */
+/* FICHA (CASI LLENA EL CUADRADO) */
+.punto{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:red;
+}
+
+/* RESPUESTA */
 .correcto::after{
     content:"";
     position:absolute;
-    width:50px;
-    height:50px;
+    width:70px;
+    height:70px;
     border:3px solid #4CAF50;
     border-radius:50%;
 }
 
-.punto{
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    background:red;
-    margin:auto;
-}
-
+/* RELOJ */
 .reloj{
     font-size:60px;
     margin-top:20px;
 }
 
+/* OCULTAR */
 .oculto{
     visibility:hidden;
 }
@@ -93,26 +107,47 @@ body{
 
 <script>
 
+/* VOZ ESTABLE */
+let vocesDisponibles = [];
+
+speechSynthesis.onvoiceschanged = () => {
+    vocesDisponibles = speechSynthesis.getVoices();
+};
+
+function hablar(texto){
+    let m = new SpeechSynthesisUtterance(texto);
+    m.lang = "es-CL";
+    m.rate = 0.9;
+
+    let voz = vocesDisponibles.find(v =>
+        v.lang.includes("es") &&
+        v.name.toLowerCase().includes("google")
+    );
+
+    if(voz) m.voice = voz;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(m);
+}
+
+/* VARIABLES */
 let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
 
-/* VOZ */
-function hablar(texto){
-    let m = new SpeechSynthesisUtterance(texto);
+/* PORTADA */
+function portada(){
+    document.getElementById("pantalla").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>Cuantificar hasta 6</h2>
+        <button class="boton" onclick="iniciar()">Comenzar</button>
+    `;
+}
 
-    let voces = speechSynthesis.getVoices();
-
-    let voz =
-        voces.find(v => v.lang === "es-CL") ||
-        voces.find(v => v.lang.startsWith("es"));
-
-    if(voz) m.voice = voz;
-
-    m.rate = 0.9;
-    m.pitch = 1.2;
-
-    speechSynthesis.speak(m);
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    nuevoEjercicio();
 }
 
 /* NUEVO EJERCICIO */
@@ -128,7 +163,7 @@ function nuevoEjercicio(){
     cantidad = Math.floor(Math.random()*6)+1;
 
     document.getElementById("pantalla").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo_manos.png" class="logo-mini">
         <h2>¿Cuántas hay?</h2>
         <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
 
@@ -136,9 +171,11 @@ function nuevoEjercicio(){
         <div id="cinta"></div>
 
         <div id="botonera">
-            <button class="boton" onclick="iniciarEjercicio()">INICIAR EJERCICIO</button>
+            <button class="boton" onclick="iniciarEjercicio()">INICIAR</button>
         </div>
     `;
+
+    hablar("¿Cuántas hay?");
 }
 
 /* INICIAR */
@@ -175,7 +212,7 @@ function iniciarEjercicio(){
 
     document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
 
-    setTimeout(ocultarTodo,3000); /* 🔥 AHORA 3 SEGUNDOS */
+    setTimeout(ocultarTodo,3000);
 }
 
 /* OCULTAR */
@@ -209,18 +246,16 @@ function mostrarRespuesta(){
 function mostrarFinal(){
 
     document.getElementById("pantalla").innerHTML = `
-        <h1>¡Felicitaciones!</h1>
-        <p>¡Buen trabajo pensando sin contar!</p>
-        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+        <img src="logo.png" class="logo">
+        <h2>¡Muy bien! 👏</h2>
+        <button class="boton" onclick="portada()">Volver a jugar</button>
     `;
+
+    hablar("Muy bien");
 }
 
-function reiniciar(){
-    ejercicio = 0;
-    nuevoEjercicio();
-}
-
-nuevoEjercicio();
+/* START */
+portada();
 
 </script>
 
