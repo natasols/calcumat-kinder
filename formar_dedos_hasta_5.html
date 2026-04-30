@@ -233,6 +233,13 @@ function siguienteForma(total){
 
 /* DOS MANOS */
 function pantallaDosManos(){
+
+    // 👇 SOLUCIÓN PARA EL 2
+    if(numeroActual == 2){
+        siguienteNumero();
+        return;
+    }
+
     subPaso = 0;
 
     document.getElementById("app").innerHTML = `
