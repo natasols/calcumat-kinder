@@ -6,22 +6,54 @@
 
 <style>
 body{
-    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
     text-align:center;
     background:white;
+    margin:0;
 }
 
+/* CONTENEDOR PORTADA */
+.contenedor{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+/* LOGO */
 .logo{
+    width:240px;
+    margin-bottom:20px;
+}
+
+.logo.pequeno{
     width:120px;
     margin-top:20px;
 }
 
+/* NÚMERO */
 .numero{
     font-size:150px;
     color:#d32f2f;
     margin:20px 0;
 }
 
+/* TEXTO */
+.texto{
+    font-size:26px;
+    color:#333;
+    margin-top:20px;
+}
+
+/* CONTADOR */
+.contador{
+    font-size:18px;
+    margin-top:10px;
+    color:#666;
+}
+
+/* MANOS */
 .manos{
     display:flex;
     justify-content:center;
@@ -37,26 +69,21 @@ body{
     transform: scaleX(-1);
 }
 
+/* BOTÓN */
 .boton{
-    padding:14px 22px;
+    padding:16px 28px;
     font-size:20px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:12px;
+    border-radius:14px;
     cursor:pointer;
-    margin-top:20px;
+    margin-top:25px;
+    transition:0.2s;
 }
 
-.texto{
-    font-size:26px;
-    margin-top:20px;
-}
-
-.contador{
-    font-size:18px;
-    margin-top:10px;
-    color:#555;
+.boton:hover{
+    transform:scale(1.05);
 }
 </style>
 </head>
@@ -110,9 +137,11 @@ function generarSecuencia(){
 /* PORTADA */
 function portada(){
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
-        <div class="texto">Jugaremos a formar números con los dedos</div>
-        <button class="boton" onclick="iniciar()">Comenzar</button>
+        <div class="contenedor">
+            <img src="logo.png" class="logo">
+            <div class="texto">Forma números con tus dedos</div>
+            <button class="boton" onclick="iniciar()">Comenzar</button>
+        </div>
     `;
 }
 
@@ -123,7 +152,7 @@ function iniciar(){
     siguienteNumero();
 }
 
-/* SIGUIENTE */
+/* SIGUIENTE NÚMERO */
 function siguienteNumero(){
 
     if(index >= totalEjercicios){
@@ -137,10 +166,10 @@ function siguienteNumero(){
     pantallaNumero();
 }
 
-/* PANTALLA 1 */
+/* PANTALLA UNA MANO */
 function pantallaNumero(){
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo.png" class="logo pequeno">
         <div class="contador">Ejercicio ${index} de ${totalEjercicios}</div>
         <div class="numero">${numeroActual}</div>
         <div class="texto">Forma el ${numeroActual} con una mano</div>
@@ -156,7 +185,7 @@ function verificar(){
     mostrarFormasUnaMano();
 }
 
-/* UNA MANO */
+/* FORMAS UNA MANO */
 function mostrarFormasUnaMano(){
 
     let formas = [];
@@ -178,7 +207,7 @@ function mostrarFormasUnaMano(){
     ];
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo.png" class="logo pequeno">
         <div class="texto">${textos[subPaso]}</div>
         <div class="manos">
             <img src="${formas[subPaso]}" class="mano">
@@ -202,13 +231,13 @@ function siguienteForma(total){
     }
 }
 
-/* DOS MANOS */
+/* PANTALLA DOS MANOS */
 function pantallaDosManos(){
 
-    subPaso = 0; // 🔥 ARREGLO CLAVE
+    subPaso = 0;
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo.png" class="logo pequeno">
         <div class="numero">${numeroActual}</div>
         <div class="texto">Ahora forma el ${numeroActual} con dos manos</div>
         <button class="boton" onclick="mostrarRespuesta()">Verificar</button>
@@ -217,7 +246,7 @@ function pantallaDosManos(){
     hablar("Ahora forma el " + numeroActual + " con dos manos");
 }
 
-/* RESPUESTAS */
+/* RESPUESTAS DOS MANOS */
 function mostrarRespuesta(){
 
     let combinaciones = [];
@@ -238,7 +267,7 @@ function mostrarRespuesta(){
     let c = combinaciones[subPaso];
 
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
+        <img src="logo.png" class="logo pequeno">
         <div class="texto">Una forma es esta</div>
         <div class="manos">
             <img src="mano_${c[0]}.png" class="mano izq">
