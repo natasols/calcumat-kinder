@@ -6,31 +6,36 @@
 
 <style>
 body{
-    font-family: Arial;
+    font-family: 'Nunito','Segoe UI',sans-serif;
     text-align:center;
     background:white;
+    margin:0;
 }
 
+/* LOGO */
 .logo{
-    width:120px;
-    margin-top:20px;
+    width:300px;
+    margin-top:30px;
 }
 
+/* PORTADA */
 .portada{
-    margin-top:80px;
+    margin-top:60px;
 }
 
+/* BOTONES */
 .boton{
     margin:10px;
-    padding:15px 25px;
-    font-size:18px;
+    padding:14px 26px;
+    font-size:20px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
 }
 
+/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
@@ -38,6 +43,7 @@ body{
     margin-top:30px;
 }
 
+/* CASILLAS CUADRADAS */
 .casilla{
     width:80px;
     height:80px;
@@ -47,20 +53,23 @@ body{
     align-items:center;
     font-size:28px;
     background:white;
-    position:relative; /* 🔥 ESTA LÍNEA FALTABA */
+    position:relative;
 }
 
+/* FICHAS */
 .punto{
-    width:50px;
-    height:50px;
+    width:65px;
+    height:65px;
     border-radius:50%;
     background:red;
 }
 
+/* OPCIONES */
 .opciones{
     margin-top:30px;
 }
 
+/* MENSAJE */
 .mensaje{
     font-size:22px;
     margin-top:15px;
@@ -78,14 +87,14 @@ body{
 /* 🔊 VOZ */
 function hablar(texto){
     let mensaje = new SpeechSynthesisUtterance(texto);
-    mensaje.lang = "es-ES";
-    mensaje.rate = 0.8;
-    mensaje.pitch = 1.1;
+    mensaje.lang = "es-CL";
+    mensaje.rate = 0.9;
 
     let voces = speechSynthesis.getVoices();
-    let voz = voces.find(v => v.lang.startsWith("es"));
+    let voz = voces.find(v => v.lang.includes("es"));
     if(voz) mensaje.voice = voz;
 
+    speechSynthesis.cancel();
     speechSynthesis.speak(mensaje);
 }
 
@@ -100,10 +109,11 @@ function iniciarApp(){
     document.getElementById("pantalla").innerHTML = `
         <div class="portada">
             <img src="logo.png" class="logo">
-            <h1>Calcumat Kinder</h1>
-            <p><b>Nivel:</b> Kinder</p>
-            <p><b>Habilidad:</b> Cuantificar hasta 6: cinta numerada, parte 1</p>
-            <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+
+            <h2>Cuantificar hasta 6</h2>
+            <p>Cinta numerada · Parte 1</p>
+
+            <button class="boton" onclick="nuevoEjercicio()">Comenzar</button>
         </div>
     `;
 }
@@ -119,16 +129,16 @@ function nuevoEjercicio(){
     }
 
     do{
-        cantidad = Math.floor(Math.random()*5)+1; 
-        // 👈 importante: hasta 5 para que siempre haya espacio vacío
+        cantidad = Math.floor(Math.random()*5)+1;
     }while(cantidad === anterior);
 
     anterior = cantidad;
 
     let html = `
-        <img src="logo.png" class="logo">
+        <img src="logo.png" style="width:140px; margin-top:15px;">
         <h2>¿Cuántas hay?</h2>
-        <p>Ejercicio ${ejercicio} de 20</p>
+        <p>Ejercicio ${ejercicio} de ${total}</p>
+
         <div id="cinta" class="cinta"></div>
         <div id="botones" class="opciones"></div>
         <div id="mensaje" class="mensaje"></div>
@@ -147,7 +157,7 @@ function nuevoEjercicio(){
             div.innerHTML = `<div class="punto"></div>`;
         }
         else if(i === cantidad + 1){
-            div.innerHTML = ""; // 🔥 casilla vacía correcta
+            div.innerHTML = "";
         }
         else{
             div.innerText = i;
@@ -161,6 +171,8 @@ function nuevoEjercicio(){
     for(let i=1;i<=6;i++){
         botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
     }
+
+    hablar("¿Cuántas hay?");
 }
 
 /* VERIFICAR */
@@ -176,22 +188,19 @@ function verificar(resp){
         aciertos++;
         mensaje.innerText = "¡Bien!";
 
-        hablar("Bien. Hay " + cantidad + " fichas");
+        hablar("Había " + cantidad);
 
         let casillas = document.querySelectorAll(".casilla");
 
         let casillaFicha = casillas[cantidad - 1];
         let casillaSiguiente = casillas[cantidad];
 
-        // 🔴 mover ficha original
         let ficha = casillaFicha.querySelector(".punto");
         ficha.style.position = "absolute";
         ficha.style.top = "-60px";
 
-        // 🔢 mostrar número bajo la ficha
         casillaFicha.innerHTML += `<span>${cantidad}</span>`;
 
-        // 🔢 completar la casilla siguiente
         if(casillaSiguiente){
             casillaSiguiente.innerText = cantidad + 1;
         }
@@ -204,13 +213,17 @@ function verificar(resp){
 
     setTimeout(nuevoEjercicio,1500);
 }
+
 /* FINAL */
 function mostrarFinal(){
     document.getElementById("pantalla").innerHTML = `
-        <h1>RESULTADOS</h1>
-        <p>Respuestas correctas: ${aciertos} de 20</p>
-        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+        <img src="logo.png" class="logo">
+        <h2>¡Muy bien! 👏</h2>
+        <p>Buen trabajo pensando sin contar</p>
+        <button class="boton" onclick="reiniciar()">Volver a jugar</button>
     `;
+
+    hablar("Muy bien");
 }
 
 function reiniciar(){
@@ -219,6 +232,7 @@ function reiniciar(){
     iniciarApp();
 }
 
+/* START */
 iniciarApp();
 
 </script>
