@@ -23,7 +23,7 @@ body{
 
 /* LOGOS */
 .logo{
-    width:360px; /* MÁS GRANDE */
+    width:360px;
     margin-bottom:30px;
 }
 
@@ -94,21 +94,30 @@ body{
 
 <script>
 
-/* VOZ */
+/* 🔊 VOZ ESTABLE */
+let vocesDisponibles = [];
+
+speechSynthesis.onvoiceschanged = () => {
+    vocesDisponibles = speechSynthesis.getVoices();
+};
+
 function hablar(texto){
+
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
     msg.rate = 0.9;
+    msg.pitch = 1;
+    msg.volume = 1;
 
-    let voces = speechSynthesis.getVoices();
-
-    let voz = voces.find(v =>
+    let voz = vocesDisponibles.find(v =>
         v.lang.includes("es") &&
         (v.name.toLowerCase().includes("female") ||
          v.name.toLowerCase().includes("google"))
     );
 
-    if(voz) msg.voice = voz;
+    if(voz){
+        msg.voice = voz;
+    }
 
     speechSynthesis.cancel();
     speechSynthesis.speak(msg);
@@ -182,7 +191,7 @@ function verificar(){
     mostrarFormasUnaMano();
 }
 
-/* FORMAS */
+/* FORMAS UNA MANO */
 function mostrarFormasUnaMano(){
 
     let formas = [];
@@ -207,6 +216,8 @@ function mostrarFormasUnaMano(){
             ${subPaso < formas.length-1 ? "Otra forma" : "Siguiente"}
         </button>
     `;
+
+    hablar("Una forma es esta");
 }
 
 /* SIGUIENTE FORMA */
@@ -230,6 +241,8 @@ function pantallaDosManos(){
         <div class="texto">Ahora forma el ${numeroActual} con dos manos</div>
         <button class="boton" onclick="mostrarRespuesta()">Verificar</button>
     `;
+
+    hablar("Ahora forma el " + numeroActual + " con dos manos");
 }
 
 /* RESPUESTAS */
@@ -260,6 +273,8 @@ function mostrarRespuesta(){
             ${subPaso < combinaciones.length-1 ? "Otra forma" : "Siguiente"}
         </button>
     `;
+
+    hablar("También puedes hacerlo así");
 }
 
 /* SIGUIENTE COMBINACIÓN */
@@ -280,6 +295,8 @@ function final(){
         <div class="texto">¡Muy bien! 👏</div>
         <button class="boton" onclick="portada()">Volver a jugar</button>
     `;
+
+    hablar("Muy bien");
 }
 
 /* START */
