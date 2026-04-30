@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat Kinder – Cinta incompleta 6</title>
+<title>Calcumat Kinder – Cinta Descubierta</title>
 
 <style>
 body{
@@ -12,15 +12,15 @@ body{
     margin:0;
 }
 
-/* LOGO */
+/* LOGOS */
 .logo{
-    width:300px;
-    margin-top:30px;
+    width:320px;
+    margin-top:20px;
 }
 
-/* PORTADA */
-.portada{
-    margin-top:60px;
+.logo-mini{
+    width:150px;
+    margin-top:20px;
 }
 
 /* BOTONES */
@@ -35,45 +35,68 @@ body{
     cursor:pointer;
 }
 
+/* CONTADOR */
+.contador{
+    margin-top:10px;
+    font-size:18px;
+    color:#555;
+}
+
+/* FILA PUNTOS */
+.fila-puntos{
+    display:grid;
+    grid-template-columns: repeat(6,80px);
+    justify-content:center;
+    margin-top:30px;
+    margin-bottom:20px;
+}
+
 /* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(6,80px);
     justify-content:center;
-    margin-top:30px;
 }
 
 /* CASILLAS CUADRADAS */
 .casilla{
     width:80px;
-    height:80px;
+    height:80px; /* 🔥 CUADRADO PERFECTO */
     border:2px solid black;
     display:flex;
     justify-content:center;
     align-items:center;
     font-size:28px;
-    background:white;
     position:relative;
 }
 
-/* FICHAS */
+/* FICHA (CASI LLENA EL CUADRADO) */
 .punto{
-    width:65px;
-    height:65px;
+    width:70px;
+    height:70px;
     border-radius:50%;
     background:red;
 }
 
-/* OPCIONES */
-.opciones{
-    margin-top:30px;
+/* RESPUESTA */
+.correcto::after{
+    content:"";
+    position:absolute;
+    width:70px;
+    height:70px;
+    border:3px solid #4CAF50;
+    border-radius:50%;
 }
 
-/* MENSAJE */
-.mensaje{
-    font-size:22px;
-    margin-top:15px;
-    height:30px;
+/* RELOJ */
+.reloj{
+    font-size:60px;
+    margin-top:20px;
+}
+
+/* OCULTAR */
+.oculto{
+    visibility:hidden;
 }
 </style>
 </head>
@@ -84,41 +107,50 @@ body{
 
 <script>
 
-/* 🔊 VOZ */
-function hablar(texto){
-    let mensaje = new SpeechSynthesisUtterance(texto);
-    mensaje.lang = "es-CL";
-    mensaje.rate = 0.9;
+/* VOZ ESTABLE */
+let vocesDisponibles = [];
 
-    let voces = speechSynthesis.getVoices();
-    let voz = voces.find(v => v.lang.includes("es"));
-    if(voz) mensaje.voice = voz;
+speechSynthesis.onvoiceschanged = () => {
+    vocesDisponibles = speechSynthesis.getVoices();
+};
+
+function hablar(texto){
+    let m = new SpeechSynthesisUtterance(texto);
+    m.lang = "es-CL";
+    m.rate = 0.9;
+
+    let voz = vocesDisponibles.find(v =>
+        v.lang.includes("es") &&
+        v.name.toLowerCase().includes("google")
+    );
+
+    if(voz) m.voice = voz;
 
     speechSynthesis.cancel();
-    speechSynthesis.speak(mensaje);
+    speechSynthesis.speak(m);
 }
 
+/* VARIABLES */
+let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
-let cantidad = 0;
-let aciertos = 0;
-let anterior = -1;
 
 /* PORTADA */
-function iniciarApp(){
+function portada(){
     document.getElementById("pantalla").innerHTML = `
-        <div class="portada">
-            <img src="logo.png" class="logo">
-
-            <h2>Cuantificar hasta 6</h2>
-            <p>Cinta numerada · Parte 1</p>
-
-            <button class="boton" onclick="nuevoEjercicio()">Comenzar</button>
-        </div>
+        <img src="logo.png" class="logo">
+        <h2>Cuantificar hasta 6</h2>
+        <button class="boton" onclick="iniciar()">Comenzar</button>
     `;
 }
 
-/* EJERCICIO */
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    nuevoEjercicio();
+}
+
+/* NUEVO EJERCICIO */
 function nuevoEjercicio(){
 
     ejercicio++;
@@ -128,112 +160,102 @@ function nuevoEjercicio(){
         return;
     }
 
-    do{
-        cantidad = Math.floor(Math.random()*5)+1;
-    }while(cantidad === anterior);
+    cantidad = Math.floor(Math.random()*6)+1;
 
-    anterior = cantidad;
-
-    let html = `
-        <img src="logo.png" style="width:140px; margin-top:15px;">
+    document.getElementById("pantalla").innerHTML = `
+        <img src="logo_manos.png" class="logo-mini">
         <h2>¿Cuántas hay?</h2>
-        <p>Ejercicio ${ejercicio} de ${total}</p>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
 
-        <div id="cinta" class="cinta"></div>
-        <div id="botones" class="opciones"></div>
-        <div id="mensaje" class="mensaje"></div>
+        <div id="puntos"></div>
+        <div id="cinta"></div>
+
+        <div id="botonera">
+            <button class="boton" onclick="iniciarEjercicio()">INICIAR</button>
+        </div>
     `;
-
-    document.getElementById("pantalla").innerHTML = html;
-
-    let cinta = document.getElementById("cinta");
-
-    for(let i=1;i<=6;i++){
-
-        let div = document.createElement("div");
-        div.className="casilla";
-
-        if(i <= cantidad){
-            div.innerHTML = `<div class="punto"></div>`;
-        }
-        else if(i === cantidad + 1){
-            div.innerHTML = "";
-        }
-        else{
-            div.innerText = i;
-        }
-
-        cinta.appendChild(div);
-    }
-
-    let botones = document.getElementById("botones");
-
-    for(let i=1;i<=6;i++){
-        botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
-    }
 
     hablar("¿Cuántas hay?");
 }
 
-/* VERIFICAR */
-function verificar(resp){
+/* INICIAR */
+function iniciarEjercicio(){
 
-    let mensaje = document.getElementById("mensaje");
+    let puntos = document.getElementById("puntos");
+    let cinta = document.getElementById("cinta");
 
-    let botones = document.querySelectorAll(".boton");
-    botones.forEach(b => b.disabled = true);
+    puntos.className = "fila-puntos";
+    cinta.className = "cinta";
 
-    if(resp == cantidad){
+    puntos.innerHTML = "";
+    cinta.innerHTML = "";
 
-        aciertos++;
-        mensaje.innerText = "¡Bien!";
+    for(let i=1;i<=6;i++){
 
-        hablar("Había " + cantidad);
+        let cont = document.createElement("div");
 
-        let casillas = document.querySelectorAll(".casilla");
-
-        let casillaFicha = casillas[cantidad - 1];
-        let casillaSiguiente = casillas[cantidad];
-
-        let ficha = casillaFicha.querySelector(".punto");
-        ficha.style.position = "absolute";
-        ficha.style.top = "-60px";
-
-        casillaFicha.innerHTML += `<span>${cantidad}</span>`;
-
-        if(casillaSiguiente){
-            casillaSiguiente.innerText = cantidad + 1;
+        if(i<=cantidad){
+            let p = document.createElement("div");
+            p.className="punto";
+            cont.appendChild(p);
         }
 
-    }else{
+        puntos.appendChild(cont);
 
-        mensaje.innerText = "Intenta nuevamente";
-        hablar("Intenta nuevamente");
+        let cas = document.createElement("div");
+        cas.className="casilla";
+        cas.id="num"+i;
+        cas.innerText=i;
+
+        cinta.appendChild(cas);
     }
 
-    setTimeout(nuevoEjercicio,1500);
+    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultarTodo,3000);
+}
+
+/* OCULTAR */
+function ocultarTodo(){
+
+    document.getElementById("puntos").classList.add("oculto");
+    document.getElementById("cinta").classList.add("oculto");
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="mostrarRespuesta()">VERIFICAR</button>
+    `;
+}
+
+/* VERIFICAR */
+function mostrarRespuesta(){
+
+    document.getElementById("puntos").classList.remove("oculto");
+    document.getElementById("cinta").classList.remove("oculto");
+
+    let correcto = document.getElementById("num"+cantidad);
+    correcto.classList.add("correcto");
+
+    hablar("Había " + cantidad);
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="nuevoEjercicio()">SIGUIENTE</button>
+    `;
 }
 
 /* FINAL */
 function mostrarFinal(){
+
     document.getElementById("pantalla").innerHTML = `
         <img src="logo.png" class="logo">
         <h2>¡Muy bien! 👏</h2>
-        <p>Buen trabajo pensando sin contar</p>
-        <button class="boton" onclick="reiniciar()">Volver a jugar</button>
+        <button class="boton" onclick="portada()">Volver a jugar</button>
     `;
 
     hablar("Muy bien");
 }
 
-function reiniciar(){
-    ejercicio = 0;
-    aciertos = 0;
-    iniciarApp();
-}
-
 /* START */
-iniciarApp();
+portada();
 
 </script>
 
