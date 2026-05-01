@@ -12,6 +12,29 @@ body{
     margin:0;
 }
 
+/* NAV */
+.nav{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    padding:10px 20px;
+    box-sizing:border-box;
+    font-size:14px;
+    color:#777;
+}
+
+.nav span{
+    cursor:pointer;
+    opacity:0.6;
+    transition:0.2s;
+}
+
+.nav span:hover{
+    opacity:1;
+    color:#000;
+}
+
+/* CONTENEDOR */
 .wrapper{
     display:flex;
     flex-direction:column;
@@ -21,12 +44,12 @@ body{
 /* LOGOS */
 .logo-portada{
     width:260px;
-    margin-top:40px;
+    margin-top:20px;
 }
 
 .logo-app{
     width:200px;
-    margin-top:30px;
+    margin-top:10px;
 }
 
 /* TITULOS */
@@ -39,14 +62,14 @@ h2{
     margin-bottom:10px;
 }
 
-/* ZONA CENTRAL (SIEMPRE FIJA) */
+/* ZONA CENTRAL */
 .contenedor{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:80px;
     margin:40px 0;
-    min-height:200px; /* 🔥 clave: mantiene estructura */
+    min-height:200px;
 }
 
 /* DADO */
@@ -70,7 +93,7 @@ h2{
 
 /* MANOS */
 .zona-manos{
-    width:140px; /* 🔥 espacio reservado */
+    width:140px;
     display:flex;
     justify-content:center;
 }
@@ -85,7 +108,7 @@ h2{
 
 /* NUMERO */
 .resultado{
-    width:100px; /* 🔥 espacio fijo */
+    width:100px;
     text-align:center;
     font-size:110px;
     color:#e53935;
@@ -103,6 +126,7 @@ h2{
     cursor:pointer;
 }
 
+/* RELOJ */
 .reloj{
     font-size:60px;
     margin-top:20px;
@@ -121,6 +145,16 @@ h2{
 
 <script>
 
+/* NAV FUNCIONES */
+function irIndice(){
+    window.location.href = "index.html";
+}
+
+function reiniciarApp(){
+    mostrarPortada();
+}
+
+/* VOZ */
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
@@ -134,13 +168,25 @@ function hablar(texto){
     speechSynthesis.speak(msg);
 }
 
+/* VARIABLES */
 let numero = 0;
 let ejercicio = 0;
 let total = 10;
 
+/* NAV HTML */
+function navHTML(){
+    return `
+        <div class="nav">
+            <span onclick="irIndice()">← Índice</span>
+            <span onclick="reiniciarApp()">↺ Inicio</span>
+        </div>
+    `;
+}
+
 /* PORTADA */
 function mostrarPortada(){
     document.getElementById("app").innerHTML = `
+        ${navHTML()}
         <div class="wrapper">
             <img src="logo.png" class="logo-portada">
             <h2>Cuantificar hasta 6 en el dado</h2>
@@ -199,6 +245,7 @@ function siguienteEjercicio(){
     numero = Math.floor(Math.random()*6)+1;
 
     document.getElementById("app").innerHTML = `
+        ${navHTML()}
         <div class="wrapper">
 
             <img src="logo_manos.png" class="logo-app">
@@ -274,6 +321,7 @@ function verificar(){
 /* FINAL */
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
+        ${navHTML()}
         <div class="wrapper">
             <img src="logo.png" class="logo-portada">
             <h2>¡Muy bien!</h2>
@@ -282,6 +330,7 @@ function mostrarFinal(){
     `;
 }
 
+/* START */
 mostrarPortada();
 
 </script>
