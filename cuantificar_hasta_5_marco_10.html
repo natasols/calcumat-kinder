@@ -12,33 +12,36 @@ body{
     background:white;
 }
 
-/* NAV */
-.nav{
+/* CONTENEDOR GENERAL */
+.wrapper{
+    min-height:100vh;
     display:flex;
-    justify-content:space-between;
-    padding:10px 25px;
-    font-size:14px;
-    color:#777;
+    flex-direction:column;
+    align-items:center;
 }
 
-/* CONTENEDOR */
-.wrapper{
-    min-height:calc(100vh - 40px);
+/* ZONA SUPERIOR */
+.header{
+    text-align:center;
+    margin-top:20px;
+}
+
+/* LOGOS */
+.logo-portada{
+    width:380px;
+}
+
+.logo-app{
+    width:160px;
+}
+
+/* ZONA CENTRAL */
+.main{
+    flex:1;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-}
-
-/* LOGO */
-.logo{
-    width:180px; /* más pequeño */
-    margin-bottom:10px;
-}
-
-/* TITULO */
-h2{
-    margin:10px 0;
 }
 
 /* MARCO CONTINUO */
@@ -53,15 +56,10 @@ h2{
     display:flex;
     justify-content:center;
     align-items:center;
-}
-
-/* líneas internas */
-.casilla{
     border-right:2px solid #0d2b45;
     border-bottom:2px solid #0d2b45;
 }
 
-/* eliminar bordes sobrantes */
 .casilla:nth-child(5),
 .casilla:nth-child(10){
     border-right:none;
@@ -71,7 +69,6 @@ h2{
     border-bottom:none;
 }
 
-/* PUNTO GRANDE */
 .punto{
     width:80px;
     height:80px;
@@ -79,22 +76,28 @@ h2{
     border-radius:50%;
 }
 
+/* ZONA INFERIOR (CLAVE) */
+.footer{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
 /* BOTON */
 .boton{
-    margin-top:20px;
-    padding:15px 25px;
+    padding:15px 30px;
     font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
 }
 
 /* RELOJ */
 .reloj{
     font-size:70px;
-    margin-top:20px;
 }
 
 /* OCULTO */
@@ -152,9 +155,18 @@ let anterior = -1;
 function mostrarPortada(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <img src="logo.png" class="logo">
-            <h2>¿Cuántas hay?</h2>
-            <button class="boton" onclick="iniciar()">Iniciar</button>
+
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>¿Cuántas hay?</h2>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
+
         </div>
     `;
 }
@@ -184,18 +196,22 @@ function siguienteEjercicio(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <img src="logo.png" class="logo">
-
-            <h2>¿Cuántas hay?</h2>
-            <div>Ejercicio ${ejercicio} de ${total}</div>
-
-            <div id="zonaAccion">
-                <button class="boton" onclick="mostrarEjercicio()">Iniciar ejercicio</button>
+            <div class="header">
+                <img src="logo.png" class="logo-app">
+                <h2>¿Cuántas hay?</h2>
+                <div>Ejercicio ${ejercicio} de ${total}</div>
             </div>
 
-            <div id="marco" class="marco oculto"></div>
+            <div class="main">
 
-            <div id="resultado" class="resultado"></div>
+                <div id="marco" class="marco oculto"></div>
+                <div id="resultado" class="resultado"></div>
+
+            </div>
+
+            <div id="footer" class="footer">
+                <button class="boton" onclick="mostrarEjercicio()">Iniciar ejercicio</button>
+            </div>
 
         </div>
     `;
@@ -219,17 +235,16 @@ function mostrarEjercicio(){
         marco.appendChild(div);
     }
 
-    document.getElementById("zonaAccion").innerHTML = `<div class="reloj">⏳</div>`;
+    document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
 
     setTimeout(ocultar,3000);
 }
 
 /* OCULTAR */
 function ocultar(){
-
     document.getElementById("marco").classList.add("oculto");
 
-    document.getElementById("zonaAccion").innerHTML = `
+    document.getElementById("footer").innerHTML = `
         <button class="boton" onclick="verificar()">Verificar</button>
     `;
 }
@@ -246,7 +261,7 @@ function verificar(){
 
     hablar("Hay " + cantidad);
 
-    document.getElementById("zonaAccion").innerHTML = `
+    document.getElementById("footer").innerHTML = `
         <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
     `;
 }
@@ -255,9 +270,16 @@ function verificar(){
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <img src="logo.png" class="logo">
-            <h2>¡Muy bien!</h2>
-            <button class="boton" onclick="mostrarPortada()">Volver</button>
+
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>¡Muy bien!</h2>
+            </div>
+
+            <div class="footer">
+                <button class="boton" onclick="mostrarPortada()">Volver</button>
+            </div>
+
         </div>
     `;
 }
