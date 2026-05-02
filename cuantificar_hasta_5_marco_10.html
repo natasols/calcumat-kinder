@@ -18,19 +18,12 @@ body{
     display:flex;
     justify-content:space-between;
     padding:12px 25px;
-    box-sizing:border-box;
     font-size:14px;
     color:#777;
 }
 
 .nav span{
     cursor:pointer;
-    opacity:0.6;
-}
-
-.nav span:hover{
-    opacity:1;
-    color:#000;
 }
 
 /* CONTENEDOR */
@@ -42,52 +35,51 @@ body{
     justify-content:center;
 }
 
-/* LOGO */
+/* LOGO PROTAGONISTA */
 .logo{
-    width:220px;
-    margin-top:10px;
+    width:320px;
+    margin-bottom:20px;
 }
 
 /* TITULOS */
 h2{
-    margin:10px 0 5px 0;
+    margin:10px 0;
     font-size:30px;
 }
 
 .contador{
     color:#555;
-    margin-bottom:10px;
 }
 
-/* MARCO */
+/* MARCO DE 10 */
 .marco{
     display:grid;
-    grid-template-columns: repeat(5,80px);
-    gap:8px;
-    justify-content:center;
+    grid-template-columns: repeat(5,100px);
+    grid-template-rows: repeat(2,100px);
+    gap:10px;
     margin:30px 0;
 }
 
 .casilla{
-    width:80px;
-    height:80px;
-    border:2px solid black;
+    width:100px;
+    height:100px;
+    border:3px solid #0d2b45;
     display:flex;
     justify-content:center;
     align-items:center;
 }
 
+/* PUNTO GRANDE */
 .punto{
-    width:40px;
-    height:40px;
+    width:80px;
+    height:80px;
     border-radius:50%;
-    background:red;
+    background:#f44336;
 }
 
-/* BOTONES */
+/* BOTON */
 .boton{
-    margin:5px;
-    padding:12px 20px;
+    padding:15px 25px;
     font-size:18px;
     background:#4CAF50;
     color:white;
@@ -98,19 +90,30 @@ h2{
 
 /* RELOJ */
 .reloj{
-    font-size:60px;
-    margin-top:10px;
+    font-size:70px;
 }
 
+/* OCULTO */
 .oculto{
     visibility:hidden;
 }
 
 /* RESULTADO */
 .resultado{
-    font-size:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:60px;
+    margin-top:20px;
+}
+
+.numero{
+    font-size:100px;
     color:#e53935;
-    margin-top:10px;
+}
+
+.manos{
+    width:160px;
 }
 
 </style>
@@ -150,7 +153,6 @@ let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
 let anterior = -1;
-let respuestaUsuario = null;
 
 /* NAV HTML */
 function navHTML(){
@@ -196,8 +198,6 @@ function siguienteEjercicio(){
 
     anterior = cantidad;
 
-    respuestaUsuario = null;
-
     document.getElementById("app").innerHTML = `
         ${navHTML()}
         <div class="wrapper">
@@ -209,7 +209,7 @@ function siguienteEjercicio(){
 
             <div id="marco" class="marco"></div>
 
-            <div id="botonera">
+            <div id="zonaAccion">
                 <button class="boton" onclick="iniciarEjercicio()">Iniciar</button>
             </div>
 
@@ -220,7 +220,7 @@ function siguienteEjercicio(){
 
     let marco = document.getElementById("marco");
 
-    for(let i=0;i<5;i++){
+    for(let i=0;i<10;i++){
         let div = document.createElement("div");
         div.className="casilla";
 
@@ -235,9 +235,9 @@ function siguienteEjercicio(){
 /* INICIAR EJERCICIO */
 function iniciarEjercicio(){
 
-    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+    document.getElementById("zonaAccion").innerHTML = `<div class="reloj">⏳</div>`;
 
-    setTimeout(ocultar,2500);
+    setTimeout(ocultar,3000);
 }
 
 /* OCULTAR */
@@ -245,37 +245,24 @@ function ocultar(){
 
     document.getElementById("marco").classList.add("oculto");
 
-    let botones = "";
-
-    for(let i=1;i<=5;i++){
-        botones += `<button class="boton" onclick="responder(${i})">${i}</button>`;
-    }
-
-    document.getElementById("botonera").innerHTML = botones;
+    document.getElementById("zonaAccion").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
 }
 
-/* RESPUESTA (1 intento) */
-function responder(valor){
-
-    if(respuestaUsuario !== null) return;
-
-    respuestaUsuario = valor;
-
-    let botones = document.querySelectorAll(".boton");
-    botones.forEach(b => b.disabled = true);
-
-    setTimeout(mostrarRespuesta,500);
-}
-
-/* MOSTRAR RESPUESTA */
-function mostrarRespuesta(){
+/* VERIFICAR */
+function verificar(){
 
     document.getElementById("marco").classList.remove("oculto");
-    document.getElementById("resultado").innerText = cantidad;
+
+    document.getElementById("resultado").innerHTML = `
+        <img src="mano_${cantidad}.png" class="manos">
+        <div class="numero">${cantidad}</div>
+    `;
 
     hablar("Hay " + cantidad);
 
-    document.getElementById("botonera").innerHTML = `
+    document.getElementById("zonaAccion").innerHTML = `
         <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
     `;
 }
