@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – ¿Cuántos hay?</title>
+
+<style>
+
+body{
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    margin:0;
+}
+
+/* CONTENEDOR */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
+    margin-top:20px;
+}
+
+.logo-portada{ width:380px; }
+.logo-app{ width:160px; }
+
+/* MAIN */
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+/* MARCO */
+.marco{
+    display:grid;
+    grid-template-columns: repeat(5,100px);
+    grid-template-rows: repeat(2,100px);
+    border:4px solid #0d2b45;
+}
+
+.casilla{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-right:2px solid #0d2b45;
+    border-bottom:2px solid #0d2b45;
+}
+
+.casilla:nth-child(5),
+.casilla:nth-child(10){ border-right:none; }
+
+.casilla:nth-child(n+6){ border-bottom:none; }
+
+.punto{
+    width:80px;
+    height:80px;
+    background:#f44336;
+    border-radius:50%;
+}
+
+/* FOOTER */
+.footer{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+.boton{
+    padding:15px 30px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.reloj{ font-size:70px; }
+.oculto{ visibility:hidden; }
+
+.resultado{
+    display:flex;
+    align-items:center;
+    gap:60px;
+    margin-top:20px;
+}
+
+.numero{
+    font-size:100px;
+    color:#e53935;
+}
+
+.manos{ width:140px; }
+
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
+let cantidad = 0;
+let ejercicio = 0;
+let total = 20;
+
+/* PATRONES PARA n (1 a 5) */
+const patronesN = {
+    1: [[0],[2],[4]],
+    2: [[0,1],[1,3],[0,4]],
+    3: [[0,1,2],[0,2,4],[1,2,3]],
+    4: [[0,1,2,3],[0,2,3,4],[1,2,3,4]],
+    5: [[0,1,2,3,4]]
+};
+
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>¿Cuántos hay?</h2>
+                <p>Cuantificar hasta 10 usando estructura 5 + n</p>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
+        </div>
+    `;
+}
+
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
+/* NUEVO EJERCICIO */
+function siguienteEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    cantidad = Math.floor(Math.random()*6)+5; // 5 a 10
+
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+
+            <div class="header">
+                <img src="logo.png" class="logo-app">
+                <h2>¿Cuántos hay?</h2>
+                <div>Ejercicio ${ejercicio} de ${total}</div>
+            </div>
+
+            <div class="main">
+                <div id="marco" class="marco oculto"></div>
+                <div id="resultado" class="resultado"></div>
+            </div>
+
+            <div id="footer" class="footer">
+                <button class="boton" onclick="mostrarEjercicio()">Iniciar ejercicio</button>
+            </div>
+
+        </div>
+    `;
+}
+
+/* MOSTRAR EJERCICIO */
+function mostrarEjercicio(){
+
+    let marco = document.getElementById("marco");
+    marco.innerHTML = "";
+    marco.classList.remove("oculto");
+
+    let n = cantidad - 5;
+
+    let orientacion = Math.random() < 0.5 ? "arriba" : "abajo";
+
+    let patronN = patronesN[n][Math.floor(Math.random()*patronesN[n].length)];
+
+    for(let i=0;i<10;i++){
+
+        let div = document.createElement("div");
+        div.className="casilla";
+
+        let tienePunto = false;
+
+        if(orientacion === "arriba"){
+            if(i < 5) tienePunto = true; // 5 base
+            else if(patronN.includes(i-5)) tienePunto = true;
+        }else{
+            if(i >= 5) tienePunto = true;
+            else if(patronN.includes(i)) tienePunto = true;
+        }
+
+        if(tienePunto){
+            div.innerHTML = '<div class="punto"></div>';
+        }
+
+        marco.appendChild(div);
+    }
+
+    document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
+    setTimeout(ocultar,3000);
+}
+
+/* OCULTAR */
+function ocultar(){
+    document.getElementById("marco").classList.add("oculto");
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    document.getElementById("marco").classList.remove("oculto");
+
+    document.getElementById("resultado").innerHTML = `
+        <img src="mano_${cantidad}.png" class="manos">
+        <div class="numero">${cantidad}</div>
+    `;
+
+    hablar("Hay " + cantidad);
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>¡Muy bien!</h2>
+            </div>
+
+            <div class="footer">
+                <button class="boton" onclick="mostrarPortada()">Volver</button>
+            </div>
+        </div>
+    `;
+}
+
+mostrarPortada();
+
+</script>
+
+</body>
+</html>
