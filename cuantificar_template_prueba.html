@@ -36,22 +36,23 @@ body{
 
 /* CONTENEDOR PRINCIPAL */
 .wrapper{
-    min-height:100vh;
+    min-height:calc(100vh - 50px);
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:flex-start;
+    justify-content:center;
+    padding-bottom:20px;
 }
 
-/* LOGOS UNIFICADOS */
+/* LOGO */
 .logo{
-    width:260px;
-    margin-top:30px;
+    width:240px;
+    margin-top:10px;
 }
 
 /* TITULOS */
 h2{
-    margin:20px 0 5px 0;
+    margin:10px 0 5px 0;
     font-size:32px;
 }
 
@@ -61,17 +62,17 @@ h2{
     font-size:18px;
 }
 
-/* ZONA CENTRAL MEJORADA */
+/* ZONA CENTRAL */
 .contenedor{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:100px;
-    margin:50px 0;
-    min-height:220px;
+    margin:30px 0;
+    min-height:200px;
 }
 
-/* DADO (INTACTO) */
+/* DADO */
 .dado{
     width:180px;
     height:180px;
@@ -194,7 +195,7 @@ function mostrarPortada(){
     `;
 }
 
-/* DADO (NO TOCAR) */
+/* DADO */
 function generarDado(n){
     let posiciones = {
         1:[5],
@@ -214,7 +215,7 @@ function generarDado(n){
     return html;
 }
 
-/* MANOS (PERFECTAS) */
+/* MANOS */
 function obtenerManos(n){
     if(n === 6){
         return `
@@ -266,7 +267,7 @@ function siguienteEjercicio(){
     `;
 }
 
-/* ANIMACION (INTOCABLE) */
+/* ANIMACION */
 function animarDado(final){
     let dado = document.getElementById("dado");
     let cambios = 0;
@@ -336,4 +337,3 @@ mostrarPortada();
 
 </body>
 </html>
-
