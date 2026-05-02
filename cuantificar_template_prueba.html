@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – Cuantificar</title>
+
+<style>
+
+body{
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    background:white;
+    margin:0;
+}
+
+/* NAV */
+.nav{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 20px;
+    font-size:14px;
+    color:#777;
+}
+
+.nav span{
+    cursor:pointer;
+    opacity:0.6;
+}
+
+.nav span:hover{
+    opacity:1;
+}
+
+/* CONTENEDOR */
+.wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* LOGOS */
+.logo-portada{
+    width:260px;
+    margin-top:20px;
+}
+
+.logo-app{
+    width:140px;
+    margin-top:10px;
+}
+
+/* BOTON */
+.boton{
+    margin-top:10px;
+    padding:15px 25px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.contador{
+    margin-top:10px;
+    color:#555;
+}
+
+.reloj{
+    font-size:60px;
+}
+
+.oculto{
+    visibility:hidden;
+}
+
+/* PUNTOS */
+.punto{
+    width:40px;
+    height:40px;
+    background:red;
+    border-radius:50%;
+    display:inline-block;
+    margin:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* NAV */
+function irIndice(){
+    window.location.href = "index.html";
+}
+
+function reiniciarApp(){
+    mostrarPortada();
+}
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang.includes("es"));
+
+    if(voz) msg.voice = voz;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
+let ejercicio = 0;
+let total = 10;
+let cantidad = 0;
+
+/* NAV HTML */
+function navHTML(){
+    return `
+        <div class="nav">
+            <span onclick="irIndice()">← Índice</span>
+            <span onclick="reiniciarApp()">↺ Inicio</span>
+        </div>
+    `;
+}
+
+/* PORTADA */
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+            <img src="logo.png" class="logo-portada">
+            <h2>Cuantificar hasta 6</h2>
+            <button class="boton" onclick="iniciar()">Comenzar</button>
+        </div>
+    `;
+}
+
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
+/* NUEVO EJERCICIO */
+function siguienteEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    cantidad = Math.floor(Math.random()*6)+1;
+
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+
+            <img src="logo_manos.png" class="logo-app">
+
+            <h2>¿Cuántas hay?</h2>
+            <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+            <div id="zonaEjercicio"></div>
+
+            <div id="botonera">
+                <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
+            </div>
+
+        </div>
+    `;
+}
+
+/* INICIAR EJERCICIO */
+function iniciarEjercicio(){
+
+    let zona = document.getElementById("zonaEjercicio");
+    zona.innerHTML = "";
+
+    for(let i=0;i<cantidad;i++){
+        let punto = document.createElement("div");
+        punto.className = "punto";
+        zona.appendChild(punto);
+    }
+
+    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultar,3000);
+}
+
+/* OCULTAR */
+function ocultar(){
+
+    document.getElementById("zonaEjercicio").classList.add("oculto");
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let zona = document.getElementById("zonaEjercicio");
+
+    zona.classList.remove("oculto");
+    zona.innerHTML = `<div style="font-size:100px;color:#e53935;">${cantidad}</div>`;
+
+    hablar("Hay " + cantidad);
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+            <img src="logo.png" class="logo-portada">
+            <h2>¡Muy bien!</h2>
+            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
+        </div>
+    `;
+}
+
+/* START */
+mostrarPortada();
+
+</script>
+
+</body>
+</html>
+
