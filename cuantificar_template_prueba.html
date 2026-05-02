@@ -2,240 +2,270 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat – Cuantificar</title>
+<title>Calcumat – Template PRO</title>
 
 <style>
 
+/* ===== BASE ===== */
 body{
-    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    font-family: Arial, sans-serif;
     background:white;
     margin:0;
 }
 
-/* NAV */
+/* ===== NAV ===== */
 .nav{
+    position:fixed;
+    top:0;
+    width:100%;
     display:flex;
     justify-content:space-between;
-    padding:10px 20px;
-    font-size:14px;
+    padding:12px 20px;
+    font-size:15px;
+    color:#777;
+    background:rgba(255,255,255,0.9);
+}
+
+.nav a{
+    text-decoration:none;
     color:#777;
 }
 
-.nav span{
-    cursor:pointer;
-    opacity:0.6;
+.nav a:hover{
+    color:#000;
 }
 
-.nav span:hover{
-    opacity:1;
-}
-
-/* CONTENEDOR */
-.wrapper{
+/* ===== CONTENEDOR CENTRAL ===== */
+.app{
     display:flex;
     flex-direction:column;
     align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    text-align:center;
 }
 
-/* LOGOS */
-.logo-portada{
+/* ===== KIT VISUAL ===== */
+.logo{
     width:260px;
-    margin-top:20px;
+    margin-top:40px;
 }
 
-.logo-app{
-    width:140px;
-    margin-top:10px;
-}
-
-/* BOTON */
-.boton{
-    margin-top:10px;
-    padding:15px 25px;
-    font-size:18px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
+h2{
+    font-size:34px;
+    margin:20px 0 5px 0;
 }
 
 .contador{
-    margin-top:10px;
-    color:#555;
+    font-size:18px;
+    color:#666;
 }
 
-.reloj{
-    font-size:60px;
+/* BOTÓN */
+.boton{
+    margin-top:30px;
+    padding:16px 34px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
 }
 
-.oculto{
-    visibility:hidden;
+/* ===== ZONA CENTRAL (mano + dado + número) ===== */
+.fila{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:60px;
+    margin-top:40px;
+}
+
+/* MANOS */
+.mano{
+    font-size:80px;
+}
+
+/* DADO */
+.dado{
+    width:180px;
+    height:180px;
+    border:4px solid black;
+    border-radius:22px;
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+    position:relative;
 }
 
 /* PUNTOS */
 .punto{
-    width:40px;
-    height:40px;
-    background:red;
+    width:22px;
+    height:22px;
+    background:black;
     border-radius:50%;
-    display:inline-block;
-    margin:10px;
+    margin:auto;
+}
+
+/* ANIMACIÓN */
+.girar{
+    animation:giro 0.6s ease;
+}
+
+@keyframes giro{
+    0%{transform:rotate(0deg) scale(0.9);}
+    50%{transform:rotate(180deg) scale(1.1);}
+    100%{transform:rotate(360deg) scale(1);}
+}
+
+/* NÚMERO */
+.numero{
+    font-size:130px;
+    color:#e53935;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div id="app"></div>
+<div class="nav">
+    <a href="indice.html">← Índice</a>
+    <a href="#" onclick="portada()">⟳ Inicio</a>
+</div>
+
+<div id="app" class="app"></div>
 
 <script>
 
-/* NAV */
-function irIndice(){
-    window.location.href = "index.html";
-}
-
-function reiniciarApp(){
-    mostrarPortada();
-}
+let ejercicio = 0;
+let total = 10;
+let valor = 0;
 
 /* VOZ */
 function hablar(texto){
-    let msg = new SpeechSynthesisUtterance(texto);
-    msg.lang = "es-CL";
-
+    let m = new SpeechSynthesisUtterance(texto);
     let voces = speechSynthesis.getVoices();
-    let voz = voces.find(v => v.lang.includes("es"));
-
-    if(voz) msg.voice = voz;
-
-    speechSynthesis.cancel();
-    speechSynthesis.speak(msg);
-}
-
-/* VARIABLES */
-let ejercicio = 0;
-let total = 10;
-let cantidad = 0;
-
-/* NAV HTML */
-function navHTML(){
-    return `
-        <div class="nav">
-            <span onclick="irIndice()">← Índice</span>
-            <span onclick="reiniciarApp()">↺ Inicio</span>
-        </div>
-    `;
+    let voz =
+        voces.find(v => v.lang === "es-CL") ||
+        voces.find(v => v.lang.startsWith("es"));
+    if(voz) m.voice = voz;
+    m.rate = 0.9;
+    m.pitch = 1.2;
+    speechSynthesis.speak(m);
 }
 
 /* PORTADA */
-function mostrarPortada(){
-    document.getElementById("app").innerHTML = `
-        ${navHTML()}
-        <div class="wrapper">
-            <img src="logo.png" class="logo-portada">
-            <h2>Cuantificar hasta 6</h2>
-            <button class="boton" onclick="iniciar()">Comenzar</button>
+function portada(){
+    ejercicio = 0;
+
+    app.innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>Cuantificar hasta 6</h2>
+        <button class="boton" onclick="nuevo()">Comenzar</button>
+    `;
+}
+
+/* GENERAR */
+function generar(){
+    return Math.floor(Math.random()*6)+1;
+}
+
+/* NUEVO EJERCICIO */
+function nuevo(){
+
+    ejercicio++;
+    if(ejercicio > total){
+        final();
+        return;
+    }
+
+    valor = generar();
+
+    app.innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>¿Cuántos puntos hay?</h2>
+        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+        <div class="fila">
+            <div id="mano"></div>
+            <div id="dado" class="dado"></div>
+            <div id="numero"></div>
         </div>
+
+        <button class="boton" onclick="mostrar()">Iniciar ejercicio</button>
+    `;
+}
+
+/* DADO */
+function dibujar(num){
+
+    const mapa = {
+        1:[5],
+        2:[1,9],
+        3:[1,5,9],
+        4:[1,3,7,9],
+        5:[1,3,5,7,9],
+        6:[1,3,4,6,7,9]
+    };
+
+    let dado = document.getElementById("dado");
+    dado.innerHTML = "";
+
+    for(let i=1;i<=9;i++){
+        let c = document.createElement("div");
+        if(mapa[num].includes(i)){
+            c.innerHTML = `<div class="punto"></div>`;
+        }
+        dado.appendChild(c);
+    }
+
+    dado.classList.add("girar");
+}
+
+/* MANOS */
+function mano(num){
+
+    if(num < 6){
+        return `<div class="mano">${["","☝️","✌️","🤟","🖖","🖐️"][num]}</div>`;
+    }
+
+    return `
+        <div class="mano">🤟</div>
+        <div class="mano">🤟</div>
+    `;
+}
+
+/* MOSTRAR */
+function mostrar(){
+
+    dibujar(valor);
+
+    setTimeout(()=>{
+
+        document.getElementById("mano").innerHTML = mano(valor);
+        document.getElementById("numero").innerHTML = `<div class="numero">${valor}</div>`;
+
+        hablar("Hay " + valor);
+
+        document.querySelector(".boton").innerText = "Siguiente";
+        document.querySelector(".boton").onclick = nuevo;
+
+    },800);
+}
+
+/* FINAL */
+function final(){
+    app.innerHTML = `
+        <h1>¡Felicitaciones!</h1>
+        <p>¡Excelente trabajo!</p>
+        <button class="boton" onclick="portada()">Reiniciar</button>
     `;
 }
 
 /* INICIO */
-function iniciar(){
-    ejercicio = 0;
-    siguienteEjercicio();
-}
-
-/* NUEVO EJERCICIO */
-function siguienteEjercicio(){
-
-    ejercicio++;
-
-    if(ejercicio > total){
-        mostrarFinal();
-        return;
-    }
-
-    cantidad = Math.floor(Math.random()*6)+1;
-
-    document.getElementById("app").innerHTML = `
-        ${navHTML()}
-        <div class="wrapper">
-
-            <img src="logo_manos.png" class="logo-app">
-
-            <h2>¿Cuántas hay?</h2>
-            <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
-
-            <div id="zonaEjercicio"></div>
-
-            <div id="botonera">
-                <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
-            </div>
-
-        </div>
-    `;
-}
-
-/* INICIAR EJERCICIO */
-function iniciarEjercicio(){
-
-    let zona = document.getElementById("zonaEjercicio");
-    zona.innerHTML = "";
-
-    for(let i=0;i<cantidad;i++){
-        let punto = document.createElement("div");
-        punto.className = "punto";
-        zona.appendChild(punto);
-    }
-
-    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
-
-    setTimeout(ocultar,3000);
-}
-
-/* OCULTAR */
-function ocultar(){
-
-    document.getElementById("zonaEjercicio").classList.add("oculto");
-
-    document.getElementById("botonera").innerHTML = `
-        <button class="boton" onclick="verificar()">Verificar</button>
-    `;
-}
-
-/* VERIFICAR */
-function verificar(){
-
-    let zona = document.getElementById("zonaEjercicio");
-
-    zona.classList.remove("oculto");
-    zona.innerHTML = `<div style="font-size:100px;color:#e53935;">${cantidad}</div>`;
-
-    hablar("Hay " + cantidad);
-
-    document.getElementById("botonera").innerHTML = `
-        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
-    `;
-}
-
-/* FINAL */
-function mostrarFinal(){
-    document.getElementById("app").innerHTML = `
-        ${navHTML()}
-        <div class="wrapper">
-            <img src="logo.png" class="logo-portada">
-            <h2>¡Muy bien!</h2>
-            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
-        </div>
-    `;
-}
-
-/* START */
-mostrarPortada();
+portada();
 
 </script>
 
