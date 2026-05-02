@@ -2,83 +2,86 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat – ¿Cuántas hay? hasta 5</title>
+<title>Calcumat – ¿Cuántas hay?</title>
 
 <style>
 
 body{
     font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
-    background:white;
     margin:0;
+    background:white;
 }
 
 /* NAV */
 .nav{
-    width:100%;
     display:flex;
     justify-content:space-between;
-    padding:12px 25px;
+    padding:10px 25px;
     font-size:14px;
     color:#777;
 }
 
-.nav span{
-    cursor:pointer;
-}
-
 /* CONTENEDOR */
 .wrapper{
-    min-height:calc(100vh - 50px);
+    min-height:calc(100vh - 40px);
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
 }
 
-/* LOGO PROTAGONISTA */
+/* LOGO */
 .logo{
-    width:320px;
-    margin-bottom:20px;
+    width:180px; /* más pequeño */
+    margin-bottom:10px;
 }
 
-/* TITULOS */
+/* TITULO */
 h2{
     margin:10px 0;
-    font-size:30px;
 }
 
-.contador{
-    color:#555;
-}
-
-/* MARCO DE 10 */
+/* MARCO CONTINUO */
 .marco{
     display:grid;
     grid-template-columns: repeat(5,100px);
     grid-template-rows: repeat(2,100px);
-    gap:10px;
-    margin:30px 0;
+    border:4px solid #0d2b45;
 }
 
 .casilla{
-    width:100px;
-    height:100px;
-    border:3px solid #0d2b45;
     display:flex;
     justify-content:center;
     align-items:center;
+}
+
+/* líneas internas */
+.casilla{
+    border-right:2px solid #0d2b45;
+    border-bottom:2px solid #0d2b45;
+}
+
+/* eliminar bordes sobrantes */
+.casilla:nth-child(5),
+.casilla:nth-child(10){
+    border-right:none;
+}
+
+.casilla:nth-child(n+6){
+    border-bottom:none;
 }
 
 /* PUNTO GRANDE */
 .punto{
     width:80px;
     height:80px;
-    border-radius:50%;
     background:#f44336;
+    border-radius:50%;
 }
 
 /* BOTON */
 .boton{
+    margin-top:20px;
     padding:15px 25px;
     font-size:18px;
     background:#4CAF50;
@@ -91,6 +94,7 @@ h2{
 /* RELOJ */
 .reloj{
     font-size:70px;
+    margin-top:20px;
 }
 
 /* OCULTO */
@@ -102,7 +106,6 @@ h2{
 .resultado{
     display:flex;
     align-items:center;
-    justify-content:center;
     gap:60px;
     margin-top:20px;
 }
@@ -113,7 +116,7 @@ h2{
 }
 
 .manos{
-    width:160px;
+    width:140px;
 }
 
 </style>
@@ -124,15 +127,6 @@ h2{
 <div id="app"></div>
 
 <script>
-
-/* NAV */
-function irIndice(){
-    window.location.href = "index.html";
-}
-
-function reiniciarApp(){
-    mostrarPortada();
-}
 
 /* VOZ */
 function hablar(texto){
@@ -154,24 +148,13 @@ let ejercicio = 0;
 let total = 20;
 let anterior = -1;
 
-/* NAV HTML */
-function navHTML(){
-    return `
-        <div class="nav">
-            <span onclick="irIndice()">← Índice</span>
-            <span onclick="reiniciarApp()">↺ Inicio</span>
-        </div>
-    `;
-}
-
 /* PORTADA */
 function mostrarPortada(){
     document.getElementById("app").innerHTML = `
-        ${navHTML()}
         <div class="wrapper">
             <img src="logo.png" class="logo">
-            <h2>¿Cuántas hay? hasta 5</h2>
-            <button class="boton" onclick="iniciar()">Comenzar</button>
+            <h2>¿Cuántas hay?</h2>
+            <button class="boton" onclick="iniciar()">Iniciar</button>
         </div>
     `;
 }
@@ -199,26 +182,31 @@ function siguienteEjercicio(){
     anterior = cantidad;
 
     document.getElementById("app").innerHTML = `
-        ${navHTML()}
         <div class="wrapper">
 
             <img src="logo.png" class="logo">
 
             <h2>¿Cuántas hay?</h2>
-            <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
-
-            <div id="marco" class="marco"></div>
+            <div>Ejercicio ${ejercicio} de ${total}</div>
 
             <div id="zonaAccion">
-                <button class="boton" onclick="iniciarEjercicio()">Iniciar</button>
+                <button class="boton" onclick="mostrarEjercicio()">Iniciar ejercicio</button>
             </div>
+
+            <div id="marco" class="marco oculto"></div>
 
             <div id="resultado" class="resultado"></div>
 
         </div>
     `;
+}
+
+/* MOSTRAR EJERCICIO */
+function mostrarEjercicio(){
 
     let marco = document.getElementById("marco");
+    marco.innerHTML = "";
+    marco.classList.remove("oculto");
 
     for(let i=0;i<10;i++){
         let div = document.createElement("div");
@@ -230,10 +218,6 @@ function siguienteEjercicio(){
 
         marco.appendChild(div);
     }
-}
-
-/* INICIAR EJERCICIO */
-function iniciarEjercicio(){
 
     document.getElementById("zonaAccion").innerHTML = `<div class="reloj">⏳</div>`;
 
@@ -270,16 +254,14 @@ function verificar(){
 /* FINAL */
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
-        ${navHTML()}
         <div class="wrapper">
             <img src="logo.png" class="logo">
             <h2>¡Muy bien!</h2>
-            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
+            <button class="boton" onclick="mostrarPortada()">Volver</button>
         </div>
     `;
 }
 
-/* START */
 mostrarPortada();
 
 </script>
