@@ -2,127 +2,137 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat – Template PRO</title>
+<title>Calcumat – Dado hasta 6</title>
 
 <style>
 
-/* ===== BASE ===== */
 body{
-    font-family: Arial, sans-serif;
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
     background:white;
     margin:0;
 }
 
-/* ===== NAV ===== */
+/* NAV */
 .nav{
-    position:fixed;
-    top:0;
     width:100%;
     display:flex;
     justify-content:space-between;
-    padding:12px 20px;
-    font-size:15px;
-    color:#777;
-    background:rgba(255,255,255,0.9);
-}
-
-.nav a{
-    text-decoration:none;
+    padding:12px 25px;
+    box-sizing:border-box;
+    font-size:14px;
     color:#777;
 }
 
-.nav a:hover{
+.nav span{
+    cursor:pointer;
+    opacity:0.6;
+    transition:0.2s;
+}
+
+.nav span:hover{
+    opacity:1;
     color:#000;
 }
 
-/* ===== CONTENEDOR CENTRAL ===== */
-.app{
+/* CONTENEDOR PRINCIPAL */
+.wrapper{
+    min-height:100vh;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    text-align:center;
+    justify-content:flex-start;
 }
 
-/* ===== KIT VISUAL ===== */
+/* LOGOS UNIFICADOS */
 .logo{
     width:260px;
-    margin-top:40px;
+    margin-top:30px;
 }
 
+/* TITULOS */
 h2{
-    font-size:34px;
     margin:20px 0 5px 0;
+    font-size:32px;
 }
 
 .contador{
+    color:#555;
+    margin-bottom:10px;
     font-size:18px;
-    color:#666;
 }
 
-/* BOTÓN */
-.boton{
-    margin-top:30px;
-    padding:16px 34px;
-    font-size:20px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:14px;
-    cursor:pointer;
-}
-
-/* ===== ZONA CENTRAL (mano + dado + número) ===== */
-.fila{
+/* ZONA CENTRAL MEJORADA */
+.contenedor{
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:60px;
-    margin-top:40px;
+    gap:100px;
+    margin:50px 0;
+    min-height:220px;
 }
 
-/* MANOS */
-.mano{
-    font-size:80px;
-}
-
-/* DADO */
+/* DADO (INTACTO) */
 .dado{
     width:180px;
     height:180px;
     border:4px solid black;
-    border-radius:22px;
+    border-radius:25px;
     display:grid;
     grid-template-columns: repeat(3,1fr);
     grid-template-rows: repeat(3,1fr);
-    position:relative;
 }
 
-/* PUNTOS */
 .punto{
-    width:22px;
-    height:22px;
+    width:28px;
+    height:28px;
     background:black;
     border-radius:50%;
     margin:auto;
 }
 
-/* ANIMACIÓN */
-.girar{
-    animation:giro 0.6s ease;
+/* MANOS */
+.zona-manos{
+    width:160px;
+    display:flex;
+    justify-content:center;
 }
 
-@keyframes giro{
-    0%{transform:rotate(0deg) scale(0.9);}
-    50%{transform:rotate(180deg) scale(1.1);}
-    100%{transform:rotate(360deg) scale(1);}
+.manos{
+    width:150px;
 }
 
-/* NÚMERO */
-.numero{
-    font-size:130px;
+.espejo{
+    transform: scaleX(-1);
+}
+
+/* NUMERO */
+.resultado{
+    width:120px;
+    text-align:center;
+    font-size:120px;
     color:#e53935;
+}
+
+/* BOTON */
+.boton{
+    margin-top:10px;
+    padding:15px 30px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+/* RELOJ */
+.reloj{
+    font-size:60px;
+    margin-top:20px;
+}
+
+.oculto{
+    visibility:hidden;
 }
 
 </style>
@@ -130,78 +140,63 @@ h2{
 
 <body>
 
-<div class="nav">
-    <a href="indice.html">← Índice</a>
-    <a href="#" onclick="portada()">⟳ Inicio</a>
-</div>
-
-<div id="app" class="app"></div>
+<div id="app"></div>
 
 <script>
 
-let ejercicio = 0;
-let total = 10;
-let valor = 0;
+/* NAV */
+function irIndice(){
+    window.location.href = "index.html";
+}
+
+function reiniciarApp(){
+    mostrarPortada();
+}
 
 /* VOZ */
 function hablar(texto){
-    let m = new SpeechSynthesisUtterance(texto);
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+
     let voces = speechSynthesis.getVoices();
-    let voz =
-        voces.find(v => v.lang === "es-CL") ||
-        voces.find(v => v.lang.startsWith("es"));
-    if(voz) m.voice = voz;
-    m.rate = 0.9;
-    m.pitch = 1.2;
-    speechSynthesis.speak(m);
+    let voz = voces.find(v => v.lang.includes("es"));
+
+    if(voz) msg.voice = voz;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* VARIABLES */
+let numero = 0;
+let ejercicio = 0;
+let total = 10;
+
+/* NAV HTML */
+function navHTML(){
+    return `
+        <div class="nav">
+            <span onclick="irIndice()">← Índice</span>
+            <span onclick="reiniciarApp()">↺ Inicio</span>
+        </div>
+    `;
 }
 
 /* PORTADA */
-function portada(){
-    ejercicio = 0;
-
-    app.innerHTML = `
-        <img src="logo.png" class="logo">
-        <h2>Cuantificar hasta 6</h2>
-        <button class="boton" onclick="nuevo()">Comenzar</button>
-    `;
-}
-
-/* GENERAR */
-function generar(){
-    return Math.floor(Math.random()*6)+1;
-}
-
-/* NUEVO EJERCICIO */
-function nuevo(){
-
-    ejercicio++;
-    if(ejercicio > total){
-        final();
-        return;
-    }
-
-    valor = generar();
-
-    app.innerHTML = `
-        <img src="logo.png" class="logo">
-        <h2>¿Cuántos puntos hay?</h2>
-        <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
-
-        <div class="fila">
-            <div id="mano"></div>
-            <div id="dado" class="dado"></div>
-            <div id="numero"></div>
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+            <img src="logo.png" class="logo">
+            <h2>Cuantificar hasta 6 en el dado</h2>
+            <button class="boton" onclick="iniciar()">Comenzar</button>
         </div>
-
-        <button class="boton" onclick="mostrar()">Iniciar ejercicio</button>
     `;
 }
 
-/* DADO */
-function dibujar(num){
-
-    const mapa = {
+/* DADO (NO TOCAR) */
+function generarDado(n){
+    let posiciones = {
         1:[5],
         2:[1,9],
         3:[1,5,9],
@@ -210,62 +205,132 @@ function dibujar(num){
         6:[1,3,4,6,7,9]
     };
 
-    let dado = document.getElementById("dado");
-    dado.innerHTML = "";
-
+    let html = "";
     for(let i=1;i<=9;i++){
-        let c = document.createElement("div");
-        if(mapa[num].includes(i)){
-            c.innerHTML = `<div class="punto"></div>`;
-        }
-        dado.appendChild(c);
+        html += posiciones[n].includes(i)
+            ? `<div class="punto"></div>`
+            : `<div></div>`;
     }
-
-    dado.classList.add("girar");
+    return html;
 }
 
-/* MANOS */
-function mano(num){
-
-    if(num < 6){
-        return `<div class="mano">${["","☝️","✌️","🤟","🖖","🖐️"][num]}</div>`;
+/* MANOS (PERFECTAS) */
+function obtenerManos(n){
+    if(n === 6){
+        return `
+            <img src="mano_3.png" class="manos espejo">
+            <img src="mano_3.png" class="manos">
+        `;
     }
-
-    return `
-        <div class="mano">🤟</div>
-        <div class="mano">🤟</div>
-    `;
-}
-
-/* MOSTRAR */
-function mostrar(){
-
-    dibujar(valor);
-
-    setTimeout(()=>{
-
-        document.getElementById("mano").innerHTML = mano(valor);
-        document.getElementById("numero").innerHTML = `<div class="numero">${valor}</div>`;
-
-        hablar("Hay " + valor);
-
-        document.querySelector(".boton").innerText = "Siguiente";
-        document.querySelector(".boton").onclick = nuevo;
-
-    },800);
-}
-
-/* FINAL */
-function final(){
-    app.innerHTML = `
-        <h1>¡Felicitaciones!</h1>
-        <p>¡Excelente trabajo!</p>
-        <button class="boton" onclick="portada()">Reiniciar</button>
-    `;
+    return `<img src="mano_${n}.png" class="manos">`;
 }
 
 /* INICIO */
-portada();
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
+/* EJERCICIO */
+function siguienteEjercicio(){
+
+    ejercicio++;
+
+    if(ejercicio > total){
+        mostrarFinal();
+        return;
+    }
+
+    numero = Math.floor(Math.random()*6)+1;
+
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+
+            <img src="logo.png" class="logo">
+
+            <h2>¿Cuántos puntos hay?</h2>
+            <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+
+            <div class="contenedor">
+                <div id="zonaManos" class="zona-manos"></div>
+                <div id="dado" class="dado"></div>
+                <div id="numero" class="resultado"></div>
+            </div>
+
+            <div id="botonera">
+                <button class="boton" onclick="iniciarEjercicio()">Iniciar ejercicio</button>
+            </div>
+
+        </div>
+    `;
+}
+
+/* ANIMACION (INTOCABLE) */
+function animarDado(final){
+    let dado = document.getElementById("dado");
+    let cambios = 0;
+
+    let intervalo = setInterval(() => {
+        let r = Math.floor(Math.random()*6)+1;
+        dado.innerHTML = generarDado(r);
+
+        cambios++;
+        if(cambios > 10){
+            clearInterval(intervalo);
+            dado.innerHTML = generarDado(final);
+        }
+    }, 80);
+}
+
+/* INICIAR */
+function iniciarEjercicio(){
+
+    animarDado(numero);
+
+    document.getElementById("botonera").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultar,3000);
+}
+
+/* OCULTAR */
+function ocultar(){
+    document.getElementById("dado").classList.add("oculto");
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    document.getElementById("dado").classList.remove("oculto");
+
+    document.getElementById("numero").innerText = numero;
+    document.getElementById("zonaManos").innerHTML = obtenerManos(numero);
+
+    hablar("Hay " + numero);
+
+    document.getElementById("botonera").innerHTML = `
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        ${navHTML()}
+        <div class="wrapper">
+            <img src="logo.png" class="logo">
+            <h2>¡Muy bien!</h2>
+            <button class="boton" onclick="mostrarPortada()">Volver a jugar</button>
+        </div>
+    `;
+}
+
+/* START */
+mostrarPortada();
 
 </script>
 
