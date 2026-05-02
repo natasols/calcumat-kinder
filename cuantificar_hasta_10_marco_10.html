@@ -86,10 +86,11 @@ body{
 .reloj{ font-size:70px; }
 .oculto{ visibility:hidden; }
 
+/* RESULTADO */
 .resultado{
     display:flex;
     align-items:center;
-    gap:60px;
+    gap:40px;
     margin-top:20px;
 }
 
@@ -98,7 +99,20 @@ body{
     color:#e53935;
 }
 
-.manos{ width:140px; }
+/* MANOS */
+.manos{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.mano{
+    width:120px;
+}
+
+.espejo{
+    transform: scaleX(-1);
+}
 
 </style>
 </head>
@@ -124,7 +138,7 @@ let cantidad = 0;
 let ejercicio = 0;
 let total = 20;
 
-/* PATRONES PARA n (1 a 5) */
+/* PATRONES */
 const patronesN = {
     1: [[0],[2],[4]],
     2: [[0,1],[1,3],[0,4]],
@@ -140,7 +154,7 @@ function mostrarPortada(){
             <div class="header">
                 <img src="logo.png" class="logo-portada">
                 <h2>¿Cuántos hay?</h2>
-                <p>Cuantificar hasta 10 usando estructura 5 + n</p>
+                <p>Cuantificar hasta 10 en la matriz</p>
             </div>
 
             <div class="main"></div>
@@ -168,7 +182,7 @@ function siguienteEjercicio(){
         return;
     }
 
-    cantidad = Math.floor(Math.random()*6)+5; // 5 a 10
+    cantidad = Math.floor(Math.random()*6)+5;
 
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
@@ -200,9 +214,7 @@ function mostrarEjercicio(){
     marco.classList.remove("oculto");
 
     let n = cantidad - 5;
-
     let orientacion = Math.random() < 0.5 ? "arriba" : "abajo";
-
     let patronN = patronesN[n][Math.floor(Math.random()*patronesN[n].length)];
 
     for(let i=0;i<10;i++){
@@ -213,7 +225,7 @@ function mostrarEjercicio(){
         let tienePunto = false;
 
         if(orientacion === "arriba"){
-            if(i < 5) tienePunto = true; // 5 base
+            if(i < 5) tienePunto = true;
             else if(patronN.includes(i-5)) tienePunto = true;
         }else{
             if(i >= 5) tienePunto = true;
@@ -245,8 +257,23 @@ function verificar(){
 
     document.getElementById("marco").classList.remove("oculto");
 
+    let manosHTML = "";
+
+    if(cantidad <= 5){
+        manosHTML = `<img src="mano_${cantidad}.png" class="mano">`;
+    }else{
+        let n = cantidad - 5;
+
+        manosHTML = `
+            <div class="manos">
+                <img src="mano_5.png" class="mano espejo">
+                <img src="mano_${n}.png" class="mano">
+            </div>
+        `;
+    }
+
     document.getElementById("resultado").innerHTML = `
-        <img src="mano_${cantidad}.png" class="manos">
+        ${manosHTML}
         <div class="numero">${cantidad}</div>
     `;
 
