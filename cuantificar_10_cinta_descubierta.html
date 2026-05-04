@@ -25,13 +25,8 @@ body{
     margin-top:20px;
 }
 
-.logo-portada{
-    width:360px;
-}
-
-.logo-app{
-    width:150px;
-}
+.logo-portada{ width:360px; }
+.logo-app{ width:140px; }
 
 /* MAIN */
 .main{
@@ -42,11 +37,21 @@ body{
     justify-content:center;
 }
 
-/* FILA PUNTOS */
+/* FILA PUNTOS (CLAVE) */
 .fila-puntos{
     display:grid;
     grid-template-columns: repeat(10,90px);
-    margin-top:30px;
+    justify-content:center;
+    margin-bottom:10px;
+}
+
+/* PUNTOS */
+.punto{
+    width:65px;
+    height:65px;
+    background:#f44336;
+    border-radius:50%;
+    margin:auto;
 }
 
 /* CINTA */
@@ -55,7 +60,7 @@ body{
     grid-template-columns: repeat(10,90px);
 }
 
-/* CASILLA GRANDE */
+/* CASILLA */
 .casilla{
     width:90px;
     height:80px;
@@ -75,15 +80,6 @@ body{
     height:60px;
     border:4px solid #4CAF50;
     border-radius:50%;
-}
-
-/* FICHA */
-.punto{
-    width:65px;
-    height:65px;
-    border-radius:50%;
-    background:#f44336;
-    margin:auto;
 }
 
 /* FOOTER */
@@ -134,13 +130,7 @@ function hablar(texto){
 
 /* GENERAR */
 function generarCantidad(){
-    let r = Math.random();
-
-    if(r < 0.8){
-        return Math.floor(Math.random()*7)+4;
-    }else{
-        return Math.floor(Math.random()*3)+1;
-    }
+    return Math.floor(Math.random()*10)+1;
 }
 
 /* PORTADA */
@@ -220,20 +210,22 @@ function iniciarEjercicio(){
 
     for(let i=1;i<=10;i++){
 
+        /* FILA SUPERIOR (puntos flotantes) */
         let cont = document.createElement("div");
 
-        if(i<=cantidad){
+        if(i <= cantidad){
             let p = document.createElement("div");
-            p.className="punto";
+            p.className = "punto";
             cont.appendChild(p);
         }
 
         puntos.appendChild(cont);
 
+        /* CINTA */
         let cas = document.createElement("div");
-        cas.className="casilla";
-        cas.id="num"+i;
-        cas.innerText=i;
+        cas.className = "casilla";
+        cas.id = "num"+i;
+        cas.innerText = i;
 
         cinta.appendChild(cas);
     }
