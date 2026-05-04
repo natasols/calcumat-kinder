@@ -5,7 +5,6 @@
 <title>Completar la cinta numerada hasta 10 - Parte 2</title>
 
 <style>
-
 body{
     font-family: Arial;
     text-align:center;
@@ -50,19 +49,10 @@ h2{margin-top:20px;}
     background:white;
 }
 
-/* activa */
-.activa{
-    background:#f6e7a1;
-}
+.activa{ background:#f6e7a1; }
 
-/* verificación */
-.correcto{
-    background:#cfe9cf !important;
-}
-
-.incorrecto{
-    background:#f6caca !important;
-}
+.correcto{ background:#cfe9cf !important; }
+.incorrecto{ background:#f6caca !important; }
 
 /* BANCO */
 .banco{
@@ -85,7 +75,6 @@ h2{margin-top:20px;}
     cursor:grab;
     border:2px solid #d4c27a;
 }
-
 </style>
 </head>
 
@@ -106,6 +95,7 @@ let respuestas = Array(10).fill(null);
 let modoLibre = false;
 
 let numeroArrastrado = null;
+let tarjetaActual = null;
 
 /* VOZ */
 function hablar(texto){
@@ -176,7 +166,6 @@ function dibujarCinta(){
 
         let c = document.createElement("div");
         c.className="casilla";
-        c.dataset.index = i;
 
         c.ondragover = (e)=> e.preventDefault();
 
@@ -216,7 +205,7 @@ function dibujarBanco(){
 
         t.ondragstart = ()=>{
             numeroArrastrado = n;
-            t.remove();
+            tarjetaActual = t;
         };
 
         banco.appendChild(t);
@@ -243,7 +232,7 @@ function colocarEnCasilla(pos){
     if(numeroArrastrado === null) return;
 
     if(!modoLibre){
-        if(pos !== orden[indiceActual]) return; // bloquea error
+        if(pos !== orden[indiceActual]) return;
         respuestas[pos] = numeroArrastrado;
         indiceActual++;
     }else{
@@ -251,7 +240,11 @@ function colocarEnCasilla(pos){
         respuestas[pos] = numeroArrastrado;
     }
 
+    // ✅ eliminar tarjeta SOLO AQUÍ
+    if(tarjetaActual) tarjetaActual.remove();
+
     numeroArrastrado = null;
+    tarjetaActual = null;
 
     dibujarCinta();
     marcarCasilla();
@@ -302,7 +295,7 @@ function devolverAlBanco(num){
 
     t.ondragstart = ()=>{
         numeroArrastrado = num;
-        t.remove();
+        tarjetaActual = t;
     };
 
     banco.appendChild(t);
