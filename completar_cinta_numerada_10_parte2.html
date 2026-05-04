@@ -47,6 +47,7 @@ h2{margin-top:20px;}
     align-items:center;
     font-size:28px;
     background:white;
+    cursor:pointer;
 }
 
 .activa{ background:#f6e7a1; }
@@ -173,6 +174,22 @@ function dibujarCinta(){
             colocarEnCasilla(i);
         };
 
+        /* 👇 NUEVO: DEVOLVER TARJETA AL HACER CLICK */
+        c.onclick = ()=>{
+            if(respuestas[i] != null){
+
+                // no permitir borrar números fijos (1,5,10 o 1,10)
+                let fijos = nivel === 1 ? [1,5,10] : [1,10];
+                if(fijos.includes(respuestas[i])) return;
+
+                devolverAlBanco(respuestas[i]);
+                respuestas[i] = null;
+
+                dibujarCinta();
+                marcarCasilla();
+            }
+        };
+
         if(respuestas[i]!=null){
             c.innerText = respuestas[i];
             c.style.background="#f6e7a1";
@@ -240,7 +257,6 @@ function colocarEnCasilla(pos){
         respuestas[pos] = numeroArrastrado;
     }
 
-    // ✅ eliminar tarjeta SOLO AQUÍ
     if(tarjetaActual) tarjetaActual.remove();
 
     numeroArrastrado = null;
