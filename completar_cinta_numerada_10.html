@@ -71,7 +71,7 @@ body{
     cursor:grab;
 }
 
-/* COLORES FEEDBACK */
+/* FEEDBACK */
 .correcto{
     background:#a5d6a7 !important;
 }
@@ -90,7 +90,7 @@ body{
 
 /* BOTÓN */
 .boton{
-    margin:30px;
+    margin:20px;
     padding:12px 28px;
     font-size:18px;
     background:#4CAF50;
@@ -181,7 +181,9 @@ function siguiente(){
             <div id="cinta" class="cinta"></div>
             <div id="banco" class="banco"></div>
 
-            <button class="boton" onclick="verificar()">Verificar</button>
+            <div id="botonera">
+                <button class="boton" onclick="verificar()">Verificar</button>
+            </div>
 
         </div>
     `;
@@ -285,19 +287,27 @@ function verificar(){
 
     });
 
+    let botonera = document.getElementById("botonera");
+
     if(todoCorrecto){
+
         hablar("Muy bien, ubicaste todos los números");
 
-        setTimeout(()=>{
-            if(ejercicio < total){
-                siguiente();
-            }else{
-                portada();
-            }
-        },1500);
+        botonera.innerHTML = `
+            <button class="boton" onclick="avanzar()">Siguiente</button>
+        `;
 
     }else{
         hablar("Inténtalo otra vez");
+    }
+}
+
+/* AVANZAR */
+function avanzar(){
+    if(ejercicio < total){
+        siguiente();
+    }else{
+        portada();
     }
 }
 
