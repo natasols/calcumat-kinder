@@ -11,13 +11,11 @@ body{
     background:white;
 }
 
-/* LOGO */
 .logo{
     width:140px;
     margin-top:20px;
 }
 
-/* PORTADA */
 .portada{
     margin-top:80px;
 }
@@ -52,7 +50,6 @@ body{
     background:white;
 }
 
-/* estados */
 .objetivo{
     background:#f6e7a1;
 }
@@ -87,11 +84,9 @@ body{
     cursor:grab;
 }
 
-/* TEXTO */
 h2{
     margin-top:30px;
 }
-
 </style>
 </head>
 
@@ -203,9 +198,9 @@ function dibujarCinta(){
         if(cinta[i]!=null){
             c.innerText=cinta[i];
         }else if(respuestas[i]!=null){
-    c.innerText=respuestas[i];
-    c.style.background = "#f6e7a1"; // amarillo suave
-}
+            c.innerText=respuestas[i];
+            c.style.background = "#f6e7a1";
+        }
 
         c.ondragover=e=>e.preventDefault();
 
@@ -217,7 +212,6 @@ function dibujarCinta(){
             if(i !== objetivos[indiceObjetivo]) return;
 
             respuestas[i]=num;
-
             eliminarDelBanco(num);
 
             indiceObjetivo++;
@@ -231,7 +225,7 @@ function dibujarCinta(){
             }
         };
 
-        /* permitir devolver */
+        /* devolver */
         c.onclick=()=>{
             if(verificado) return;
 
@@ -281,8 +275,7 @@ function generarBanco(){
 }
 
 function eliminarDelBanco(num){
-    let tarjetas=document.querySelectorAll(".tarjeta");
-    tarjetas.forEach(t=>{
+    document.querySelectorAll(".tarjeta").forEach(t=>{
         if(parseInt(t.innerText)===num){
             t.remove();
         }
@@ -290,7 +283,6 @@ function eliminarDelBanco(num){
 }
 
 function devolverAlBanco(num){
-
     let banco=document.getElementById("banco");
 
     let t=document.createElement("div");
@@ -305,9 +297,8 @@ function devolverAlBanco(num){
     banco.appendChild(t);
 }
 
-/* INDICAR OBJETIVO */
+/* VOZ */
 function indicarObjetivo(){
-    let pos = objetivos[indiceObjetivo]+1;
     hablar("Ubica el número que va en esta posición");
 }
 
@@ -318,7 +309,6 @@ function verificar(){
 
     let casillas = document.querySelectorAll(".casilla");
     let todoBien = true;
-
     let nuevasPendientes = [];
 
     for(let i=0;i<10;i++){
@@ -327,11 +317,9 @@ function verificar(){
 
             if(respuestas[i] === i+1){
 
-    casillas[i].classList.remove("incorrecto");
-    casillas[i].style.background = ""; // limpia amarillo
-    casillas[i].classList.add("correcto");
-
-}
+                casillas[i].classList.remove("incorrecto");
+                casillas[i].style.background = "";
+                casillas[i].classList.add("correcto");
 
             }else{
 
@@ -384,7 +372,6 @@ function reiniciar(){
     iniciarApp();
 }
 
-/* INICIO */
 iniciarApp();
 
 </script>
