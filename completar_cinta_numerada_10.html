@@ -6,6 +6,10 @@
 
 <style>
 
+:root{
+    --tam: 90px; /* 👈 puedes cambiar a 85, 95, etc */
+}
+
 body{
     font-family: 'Comic Sans MS', sans-serif;
     margin:0;
@@ -32,19 +36,19 @@ body{
 /* CINTA */
 .cinta{
     display:grid;
-    grid-template-columns: repeat(10,70px);
+    grid-template-columns: repeat(10,var(--tam));
     margin-top:40px;
     border:3px solid #0d2b45;
     background:white;
 }
 
 .casilla{
-    width:70px;
-    height:70px;
+    width:var(--tam);
+    height:var(--tam);
     display:flex;
     justify-content:center;
     align-items:center;
-    font-size:26px;
+    font-size:32px;
     border-right:1px solid #0d2b45;
 }
 
@@ -58,16 +62,16 @@ body{
 
 /* TARJETAS */
 .numero{
-    width:70px;
-    height:70px;
+    width:var(--tam);
+    height:var(--tam);
     background:#fff3b0;
     border:2px solid #e0c97f;
     color:#333;
-    font-size:26px;
+    font-size:32px;
     display:flex;
     justify-content:center;
     align-items:center;
-    border-radius:8px;
+    border-radius:10px;
     cursor:grab;
 }
 
@@ -84,14 +88,16 @@ body{
 .banco{
     display:flex;
     justify-content:center;
-    gap:10px;
+    gap:12px;
     margin-top:40px;
+    flex-wrap:wrap;
+    max-width:1000px;
 }
 
 /* BOTÓN */
 .boton{
     margin:20px;
-    padding:12px 28px;
+    padding:14px 32px;
     font-size:18px;
     background:#4CAF50;
     color:white;
@@ -213,14 +219,11 @@ function renderCinta(){
 
                 let val = e.dataTransfer.getData("text");
 
-                // si ya había uno → devolverlo al banco
                 if(this.firstChild){
                     devolverAlBanco(this.firstChild.innerText);
                 }
 
                 let original = document.getElementById("num"+val);
-
-                // ocultar original
                 original.style.visibility = "hidden";
 
                 let nueva = crearTarjeta(val, false);
@@ -257,17 +260,14 @@ function crearTarjeta(valor, draggable=true){
     }else{
         div.draggable = true;
 
-        // 👇 permitir devolver
         div.ondragstart = function(e){
             e.dataTransfer.setData("text", valor);
 
-            // eliminar de la casilla al empezar arrastre
             let parent = this.parentElement;
             parent.innerHTML = "";
 
             delete respuestas[parent.dataset.pos];
 
-            // volver visible en banco
             let original = document.getElementById("num"+valor);
             original.style.visibility = "visible";
         };
@@ -298,7 +298,6 @@ function devolverAlBanco(valor){
 /* VERIFICAR */
 function verificar(){
 
-    let banco = document.getElementById("banco");
     let todoCorrecto = true;
 
     faltantes.forEach(n=>{
@@ -339,6 +338,7 @@ function verificar(){
     }
 }
 
+/* AVANZAR */
 function avanzar(){
     if(ejercicio < total){
         siguiente();
