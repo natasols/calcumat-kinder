@@ -327,7 +327,11 @@ function verificar(){
 
             if(respuestas[i] === i+1){
 
-                casillas[i].classList.add("correcto");
+    casillas[i].classList.remove("incorrecto");
+    casillas[i].style.background = ""; // limpia amarillo
+    casillas[i].classList.add("correcto");
+
+}
 
             }else{
 
