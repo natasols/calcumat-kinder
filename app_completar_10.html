@@ -2,118 +2,154 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactimat – Completar 10</title>
+<title>Calcumat – Completar 10</title>
 
 <style>
+
 body{
-    font-family: Arial;
-    text-align:center;
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    margin:0;
 }
 
-/* LOGO */
-.logo{
-    width:120px;
+/* CONTENEDOR */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
     margin-top:20px;
 }
 
-/* PORTADA */
-.portada{
-    margin-top:80px;
-}
+.logo-portada{ width:360px; }
+.logo-app{ width:150px; }
 
-.boton{
-    margin:10px;
-    padding:15px 25px;
-    font-size:18px;
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
+/* MAIN */
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 }
 
 /* MARCO */
 .marco{
     display:grid;
-    grid-template-columns: repeat(5,80px);
-    grid-template-rows: repeat(2,80px);
-    gap:8px;
-    justify-content:center;
-    margin-top:30px;
+    grid-template-columns: repeat(5,100px);
+    grid-template-rows: repeat(2,100px);
+    border:4px solid #0d2b45;
 }
 
+/* CASILLAS */
 .casilla{
-    width:80px;
-    height:80px;
-    border:2px solid black;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#ddd;
+    border-right:2px solid #0d2b45;
+    border-bottom:2px solid #0d2b45;
 }
 
+.casilla:nth-child(5),
+.casilla:nth-child(10){ border-right:none; }
+
+.casilla:nth-child(n+6){ border-bottom:none; }
+
+/* PUNTOS */
 .punto{
-    width:40px;
-    height:40px;
+    width:80px;
+    height:80px;
     border-radius:50%;
-    background:red;
+    background:#f44336;
 }
 
+/* COMPLETAR */
 .verde{
-    background:green;
+    background:#4CAF50;
 }
 
-.mensaje{
-    font-size:22px;
-    margin-top:15px;
-    height:30px;
+/* FOOTER */
+.footer{
+    padding:20px;
 }
+
+.boton{
+    padding:15px 30px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.reloj{
+    font-size:70px;
+}
+
+.oculto{
+    visibility:hidden;
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="pantalla"></div>
+<div id="app"></div>
 
 <script>
 
-/* 🔊 VOZ */
+/* VOZ */
 function hablar(texto){
-    let mensaje = new SpeechSynthesisUtterance(texto);
-    mensaje.lang = "es-ES";
-    mensaje.rate = 0.8;
-    mensaje.pitch = 1.1;
-
-    let voces = speechSynthesis.getVoices();
-    let voz = voces.find(v => v.lang.startsWith("es"));
-    if(voz) mensaje.voice = voz;
-
-    speechSynthesis.speak(mensaje);
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
 }
 
 /* VARIABLES */
+let cantidad = 0;
+let faltan = 0;
 let ejercicio = 0;
 let total = 20;
-let cantidad = 0;
-let respuestaCorrecta = 0;
-let aciertos = 0;
 let anterior = -1;
 
 /* PORTADA */
-function iniciarApp(){
-    document.getElementById("pantalla").innerHTML = `
-        <div class="portada">
-            <img src="logo.png" class="logo">
-            <h1>Didactimat</h1>
-            <p><b>Nivel:</b> Kinder</p>
-            <p><b>Habilidad:</b> completar hasta 10</p>
-            <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+function mostrarPortada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>Completar hasta 10</h2>
+                <p>Marco de 10</p>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
+
         </div>
     `;
 }
 
+/* INICIO */
+function iniciar(){
+    ejercicio = 0;
+    siguienteEjercicio();
+}
+
 /* NUEVO EJERCICIO */
-function nuevoEjercicio(){
+function siguienteEjercicio(){
 
     ejercicio++;
 
@@ -122,27 +158,40 @@ function nuevoEjercicio(){
         return;
     }
 
-    /* evita repetir número */
     do{
         cantidad = Math.floor(Math.random()*4)+6; // 6 a 9
     }while(cantidad === anterior);
 
     anterior = cantidad;
+    faltan = 10 - cantidad;
 
-    respuestaCorrecta = 10 - cantidad;
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
 
-    let html = `
-        <img src="logo.png" class="logo">
-        <h2>¿Cuántas faltan para completar 10?</h2>
-        <p>Ejercicio ${ejercicio} de 20</p>
-        <div id="marco" class="marco"></div>
-        <div id="botones"></div>
-        <div id="mensaje" class="mensaje"></div>
+            <div class="header">
+                <img src="logo.png" class="logo-app">
+                <h2>¿Cuántas faltan para completar 10?</h2>
+                <div>Ejercicio ${ejercicio} de ${total}</div>
+            </div>
+
+            <div class="main">
+                <div id="marco" class="marco oculto"></div>
+            </div>
+
+            <div id="footer" class="footer">
+                <button class="boton" onclick="mostrarEjercicio()">Iniciar ejercicio</button>
+            </div>
+
+        </div>
     `;
+}
 
-    document.getElementById("pantalla").innerHTML = html;
+/* MOSTRAR */
+function mostrarEjercicio(){
 
     let marco = document.getElementById("marco");
+    marco.innerHTML = "";
+    marco.classList.remove("oculto");
 
     let arriba = Array(5).fill(0);
     let abajo = Array(5).fill(0);
@@ -169,47 +218,24 @@ function nuevoEjercicio(){
         marco.appendChild(div);
     });
 
-    let botones = document.getElementById("botones");
+    document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
+    setTimeout(ocultar,3000);
+}
 
-    for(let i=1;i<=5;i++){
-        botones.innerHTML += `<button class="boton" onclick="verificar(${i})">${i}</button>`;
-    }
+/* OCULTAR */
+function ocultar(){
+    document.getElementById("marco").classList.add("oculto");
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
 }
 
 /* VERIFICAR */
-function verificar(resp){
-
-    let mensaje = document.getElementById("mensaje");
-
-    let botones = document.querySelectorAll(".boton");
-    botones.forEach(b => b.disabled = true);
-
-    if(resp == respuestaCorrecta){
-
-        aciertos++;
-
-        mensaje.innerText = "¡Bien!";
-
-        mostrarSolucion();
-
-        hablar("Bien. Faltan " + respuestaCorrecta + " fichas");
-
-    }else{
-
-        mensaje.innerText = "Intenta nuevamente";
-
-        hablar("Intenta nuevamente");
-    }
-
-    setTimeout(nuevoEjercicio,1500);
-}
-
-/* MOSTRAR SOLUCIÓN */
-function mostrarSolucion(){
+function verificar(){
 
     let casillas = document.querySelectorAll(".casilla");
 
-    let faltan = respuestaCorrecta;
     let contador = 0;
 
     for(let i=0;i<casillas.length;i++){
@@ -218,25 +244,33 @@ function mostrarSolucion(){
             contador++;
         }
     }
+
+    document.getElementById("marco").classList.remove("oculto");
+
+    hablar("Faltan " + faltan);
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
+    `;
 }
 
 /* FINAL */
 function mostrarFinal(){
-    document.getElementById("pantalla").innerHTML = `
-        <h1>RESULTADOS</h1>
-        <p>Respuestas correctas: ${aciertos} de 20</p>
-        <button class="boton" onclick="reiniciar()">REINICIAR</button>
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo-portada">
+                <h2>¡Muy bien!</h2>
+            </div>
+
+            <div class="footer">
+                <button class="boton" onclick="mostrarPortada()">Volver</button>
+            </div>
+        </div>
     `;
 }
 
-function reiniciar(){
-    ejercicio = 0;
-    aciertos = 0;
-    iniciarApp();
-}
-
-/* INICIO */
-iniciarApp();
+mostrarPortada();
 
 </script>
 
