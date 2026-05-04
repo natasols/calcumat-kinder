@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – Completar cinta</title>
+
+<style>
+
+body{
+    font-family: 'Comic Sans MS', sans-serif;
+    margin:0;
+    text-align:center;
+}
+
+/* CONTENEDOR */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HEADER */
+.header{
+    margin-top:20px;
+}
+
+.logo{
+    width:300px;
+}
+
+/* CINTA */
+.cinta{
+    display:grid;
+    grid-template-columns: repeat(10,70px);
+    margin-top:40px;
+    border:3px solid #0d2b45;
+}
+
+.casilla{
+    width:70px;
+    height:70px;
+    border-right:2px solid #0d2b45;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:28px;
+}
+
+.casilla:last-child{
+    border-right:none;
+}
+
+.fija{
+    background:#eee;
+    font-weight:bold;
+}
+
+.vacia{
+    background:#fafafa;
+    border:2px dashed #ccc;
+}
+
+/* BANCO */
+.banco{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-top:40px;
+    width:500px;
+}
+
+.numero{
+    width:60px;
+    height:60px;
+    background:#4CAF50;
+    color:white;
+    font-size:24px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    cursor:grab;
+}
+
+/* BOTÓN */
+.boton{
+    margin:30px;
+    padding:15px 30px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+/* TEXTO */
+.mensaje{
+    font-size:22px;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+let ejercicio = 0;
+let total = 6;
+
+let cinta = [];
+let faltantes = [];
+let respuestas = {};
+
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>Completar la cinta numerada</h2>
+                <p>Números hasta 10</p>
+            </div>
+            <button class="boton" onclick="iniciar()">Iniciar</button>
+        </div>
+    `;
+}
+
+function iniciar(){
+    ejercicio = 0;
+    siguiente();
+}
+
+/* NIVEL */
+function obtenerNivel(){
+    let ciclo = (ejercicio % 6);
+    if(ciclo < 4) return 2;
+    if(ciclo === 4) return 4;
+    return 6;
+}
+
+/* GENERAR EJERCICIO */
+function siguiente(){
+
+    ejercicio++;
+
+    let cantidadFaltantes = obtenerNivel();
+
+    cinta = Array.from({length:10}, (_,i)=>i+1);
+
+    faltantes = [];
+    respuestas = {};
+
+    while(faltantes.length < cantidadFaltantes){
+        let n = Math.floor(Math.random()*10)+1;
+        if(!faltantes.includes(n)){
+            faltantes.push(n);
+        }
+    }
+
+    let html = `
+        <div class="wrapper">
+
+            <div class="header">
+                <img src="logo.png" width="150">
+                <h2>Completa la cinta</h2>
+                <p>Ejercicio ${ejercicio} de ${total}</p>
+            </div>
+
+            <div id="cinta" class="cinta"></div>
+
+            <div id="banco" class="banco"></div>
+
+            <button class="boton" onclick="verificar()">Verificar</button>
+
+            <div id="mensaje" class="mensaje"></div>
+
+        </div>
+    `;
+
+    document.getElementById("app").innerHTML = html;
+
+    renderCinta();
+    renderBanco();
+}
+
+/* RENDER CINTA */
+function renderCinta(){
+
+    let cont = document.getElementById("cinta");
+    cont.innerHTML = "";
+
+    cinta.forEach(n=>{
+
+        let div = document.createElement("div");
+
+        if(faltantes.includes(n)){
+            div.className = "casilla vacia";
+            div.dataset.pos = n;
+
+            div.ondragover = e => e.preventDefault();
+
+            div.ondrop = function(e){
+                e.preventDefault();
+                let val = e.dataTransfer.getData("text");
+                this.innerText = val;
+                respuestas[this.dataset.pos] = parseInt(val);
+
+                document.getElementById("num"+val).remove();
+            };
+
+        }else{
+            div.className = "casilla fija";
+            div.innerText = n;
+        }
+
+        cont.appendChild(div);
+    });
+}
+
+/* RENDER BANCO */
+function renderBanco(){
+
+    let banco = document.getElementById("banco");
+
+    let numeros = [...cinta].sort(()=>Math.random()-0.5);
+
+    numeros.forEach(n=>{
+        let div = document.createElement("div");
+        div.className = "numero";
+        div.innerText = n;
+        div.id = "num"+n;
+
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", n);
+        };
+
+        banco.appendChild(div);
+    });
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let correcto = true;
+
+    faltantes.forEach(n=>{
+        if(respuestas[n] !== n){
+            correcto = false;
+        }
+    });
+
+    /* LIMPIAR */
+    renderCinta();
+
+    /* MOSTRAR SOLUCIÓN */
+    let casillas = document.querySelectorAll(".casilla");
+
+    casillas.forEach(c=>{
+        let pos = parseInt(c.dataset.pos);
+        if(pos){
+            c.innerText = pos;
+            c.style.background = "#c8e6c9";
+        }
+    });
+
+    /* VOZ RELACIONAL */
+    faltantes.forEach(n=>{
+        let antes = n-1;
+        let despues = n+1;
+
+        if(n === 1){
+            hablar(`El 1 va antes del 2`);
+        }else if(n === 10){
+            hablar(`El 10 va después del 9`);
+        }else{
+            hablar(`El ${n} va después del ${antes} y antes del ${despues}`);
+        }
+    });
+
+    document.getElementById("mensaje").innerText = "Así se completa la cinta";
+
+    setTimeout(()=>{
+        if(ejercicio < total){
+            siguiente();
+        }else{
+            portada();
+        }
+    },3000);
+}
+
+portada();
+
+</script>
+
+</body>
+</html>
