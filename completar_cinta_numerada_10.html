@@ -213,11 +213,19 @@ function renderCinta(){
 
                 let val = e.dataTransfer.getData("text");
 
-                this.innerHTML = "";
-                let nueva = document.getElementById("num"+val).cloneNode(true);
-                nueva.id = "";
-                nueva.draggable = false;
+                // si ya había uno → devolverlo al banco
+                if(this.firstChild){
+                    devolverAlBanco(this.firstChild.innerText);
+                }
 
+                let original = document.getElementById("num"+val);
+
+                // ocultar original
+                original.style.visibility = "hidden";
+
+                let nueva = crearTarjeta(val, false);
+
+                this.innerHTML = "";
                 this.appendChild(nueva);
 
                 respuestas[n] = parseInt(val);
@@ -232,6 +240,42 @@ function renderCinta(){
     });
 }
 
+/* CREAR TARJETA */
+function crearTarjeta(valor, draggable=true){
+
+    let div = document.createElement("div");
+    div.className = "numero";
+    div.innerText = valor;
+
+    if(draggable){
+        div.id = "num"+valor;
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+        };
+    }else{
+        div.draggable = true;
+
+        // 👇 permitir devolver
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+
+            // eliminar de la casilla al empezar arrastre
+            let parent = this.parentElement;
+            parent.innerHTML = "";
+
+            delete respuestas[parent.dataset.pos];
+
+            // volver visible en banco
+            let original = document.getElementById("num"+valor);
+            original.style.visibility = "visible";
+        };
+    }
+
+    return div;
+}
+
 /* BANCO */
 function renderBanco(){
 
@@ -240,19 +284,15 @@ function renderBanco(){
     let numeros = [...cinta].sort(()=>Math.random()-0.5);
 
     numeros.forEach(n=>{
-        let div = document.createElement("div");
-        div.className = "numero";
-        div.innerText = n;
-        div.id = "num"+n;
-
-        div.draggable = true;
-
-        div.ondragstart = function(e){
-            e.dataTransfer.setData("text", n);
-        };
-
+        let div = crearTarjeta(n, true);
         banco.appendChild(div);
     });
+}
+
+/* DEVOLVER */
+function devolverAlBanco(valor){
+    let original = document.getElementById("num"+valor);
+    original.style.visibility = "visible";
 }
 
 /* VERIFICAR */
@@ -275,8 +315,7 @@ function verificar(){
                 let val = cas.firstChild.innerText;
 
                 setTimeout(()=>{
-                    let original = document.getElementById("num"+val);
-                    banco.appendChild(original);
+                    devolverAlBanco(val);
                     cas.innerHTML = "";
                 },800);
             }
@@ -290,19 +329,16 @@ function verificar(){
     let botonera = document.getElementById("botonera");
 
     if(todoCorrecto){
-
         hablar("Muy bien, ubicaste todos los números");
 
         botonera.innerHTML = `
             <button class="boton" onclick="avanzar()">Siguiente</button>
         `;
-
     }else{
         hablar("Inténtalo otra vez");
     }
 }
 
-/* AVANZAR */
 function avanzar(){
     if(ejercicio < total){
         siguiente();
