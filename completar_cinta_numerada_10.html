@@ -26,25 +26,26 @@ body{
 }
 
 .logo{
-    width:300px;
+    width:280px;
 }
 
-/* CINTA */
+/* CINTA NUMERADA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,70px);
     margin-top:40px;
     border:3px solid #0d2b45;
+    background:#f5f5f5;
 }
 
 .casilla{
     width:70px;
     height:70px;
-    border-right:2px solid #0d2b45;
     display:flex;
     justify-content:center;
     align-items:center;
-    font-size:28px;
+    font-size:26px;
+    border-right:1px solid #0d2b45;
 }
 
 .casilla:last-child{
@@ -52,42 +53,41 @@ body{
 }
 
 .fija{
-    background:#eee;
+    background:#e0e0e0;
     font-weight:bold;
 }
 
 .vacia{
     background:#fafafa;
-    border:2px dashed #ccc;
 }
 
 /* BANCO */
 .banco{
     display:flex;
-    flex-wrap:wrap;
     justify-content:center;
     gap:10px;
     margin-top:40px;
-    width:500px;
 }
 
+/* TARJETAS */
 .numero{
-    width:60px;
-    height:60px;
-    background:#4CAF50;
-    color:white;
-    font-size:24px;
+    width:70px;
+    height:70px;
+    background:#fff3b0;
+    border:2px solid #e0c97f;
+    color:#333;
+    font-size:26px;
     display:flex;
     justify-content:center;
     align-items:center;
-    border-radius:10px;
+    border-radius:8px;
     cursor:grab;
 }
 
 /* BOTÓN */
 .boton{
     margin:30px;
-    padding:15px 30px;
+    padding:12px 28px;
     font-size:18px;
     background:#4CAF50;
     color:white;
@@ -96,10 +96,10 @@ body{
     cursor:pointer;
 }
 
-/* TEXTO */
+/* MENSAJE */
 .mensaje{
     font-size:22px;
-    margin-top:20px;
+    margin-top:15px;
 }
 
 </style>
@@ -126,7 +126,6 @@ let total = 6;
 
 let cinta = [];
 let faltantes = [];
-let respuestas = {};
 
 /* PORTADA */
 function portada(){
@@ -147,7 +146,7 @@ function iniciar(){
     siguiente();
 }
 
-/* NIVEL */
+/* NIVELES */
 function obtenerNivel(){
     let ciclo = (ejercicio % 6);
     if(ciclo < 4) return 2;
@@ -165,7 +164,6 @@ function siguiente(){
     cinta = Array.from({length:10}, (_,i)=>i+1);
 
     faltantes = [];
-    respuestas = {};
 
     while(faltantes.length < cantidadFaltantes){
         let n = Math.floor(Math.random()*10)+1;
@@ -178,7 +176,7 @@ function siguiente(){
         <div class="wrapper">
 
             <div class="header">
-                <img src="logo.png" width="150">
+                <img src="logo.png" width="140">
                 <h2>Completa la cinta</h2>
                 <p>Ejercicio ${ejercicio} de ${total}</p>
             </div>
@@ -200,7 +198,7 @@ function siguiente(){
     renderBanco();
 }
 
-/* RENDER CINTA */
+/* CINTA */
 function renderCinta(){
 
     let cont = document.getElementById("cinta");
@@ -218,11 +216,20 @@ function renderCinta(){
 
             div.ondrop = function(e){
                 e.preventDefault();
-                let val = e.dataTransfer.getData("text");
-                this.innerText = val;
-                respuestas[this.dataset.pos] = parseInt(val);
 
-                document.getElementById("num"+val).remove();
+                let val = parseInt(e.dataTransfer.getData("text"));
+
+                /* VALIDACIÓN DIRECTA */
+                if(val === n){
+                    this.innerText = val;
+                    document.getElementById("num"+val).remove();
+                }else{
+                    /* rebote visual opcional */
+                    this.style.background = "#ffcdd2";
+                    setTimeout(()=>{
+                        this.style.background = "#fafafa";
+                    },300);
+                }
             };
 
         }else{
@@ -234,7 +241,7 @@ function renderCinta(){
     });
 }
 
-/* RENDER BANCO */
+/* BANCO */
 function renderBanco(){
 
     let banco = document.getElementById("banco");
@@ -260,43 +267,9 @@ function renderBanco(){
 /* VERIFICAR */
 function verificar(){
 
-    let correcto = true;
+    document.getElementById("mensaje").innerText = "Los números van en orden del 1 al 10";
 
-    faltantes.forEach(n=>{
-        if(respuestas[n] !== n){
-            correcto = false;
-        }
-    });
-
-    /* LIMPIAR */
-    renderCinta();
-
-    /* MOSTRAR SOLUCIÓN */
-    let casillas = document.querySelectorAll(".casilla");
-
-    casillas.forEach(c=>{
-        let pos = parseInt(c.dataset.pos);
-        if(pos){
-            c.innerText = pos;
-            c.style.background = "#c8e6c9";
-        }
-    });
-
-    /* VOZ RELACIONAL */
-    faltantes.forEach(n=>{
-        let antes = n-1;
-        let despues = n+1;
-
-        if(n === 1){
-            hablar(`El 1 va antes del 2`);
-        }else if(n === 10){
-            hablar(`El 10 va después del 9`);
-        }else{
-            hablar(`El ${n} va después del ${antes} y antes del ${despues}`);
-        }
-    });
-
-    document.getElementById("mensaje").innerText = "Así se completa la cinta";
+    hablar("Los números van en orden del 1 al 10");
 
     setTimeout(()=>{
         if(ejercicio < total){
@@ -304,7 +277,7 @@ function verificar(){
         }else{
             portada();
         }
-    },3000);
+    },2500);
 }
 
 portada();
