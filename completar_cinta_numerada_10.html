@@ -56,10 +56,6 @@ body{
     font-weight:bold;
 }
 
-.vacia{
-    border:2px dashed #ccc;
-}
-
 /* TARJETAS */
 .numero{
     width:70px;
@@ -73,6 +69,15 @@ body{
     align-items:center;
     border-radius:8px;
     cursor:grab;
+}
+
+/* COLORES FEEDBACK */
+.correcto{
+    background:#a5d6a7 !important;
+}
+
+.incorrecto{
+    background:#ef9a9a !important;
 }
 
 /* BANCO */
@@ -93,12 +98,6 @@ body{
     border:none;
     border-radius:12px;
     cursor:pointer;
-}
-
-/* MENSAJE */
-.mensaje{
-    font-size:22px;
-    margin-top:15px;
 }
 
 </style>
@@ -133,7 +132,6 @@ function portada(){
             <div class="header">
                 <img src="logo.png" class="logo">
                 <h2>Completa la cinta numerada</h2>
-                <p>Números hasta 10</p>
             </div>
             <button class="boton" onclick="iniciar()">Iniciar</button>
         </div>
@@ -184,7 +182,6 @@ function siguiente(){
             <div id="banco" class="banco"></div>
 
             <button class="boton" onclick="verificar()">Verificar</button>
-            <div id="mensaje" class="mensaje"></div>
 
         </div>
     `;
@@ -204,7 +201,7 @@ function renderCinta(){
         let div = document.createElement("div");
 
         if(faltantes.includes(n)){
-            div.className = "casilla vacia";
+            div.className = "casilla";
             div.dataset.pos = n;
 
             div.ondragover = e => e.preventDefault();
@@ -260,47 +257,48 @@ function renderBanco(){
 function verificar(){
 
     let banco = document.getElementById("banco");
-
-    let incorrectos = [];
+    let todoCorrecto = true;
 
     faltantes.forEach(n=>{
-        if(respuestas[n] !== n){
-            incorrectos.push(n);
-        }
-    });
 
-    /* devolver incorrectos */
-    incorrectos.forEach(n=>{
         let cas = document.querySelector(`[data-pos='${n}']`);
-        if(cas && cas.firstChild){
-            let val = cas.firstChild.innerText;
-            let original = document.getElementById("num"+val);
 
-            if(original){
-                banco.appendChild(original);
+        if(!cas.firstChild || respuestas[n] !== n){
+
+            todoCorrecto = false;
+
+            if(cas.firstChild){
+                cas.firstChild.classList.add("incorrecto");
+
+                let val = cas.firstChild.innerText;
+
+                setTimeout(()=>{
+                    let original = document.getElementById("num"+val);
+                    banco.appendChild(original);
+                    cas.innerHTML = "";
+                },800);
             }
 
-            cas.innerHTML = "";
+        }else{
+            cas.firstChild.classList.add("correcto");
         }
+
     });
 
-    /* voz */
-    if(faltantes.length === 1){
-        hablar(`Faltaba el ${faltantes[0]}`);
+    if(todoCorrecto){
+        hablar("Muy bien, ubicaste todos los números");
+
+        setTimeout(()=>{
+            if(ejercicio < total){
+                siguiente();
+            }else{
+                portada();
+            }
+        },1500);
+
     }else{
-        let lista = faltantes.join(" y ");
-        hablar(`Faltaban el ${lista}`);
+        hablar("Inténtalo otra vez");
     }
-
-    document.getElementById("mensaje").innerText = "Revisa la cinta";
-
-    setTimeout(()=>{
-        if(ejercicio < total){
-            siguiente();
-        }else{
-            portada();
-        }
-    },2500);
 }
 
 portada();
