@@ -19,13 +19,8 @@ body{
 }
 
 /* TITULOS */
-h1{
-    font-size:28px;
-}
-
-h2{
-    margin-top:20px;
-}
+h1{ font-size:28px; }
+h2{ margin-top:20px; }
 
 /* BOTONES */
 .boton{
@@ -58,18 +53,19 @@ h2{
     background:white;
 }
 
-/* ESTADOS */
+/* CASILLA ACTIVA */
 .activa{
     background:#f6e7a1;
 }
 
+/* ESTADOS DESPUÉS DE VERIFICAR */
 .correcto{
-    background:#bfe3bf !important;
+    background:#cfe9cf !important;
     color:#1b5e20;
 }
 
 .incorrecto{
-    background:#f5c6c6 !important;
+    background:#f6caca !important;
     color:#b71c1c;
 }
 
@@ -93,11 +89,6 @@ h2{
     align-items:center;
     cursor:pointer;
     border:2px solid #d4c27a;
-}
-
-/* OCULTA */
-.oculto{
-    visibility:hidden;
 }
 
 </style>
@@ -181,7 +172,6 @@ function nuevoEjercicio(){
 
     dibujarCinta();
     dibujarBanco();
-
     marcarCasillaActual();
 }
 
@@ -199,11 +189,7 @@ function dibujarCinta(){
 
         if(respuestas[i] !== null){
             c.innerText = respuestas[i];
-
-            if(respuestas[i] === i+1){
-                c.classList.add("correcto"); // 👈 VERDE PERMANENTE
-            }
-
+            c.style.background = "#f6e7a1"; // 🟡 siempre amarillo mientras trabaja
         }
 
         c.onclick = ()=> devolver(i);
@@ -216,7 +202,6 @@ function dibujarCinta(){
 function marcarCasillaActual(){
 
     let casillas = document.querySelectorAll(".casilla");
-
     casillas.forEach(c => c.classList.remove("activa"));
 
     if(indiceActual < orden.length){
@@ -280,7 +265,6 @@ function devolver(index){
     if(respuestas[index] === null) return;
 
     let num = respuestas[index];
-
     respuestas[index] = null;
 
     let banco = document.getElementById("banco");
@@ -310,7 +294,7 @@ function verificar(){
             }else{
                 casillas[i].classList.add("incorrecto");
 
-                devolver(i);
+                devolver(i); // vuelve abajo
                 todoBien = false;
             }
         }
