@@ -5,65 +5,77 @@
 <title>Calcumat – Completar cinta</title>
 
 <style>
-body{
-    font-family: Arial;
-    text-align:center;
-    background:#f4f4f4;
+
+:root{
+    --tam: 90px;
 }
 
-/* LOGO */
-.logo{
-    width:180px;
+body{
+    font-family: 'Comic Sans MS', sans-serif;
+    margin:0;
+    text-align:center;
+}
+
+/* CONTENEDOR */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HEADER */
+.header{
     margin-top:20px;
 }
 
-/* TITULO */
-h2{
-    font-size:28px;
+.logo{
+    width:260px;
 }
 
 /* CINTA */
 .cinta{
     display:grid;
-    grid-template-columns: repeat(10,85px);
-    justify-content:center;
+    grid-template-columns: repeat(10,var(--tam));
     margin-top:40px;
-}
-
-.casilla{
-    width:85px;
-    height:85px;
-    border:3px solid #1f3b57;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
+    border:3px solid #0d2b45;
     background:white;
 }
 
-/* BANCO */
-.banco{
+.casilla{
+    width:var(--tam);
+    height:var(--tam);
     display:flex;
     justify-content:center;
-    gap:12px;
-    margin-top:40px;
+    align-items:center;
+    font-size:32px;
+    border-right:1px solid #0d2b45;
+}
+
+.casilla:last-child{
+    border-right:none;
+}
+
+.fija{
+    font-weight:bold;
 }
 
 /* TARJETAS */
-.tarjeta{
-    width:85px;
-    height:85px;
-    background:#f5e6a3;
-    border-radius:12px;
-    border:2px solid #d6c273;
+.numero{
+    width:var(--tam);
+    height:var(--tam);
+    background:#fff3b0;
+    border:2px solid #e0c97f;
+    color:#333;
+    font-size:32px;
     display:flex;
-    align-items:center;
     justify-content:center;
-    font-size:28px;
+    align-items:center;
+    border-radius:10px;
     cursor:grab;
 }
 
-/* COLORES */
+/* FEEDBACK */
 .correcto{
     background:#a5d6a7 !important;
 }
@@ -72,17 +84,28 @@ h2{
     background:#ef9a9a !important;
 }
 
-/* BOTON */
+/* BANCO */
+.banco{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:40px;
+    flex-wrap:wrap;
+    max-width:1000px;
+}
+
+/* BOTÓN */
 .boton{
-    margin-top:30px;
-    padding:15px 25px;
+    margin:20px;
+    padding:14px 32px;
     font-size:18px;
     background:#4CAF50;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
 }
+
 </style>
 </head>
 
@@ -92,42 +115,60 @@ h2{
 
 <script>
 
-let ejercicio = 0;
-let total = 6;
-let cinta = [];
-let faltantes = [];
-let ubicados = {};
-
-/* VOZ */
 function hablar(texto){
-    let m = new SpeechSynthesisUtterance(texto);
-    let voces = speechSynthesis.getVoices();
-    let voz = voces.find(v => v.lang === "es-CL") || voces.find(v => v.lang.startsWith("es"));
-    if(voz) m.voice = voz;
-    speechSynthesis.speak(m);
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
 }
 
-/* NUEVO EJERCICIO */
-function nuevoEjercicio(){
+let ejercicio = 0;
+let total = 6;
+
+let cinta = [];
+let faltantes = [];
+let respuestas = {};
+
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>Completa la cinta numerada</h2>
+            </div>
+            <button class="boton" onclick="iniciar()">Iniciar</button>
+        </div>
+    `;
+}
+
+function iniciar(){
+    ejercicio = 0;
+    siguiente();
+}
+
+/* NIVEL */
+function obtenerNivel(){
+    let ciclo = (ejercicio % 6);
+    if(ciclo < 4) return 2;
+    if(ciclo === 4) return 4;
+    return 6;
+}
+
+/* NUEVO */
+function siguiente(){
 
     ejercicio++;
 
-    if(ejercicio > total){
-        document.getElementById("app").innerHTML = `
-            <h1>¡Muy bien!</h1>
-            <button class="boton" onclick="reiniciar()">Reiniciar</button>
-        `;
-        return;
-    }
+    let cantidadFaltantes = obtenerNivel();
 
-    cinta = [1,2,3,4,5,6,7,8,9,10];
-    ubicados = {};
-
-    let cantidadFaltantes = (ejercicio <= 4) ? 2 : (ejercicio === 5 ? 3 : 4);
-
+    cinta = Array.from({length:10}, (_,i)=>i+1);
     faltantes = [];
+    respuestas = {};
 
-    /* 🔥 CAMBIO CLAVE: nunca falta el 1 */
+    /* 🔥 CLAVE: nunca falta el 1 */
     while(faltantes.length < cantidadFaltantes){
         let n = Math.floor(Math.random()*9)+2; // 2 a 10
         if(!faltantes.includes(n)){
@@ -135,21 +176,23 @@ function nuevoEjercicio(){
         }
     }
 
-    render();
-}
-
-/* RENDER */
-function render(){
-
     document.getElementById("app").innerHTML = `
-        <img src="logo.png" class="logo">
-        <h2>Completa la cinta</h2>
-        <p>Ejercicio ${ejercicio} de ${total}</p>
+        <div class="wrapper">
 
-        <div id="cinta" class="cinta"></div>
-        <div id="banco" class="banco"></div>
+            <div class="header">
+                <img src="logo.png" width="140">
+                <h2>Completa la cinta</h2>
+                <p>Ejercicio ${ejercicio} de ${total}</p>
+            </div>
 
-        <button class="boton" onclick="verificar()">Verificar</button>
+            <div id="cinta" class="cinta"></div>
+            <div id="banco" class="banco"></div>
+
+            <div id="botonera">
+                <button class="boton" onclick="verificar()">Verificar</button>
+            </div>
+
+        </div>
     `;
 
     renderCinta();
@@ -165,24 +208,35 @@ function renderCinta(){
     cinta.forEach(n=>{
 
         let div = document.createElement("div");
-        div.className = "casilla";
 
         if(faltantes.includes(n)){
-            div.dataset.valor = n;
+            div.className = "casilla";
+            div.dataset.pos = n;
 
             div.ondragover = e => e.preventDefault();
 
-            div.ondrop = e=>{
-                let numero = e.dataTransfer.getData("text");
+            div.ondrop = function(e){
+                e.preventDefault();
 
-                div.innerText = numero;
-                ubicados[n] = parseInt(numero);
+                let val = e.dataTransfer.getData("text");
 
-                let tarjeta = document.querySelector(`[data-num='${numero}']`);
-                if(tarjeta) tarjeta.remove();
+                if(this.firstChild){
+                    devolverAlBanco(this.firstChild.innerText);
+                }
+
+                let original = document.getElementById("num"+val);
+                original.style.visibility = "hidden";
+
+                let nueva = crearTarjeta(val, false);
+
+                this.innerHTML = "";
+                this.appendChild(nueva);
+
+                respuestas[n] = parseInt(val);
             };
 
         }else{
+            div.className = "casilla fija";
             div.innerText = n;
         }
 
@@ -190,101 +244,126 @@ function renderCinta(){
     });
 }
 
-/* BANCO (SIN SOBRANTES) */
+/* CREAR TARJETA */
+function crearTarjeta(valor, draggable=true){
+
+    let div = document.createElement("div");
+    div.className = "numero";
+    div.innerText = valor;
+
+    if(draggable){
+        div.id = "num"+valor;
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+        };
+    }else{
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+
+            let parent = this.parentElement;
+            parent.innerHTML = "";
+
+            delete respuestas[parent.dataset.pos];
+
+            let original = document.getElementById("num"+valor);
+            original.style.visibility = "visible";
+        };
+    }
+
+    return div;
+}
+
+/* BANCO */
 function renderBanco(){
 
     let banco = document.getElementById("banco");
-    banco.innerHTML = "";
 
-    let numerosBanco = [...faltantes];
+    /* 🔥 CLAVE: el 1 NO aparece en banco */
+    let numeros = cinta.filter(n => n !== 1).sort(()=>Math.random()-0.5);
 
-    let candidatos = cinta.filter(n => !faltantes.includes(n));
-
-    /* rellenar hasta 9 */
-    while(numerosBanco.length < 9){
-        let rand = candidatos[Math.floor(Math.random()*candidatos.length)];
-        if(!numerosBanco.includes(rand)){
-            numerosBanco.push(rand);
-        }
-    }
-
-    numerosBanco.sort(()=>Math.random()-0.5);
-
-    numerosBanco.forEach(n=>{
-        let div = document.createElement("div");
-        div.className = "tarjeta";
-        div.innerText = n;
-        div.draggable = true;
-        div.dataset.num = n;
-
-        div.ondragstart = e=>{
-            e.dataTransfer.setData("text", n);
-        };
-
+    numeros.forEach(n=>{
+        let div = crearTarjeta(n, true);
         banco.appendChild(div);
     });
+}
+
+/* DEVOLVER */
+function devolverAlBanco(valor){
+    let original = document.getElementById("num"+valor);
+    original.style.visibility = "visible";
 }
 
 /* VERIFICAR */
 function verificar(){
 
-    let casillas = document.querySelectorAll(".casilla");
-    let errores = false;
+    let todoCorrecto = true;
 
-    casillas.forEach(c=>{
+    faltantes.forEach(n=>{
 
-        let esperado = parseInt(c.dataset.valor);
-        let puesto = parseInt(c.innerText);
+        let cas = document.querySelector(`[data-pos='${n}']`);
 
-        if(esperado){
+        if(!cas.firstChild || respuestas[n] !== n){
 
-            if(esperado === puesto){
-                c.classList.add("correcto");
-            }else{
-                if(puesto){
-                    errores = true;
+            todoCorrecto = false;
 
-                    c.classList.add("incorrecto");
+            if(cas.firstChild){
+                cas.firstChild.classList.add("incorrecto");
 
-                    let banco = document.getElementById("banco");
+                let val = cas.firstChild.innerText;
 
-                    let tarjeta = document.createElement("div");
-                    tarjeta.className = "tarjeta";
-                    tarjeta.innerText = puesto;
-                    tarjeta.draggable = true;
-                    tarjeta.dataset.num = puesto;
-
-                    tarjeta.ondragstart = e=>{
-                        e.dataTransfer.setData("text", puesto);
-                    };
-
-                    banco.appendChild(tarjeta);
-
-                    c.innerText = "";
-                }
+                setTimeout(()=>{
+                    devolverAlBanco(val);
+                    cas.innerHTML = "";
+                },800);
             }
+
+        }else{
+            cas.firstChild.classList.add("correcto");
         }
+
     });
 
-    if(!errores){
+    let botonera = document.getElementById("botonera");
+
+    if(todoCorrecto){
         hablar("Muy bien, ubicaste todos los números");
 
-        document.querySelector(".boton").outerHTML = `
-            <button class="boton" onclick="nuevoEjercicio()">Siguiente</button>
+        botonera.innerHTML = `
+            <button class="boton" onclick="avanzar()">Siguiente</button>
         `;
     }else{
         hablar("Inténtalo otra vez");
     }
 }
 
-/* REINICIAR */
-function reiniciar(){
-    ejercicio = 0;
-    nuevoEjercicio();
+/* AVANZAR */
+function avanzar(){
+    if(ejercicio < total){
+        siguiente();
+    }else{
+        mostrarFinal();
+    }
 }
 
-/* INICIO */
-nuevoEjercicio();
+/* 🎉 FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>¡Muy bien!</h2>
+                <p>Completaste todas las cintas</p>
+            </div>
+            <button class="boton" onclick="iniciar()">Reiniciar</button>
+        </div>
+    `;
+}
+
+portada();
 
 </script>
 
