@@ -176,20 +176,24 @@ function dibujarCinta(){
 
         /* 👇 NUEVO: DEVOLVER TARJETA AL HACER CLICK */
         c.onclick = ()=>{
-            if(respuestas[i] != null){
+    if(respuestas[i] != null){
 
-                // no permitir borrar números fijos (1,5,10 o 1,10)
-                let fijos = nivel === 1 ? [1,5,10] : [1,10];
-                if(fijos.includes(respuestas[i])) return;
+        let fijos = nivel === 1 ? [1,5,10] : [1,10];
+        if(fijos.includes(respuestas[i])) return;
 
-                devolverAlBanco(respuestas[i]);
-                respuestas[i] = null;
+        devolverAlBanco(respuestas[i]);
+        respuestas[i] = null;
 
-                dibujarCinta();
-                marcarCasilla();
-            }
-        };
+        // 👇 CLAVE: retroceder el índice si estamos en modo guiado
+        if(!modoLibre){
+            indiceActual--;
+            if(indiceActual < 0) indiceActual = 0;
+        }
 
+        dibujarCinta();
+        marcarCasilla();
+    }
+};
         if(respuestas[i]!=null){
             c.innerText = respuestas[i];
             c.style.background="#f6e7a1";
