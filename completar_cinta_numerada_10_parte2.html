@@ -5,12 +5,20 @@
 <title>Completar la cinta numerada hasta 10 - Parte 2</title>
 
 <style>
-body{ font-family: Arial; text-align:center; background:white; }
 
-.logo{ width:200px; margin-top:30px; }
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
 
-h1{ font-size:28px; }
-h2{ margin-top:20px; }
+.logo{
+    width:200px;
+    margin-top:30px;
+}
+
+h1{font-size:28px;}
+h2{margin-top:20px;}
 
 .boton{
     margin-top:20px;
@@ -23,6 +31,7 @@ h2{ margin-top:20px; }
     cursor:pointer;
 }
 
+/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,90px);
@@ -41,18 +50,21 @@ h2{ margin-top:20px; }
     background:white;
 }
 
-.activa{ background:#f6e7a1; }
+/* activa */
+.activa{
+    background:#f6e7a1;
+}
 
+/* verificación */
 .correcto{
     background:#cfe9cf !important;
-    color:#1b5e20;
 }
 
 .incorrecto{
     background:#f6caca !important;
-    color:#b71c1c;
 }
 
+/* BANCO */
 .banco{
     display:flex;
     justify-content:center;
@@ -70,9 +82,10 @@ h2{ margin-top:20px; }
     display:flex;
     justify-content:center;
     align-items:center;
-    cursor:pointer;
+    cursor:grab;
     border:2px solid #d4c27a;
 }
+
 </style>
 </head>
 
@@ -90,7 +103,9 @@ let orden = [];
 let indiceActual = 0;
 
 let respuestas = Array(10).fill(null);
-let modoLibre = false; // 🔥 NUEVO
+let modoLibre = false;
+
+let numeroArrastrado = null;
 
 /* VOZ */
 function hablar(texto){
@@ -127,7 +142,6 @@ function nuevoEjercicio(){
     respuestas = Array(10).fill(null);
 
     let fijos = nivel === 1 ? [1,5,10] : [1,10];
-
     fijos.forEach(n=> respuestas[n-1]=n);
 
     orden = [];
@@ -162,29 +176,20 @@ function dibujarCinta(){
 
         let c = document.createElement("div");
         c.className="casilla";
+        c.dataset.index = i;
+
+        c.ondragover = (e)=> e.preventDefault();
+
+        c.ondrop = ()=>{
+            colocarEnCasilla(i);
+        };
 
         if(respuestas[i]!=null){
             c.innerText = respuestas[i];
             c.style.background="#f6e7a1";
         }
 
-        c.onclick = ()=> devolver(i);
-
         cinta.appendChild(c);
-    }
-}
-
-/* CASILLA ACTIVA */
-function marcarCasilla(){
-
-    if(modoLibre) return; // 🔥 no marcar en segundo intento
-
-    let casillas = document.querySelectorAll(".casilla");
-    casillas.forEach(c=>c.classList.remove("activa"));
-
-    if(indiceActual < orden.length){
-        casillas[orden[indiceActual]].classList.add("activa");
-        hablar("Ubica el número que va en esta posición");
     }
 }
 
@@ -207,51 +212,49 @@ function dibujarBanco(){
         let t = document.createElement("div");
         t.className="tarjeta";
         t.innerText=n;
-        t.onclick = ()=> colocar(n,t);
+        t.draggable = true;
+
+        t.ondragstart = ()=>{
+            numeroArrastrado = n;
+            t.remove();
+        };
+
         banco.appendChild(t);
     });
 }
 
-/* COLOCAR */
-function colocar(num, tarjeta){
+/* MARCAR */
+function marcarCasilla(){
 
-    if(!modoLibre){
-        let pos = orden[indiceActual];
-        respuestas[pos]=num;
-        indiceActual++;
-    }else{
-        // 🔥 modo libre: buscar primera vacía
-        for(let i=0;i<10;i++){
-            if(respuestas[i]==null){
-                respuestas[i]=num;
-                break;
-            }
-        }
+    if(modoLibre) return;
+
+    let casillas = document.querySelectorAll(".casilla");
+    casillas.forEach(c=>c.classList.remove("activa"));
+
+    if(indiceActual < orden.length){
+        casillas[orden[indiceActual]].classList.add("activa");
+        hablar("Ubica el número que va en esta posición");
     }
-
-    tarjeta.remove();
-    dibujarCinta();
-    marcarCasilla();
 }
 
-/* DEVOLVER */
-function devolver(i){
+/* COLOCAR */
+function colocarEnCasilla(pos){
 
-    if(respuestas[i]==null) return;
+    if(numeroArrastrado === null) return;
 
-    let num = respuestas[i];
-    respuestas[i]=null;
+    if(!modoLibre){
+        if(pos !== orden[indiceActual]) return; // bloquea error
+        respuestas[pos] = numeroArrastrado;
+        indiceActual++;
+    }else{
+        if(respuestas[pos] !== null) return;
+        respuestas[pos] = numeroArrastrado;
+    }
 
-    let banco = document.getElementById("banco");
-
-    let t = document.createElement("div");
-    t.className="tarjeta";
-    t.innerText=num;
-    t.onclick = ()=> colocar(num,t);
-
-    banco.appendChild(t);
+    numeroArrastrado = null;
 
     dibujarCinta();
+    marcarCasilla();
 }
 
 /* VERIFICAR */
@@ -268,7 +271,10 @@ function verificar(){
                 casillas[i].classList.add("correcto");
             }else{
                 casillas[i].classList.add("incorrecto");
-                devolver(i);
+
+                devolverAlBanco(respuestas[i]);
+                respuestas[i]=null;
+
                 todoBien=false;
             }
         }
@@ -279,8 +285,27 @@ function verificar(){
         setTimeout(nuevoEjercicio,1500);
     }else{
         hablar("Inténtalo otra vez");
-        modoLibre = true; // 🔥 CAMBIO CLAVE
+        modoLibre = true;
+        dibujarCinta();
     }
+}
+
+/* DEVOLVER */
+function devolverAlBanco(num){
+
+    let banco = document.getElementById("banco");
+
+    let t = document.createElement("div");
+    t.className="tarjeta";
+    t.innerText=num;
+    t.draggable=true;
+
+    t.ondragstart = ()=>{
+        numeroArrastrado = num;
+        t.remove();
+    };
+
+    banco.appendChild(t);
 }
 
 /* FINAL */
