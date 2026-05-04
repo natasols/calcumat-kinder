@@ -203,8 +203,9 @@ function dibujarCinta(){
         if(cinta[i]!=null){
             c.innerText=cinta[i];
         }else if(respuestas[i]!=null){
-            c.innerText=respuestas[i];
-        }
+    c.innerText=respuestas[i];
+    c.style.background = "#f6e7a1"; // amarillo suave
+}
 
         c.ondragover=e=>e.preventDefault();
 
@@ -307,7 +308,7 @@ function devolverAlBanco(num){
 /* INDICAR OBJETIVO */
 function indicarObjetivo(){
     let pos = objetivos[indiceObjetivo]+1;
-    hablar("Ubica el número que va en la posición " + pos);
+    hablar("Ubica el número que va en esta posición");
 }
 
 /* VERIFICAR */
