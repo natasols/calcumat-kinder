@@ -72,6 +72,18 @@ body{
     background:#4CAF50;
 }
 
+/* TEXTO */
+.numero{
+    font-size:90px;
+    color:#e53935;
+    margin-top:20px;
+}
+
+.expresion{
+    font-size:50px;
+    margin-top:10px;
+}
+
 /* FOOTER */
 .footer{
     padding:20px;
@@ -148,7 +160,7 @@ function iniciar(){
     siguienteEjercicio();
 }
 
-/* NUEVO EJERCICIO */
+/* NUEVO */
 function siguienteEjercicio(){
 
     ejercicio++;
@@ -176,6 +188,8 @@ function siguienteEjercicio(){
 
             <div class="main">
                 <div id="marco" class="marco oculto"></div>
+                <div id="numero" class="numero"></div>
+                <div id="expresion" class="expresion"></div>
             </div>
 
             <div id="footer" class="footer">
@@ -219,6 +233,7 @@ function mostrarEjercicio(){
     });
 
     document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
+
     setTimeout(ocultar,3000);
 }
 
@@ -227,12 +242,26 @@ function ocultar(){
     document.getElementById("marco").classList.add("oculto");
 
     document.getElementById("footer").innerHTML = `
-        <button class="boton" onclick="verificar()">Verificar</button>
+        <button class="boton" onclick="mostrarCantidad()">¿Cuántas hay?</button>
     `;
 }
 
-/* VERIFICAR */
-function verificar(){
+/* CUÁNTAS HAY */
+function mostrarCantidad(){
+
+    document.getElementById("marco").classList.remove("oculto");
+
+    document.getElementById("numero").innerText = cantidad;
+
+    hablar("Hay " + cantidad);
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="mostrarFaltan()">¿Cuántas faltan para completar 10?</button>
+    `;
+}
+
+/* CUÁNTAS FALTAN */
+function mostrarFaltan(){
 
     let casillas = document.querySelectorAll(".casilla");
 
@@ -245,9 +274,13 @@ function verificar(){
         }
     }
 
-    document.getElementById("marco").classList.remove("oculto");
-
     hablar("Faltan " + faltan);
+
+    document.getElementById("expresion").innerText = `${cantidad} y ${faltan} hacen 10`;
+
+    setTimeout(()=>{
+        hablar(`${cantidad} y ${faltan} hacen 10`);
+    },800);
 
     document.getElementById("footer").innerHTML = `
         <button class="boton" onclick="siguienteEjercicio()">Siguiente</button>
