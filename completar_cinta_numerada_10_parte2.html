@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat – Completa la cinta (Parte 2)</title>
+<title>Calcumat – Completar cinta parte 2</title>
 
 <style>
 body{
@@ -11,13 +11,11 @@ body{
     background:white;
 }
 
-/* LOGO */
 .logo{
-    width:160px;
-    margin-top:20px;
+    width:180px;
+    margin-top:40px;
 }
 
-/* TITULOS */
 h2{
     margin-top:20px;
 }
@@ -27,7 +25,7 @@ h2{
     display:grid;
     grid-template-columns: repeat(10,80px);
     justify-content:center;
-    margin-top:30px;
+    margin-top:40px;
 }
 
 .casilla{
@@ -39,6 +37,7 @@ h2{
     align-items:center;
     font-size:28px;
     background:white;
+    cursor:pointer;
 }
 
 /* OBJETIVO */
@@ -46,7 +45,23 @@ h2{
     background:#f3e5ab;
 }
 
-/* TARJETAS */
+/* TARJETA EN CINTA */
+.tarjeta-cinta{
+    background:#f3e5ab;
+}
+
+/* RESULTADOS */
+.correcto{
+    background:#4CAF50;
+    color:white;
+}
+
+.incorrecto{
+    background:#f44336;
+    color:white;
+}
+
+/* BANCO */
 .banco{
     display:flex;
     justify-content:center;
@@ -66,17 +81,6 @@ h2{
     align-items:center;
     font-size:24px;
     cursor:grab;
-}
-
-/* COLORES VERIFICACIÓN */
-.correcto{
-    background:#4CAF50;
-    color:white;
-}
-
-.incorrecto{
-    background:#f44336;
-    color:white;
 }
 
 /* BOTON */
@@ -109,6 +113,8 @@ let respuestas = new Array(10).fill(null);
 let objetivos = [];
 let indiceObjetivo = 0;
 
+let verificado = false;
+
 /* VOZ */
 function hablar(texto){
     let m = new SpeechSynthesisUtterance(texto);
@@ -118,15 +124,27 @@ function hablar(texto){
     speechSynthesis.speak(m);
 }
 
-/* NUEVO EJERCICIO */
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h1>Completar la cinta numerada hasta 10</h1>
+        <p>Parte 2</p>
+        <button class="boton" onclick="nuevoEjercicio()">Iniciar</button>
+    `;
+}
+
+/* NUEVO */
 function nuevoEjercicio(){
 
     ejercicio++;
 
     if(ejercicio > total){
-        mostrarFinal();
+        final();
         return;
     }
+
+    verificado = false;
 
     nivel = ejercicio <= 3 ? 1 : 2;
 
@@ -134,21 +152,18 @@ function nuevoEjercicio(){
     respuestas = new Array(10).fill(null);
 
     if(nivel === 1){
-        cinta[0] = 1;
-        cinta[4] = 5;
-        cinta[9] = 10;
+        cinta[0]=1; cinta[4]=5; cinta[9]=10;
     }else{
-        cinta[0] = 1;
-        cinta[9] = 10;
+        cinta[0]=1; cinta[9]=10;
     }
 
     objetivos = [];
     for(let i=0;i<10;i++){
-        if(cinta[i] === null) objetivos.push(i);
+        if(cinta[i]===null) objetivos.push(i);
     }
 
-    objetivos.sort(() => Math.random() - 0.5);
-    indiceObjetivo = 0;
+    objetivos.sort(()=>Math.random()-0.5);
+    indiceObjetivo=0;
 
     render();
 }
@@ -168,35 +183,37 @@ function render(){
 
     dibujarCinta();
     generarBanco();
-    indicarObjetivo();
+    indicar();
 }
 
-/* DIBUJAR CINTA */
+/* CINTA */
 function dibujarCinta(){
 
     let cont = document.getElementById("cinta");
-    cont.innerHTML = "";
+    cont.innerHTML="";
 
     for(let i=0;i<10;i++){
 
-        let div = document.createElement("div");
-        div.className = "casilla";
+        let div=document.createElement("div");
+        div.className="casilla";
 
-        if(i === objetivos[indiceObjetivo]){
+        if(i===objetivos[indiceObjetivo]){
             div.classList.add("objetivo");
         }
 
-        if(cinta[i] !== null){
-            div.innerText = cinta[i];
+        if(cinta[i]!=null){
+            div.innerText=cinta[i];
         }
 
-        if(respuestas[i] !== null){
-            div.innerText = respuestas[i];
-            div.style.background = "#f3e5ab";
+        if(respuestas[i]!=null){
+            div.innerText=respuestas[i];
+            div.classList.add("tarjeta-cinta");
         }
 
-        div.ondragover = e => e.preventDefault();
-        div.ondrop = e => soltar(e, i);
+        div.onclick=()=>devolver(i);
+
+        div.ondragover=e=>e.preventDefault();
+        div.ondrop=e=>soltar(e,i);
 
         cont.appendChild(div);
     }
@@ -205,28 +222,27 @@ function dibujarCinta(){
 /* BANCO */
 function generarBanco(){
 
-    let banco = document.getElementById("banco");
-    banco.innerHTML = "";
+    let banco=document.getElementById("banco");
+    banco.innerHTML="";
 
-    let disponibles = [];
+    let nums=[];
 
     for(let i=1;i<=10;i++){
         if(!cinta.includes(i)){
-            disponibles.push(i);
+            nums.push(i);
         }
     }
 
-    disponibles.sort(() => Math.random() - 0.5);
+    nums.sort(()=>Math.random()-0.5);
 
-    disponibles.forEach(num => {
+    nums.forEach(n=>{
+        let t=document.createElement("div");
+        t.className="tarjeta";
+        t.innerText=n;
+        t.draggable=true;
 
-        let t = document.createElement("div");
-        t.className = "tarjeta";
-        t.innerText = num;
-        t.draggable = true;
-
-        t.ondragstart = e => {
-            e.dataTransfer.setData("text", num);
+        t.ondragstart=e=>{
+            e.dataTransfer.setData("num",n);
         };
 
         banco.appendChild(t);
@@ -234,78 +250,131 @@ function generarBanco(){
 }
 
 /* SOLTAR */
-function soltar(e, pos){
+function soltar(e,pos){
 
-    let num = Number(e.dataTransfer.getData("text"));
+    if(verificado) return;
 
-    if(pos !== objetivos[indiceObjetivo]) return;
+    let num=Number(e.dataTransfer.getData("num"));
 
-    // guarda respuesta aunque sea incorrecta
-    respuestas[pos] = num;
+    if(pos!==objetivos[indiceObjetivo]) return;
 
-    // elimina tarjeta del banco
-    let tarjetas = document.querySelectorAll(".tarjeta");
-    tarjetas.forEach(t=>{
-        if(Number(t.innerText) === num){
-            t.remove();
-        }
+    respuestas[pos]=num;
+
+    // eliminar del banco
+    document.querySelectorAll(".tarjeta").forEach(t=>{
+        if(Number(t.innerText)===num) t.remove();
     });
 
     indiceObjetivo++;
 
-    if(indiceObjetivo < objetivos.length){
+    if(indiceObjetivo<objetivos.length){
         dibujarCinta();
-        indicarObjetivo();
+        indicar();
     }else{
         dibujarCinta();
-        document.getElementById("btnVerificar").disabled = false;
+        document.getElementById("btnVerificar").disabled=false;
+    }
+}
+
+/* DEVOLVER */
+function devolver(pos){
+
+    if(verificado) return;
+
+    if(respuestas[pos]!=null){
+
+        let num=respuestas[pos];
+        respuestas[pos]=null;
+
+        let banco=document.getElementById("banco");
+
+        let t=document.createElement("div");
+        t.className="tarjeta";
+        t.innerText=num;
+        t.draggable=true;
+
+        t.ondragstart=e=>{
+            e.dataTransfer.setData("num",num);
+        };
+
+        banco.appendChild(t);
+
+        // retroceder secuencia
+        indiceObjetivo--;
+        dibujarCinta();
     }
 }
 
 /* INDICAR */
-function indicarObjetivo(){
+function indicar(){
     hablar("Ubica el número que va aquí");
 }
 
 /* VERIFICAR */
 function verificar(){
 
-    let casillas = document.querySelectorAll(".casilla");
+    verificado=true;
+
+    let casillas=document.querySelectorAll(".casilla");
+
+    let todoBien=true;
 
     for(let i=0;i<10;i++){
 
-        if(respuestas[i] !== null){
+        if(respuestas[i]!=null){
 
-            if(respuestas[i] === i+1){
+            if(respuestas[i]===i+1){
                 casillas[i].classList.add("correcto");
             }else{
                 casillas[i].classList.add("incorrecto");
+                todoBien=false;
+
+                // devolver incorrectas
+                let num=respuestas[i];
+                respuestas[i]=null;
+
+                let banco=document.getElementById("banco");
+
+                let t=document.createElement("div");
+                t.className="tarjeta";
+                t.innerText=num;
+                t.draggable=true;
+
+                t.ondragstart=e=>{
+                    e.dataTransfer.setData("num",num);
+                };
+
+                banco.appendChild(t);
             }
         }
     }
 
-    hablar("Revisa tus respuestas");
+    if(todoBien){
+        hablar("Muy bien, completaste la cinta");
+    }else{
+        hablar("Inténtalo otra vez");
+    }
 
-    document.getElementById("btnVerificar").innerText = "Siguiente";
-    document.getElementById("btnVerificar").onclick = nuevoEjercicio;
+    document.getElementById("btnVerificar").innerText="Siguiente";
+    document.getElementById("btnVerificar").onclick=nuevoEjercicio;
 }
 
 /* FINAL */
-function mostrarFinal(){
-    document.getElementById("app").innerHTML = `
+function final(){
+    document.getElementById("app").innerHTML=`
         <h1>¡Excelente!</h1>
-        <p>Completaste todas las cintas</p>
+        <p>Terminaste todas las actividades</p>
         <button class="boton" onclick="reiniciar()">Reiniciar</button>
     `;
 }
 
 function reiniciar(){
-    ejercicio = 0;
-    nuevoEjercicio();
+    ejercicio=0;
+    portada();
 }
 
 /* INICIO */
-nuevoEjercicio();
+portada();
 
 </script>
 
