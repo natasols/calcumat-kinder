@@ -5,24 +5,13 @@
 <title>Completar la cinta numerada hasta 10 - Parte 2</title>
 
 <style>
+body{ font-family: Arial; text-align:center; background:white; }
 
-body{
-    font-family: Arial;
-    text-align:center;
-    background:white;
-}
+.logo{ width:200px; margin-top:30px; }
 
-/* LOGO */
-.logo{
-    width:200px;
-    margin-top:30px;
-}
-
-/* TITULOS */
 h1{ font-size:28px; }
 h2{ margin-top:20px; }
 
-/* BOTONES */
 .boton{
     margin-top:20px;
     padding:15px 30px;
@@ -34,7 +23,6 @@ h2{ margin-top:20px; }
     cursor:pointer;
 }
 
-/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,90px);
@@ -53,12 +41,8 @@ h2{ margin-top:20px; }
     background:white;
 }
 
-/* CASILLA ACTIVA */
-.activa{
-    background:#f6e7a1;
-}
+.activa{ background:#f6e7a1; }
 
-/* ESTADOS DESPUÉS DE VERIFICAR */
 .correcto{
     background:#cfe9cf !important;
     color:#1b5e20;
@@ -69,7 +53,6 @@ h2{ margin-top:20px; }
     color:#b71c1c;
 }
 
-/* TARJETAS */
 .banco{
     display:flex;
     justify-content:center;
@@ -90,7 +73,6 @@ h2{ margin-top:20px; }
     cursor:pointer;
     border:2px solid #d4c27a;
 }
-
 </style>
 </head>
 
@@ -108,6 +90,7 @@ let orden = [];
 let indiceActual = 0;
 
 let respuestas = Array(10).fill(null);
+let modoLibre = false; // 🔥 NUEVO
 
 /* VOZ */
 function hablar(texto){
@@ -115,8 +98,6 @@ function hablar(texto){
     let voces = speechSynthesis.getVoices();
     let voz = voces.find(v => v.lang === "es-CL") || voces.find(v => v.lang.startsWith("es"));
     if(voz) m.voice = voz;
-    m.rate = 0.9;
-    m.pitch = 1.1;
     speechSynthesis.speak(m);
 }
 
@@ -130,10 +111,11 @@ function portada(){
     `;
 }
 
-/* NUEVO EJERCICIO */
+/* NUEVO */
 function nuevoEjercicio(){
 
     ejercicio++;
+    modoLibre = false;
 
     if(ejercicio > total){
         final();
@@ -146,19 +128,14 @@ function nuevoEjercicio(){
 
     let fijos = nivel === 1 ? [1,5,10] : [1,10];
 
-    fijos.forEach(n=>{
-        respuestas[n-1] = n;
-    });
+    fijos.forEach(n=> respuestas[n-1]=n);
 
     orden = [];
     for(let i=1;i<=10;i++){
-        if(!fijos.includes(i)){
-            orden.push(i-1);
-        }
+        if(!fijos.includes(i)) orden.push(i-1);
     }
 
     orden.sort(()=>Math.random()-0.5);
-
     indiceActual = 0;
 
     document.getElementById("pantalla").innerHTML = `
@@ -172,24 +149,23 @@ function nuevoEjercicio(){
 
     dibujarCinta();
     dibujarBanco();
-    marcarCasillaActual();
+    marcarCasilla();
 }
 
-/* DIBUJAR CINTA */
+/* CINTA */
 function dibujarCinta(){
 
     let cinta = document.getElementById("cinta");
-    cinta.innerHTML = "";
+    cinta.innerHTML="";
 
     for(let i=0;i<10;i++){
 
         let c = document.createElement("div");
-        c.className = "casilla";
-        c.dataset.index = i;
+        c.className="casilla";
 
-        if(respuestas[i] !== null){
+        if(respuestas[i]!=null){
             c.innerText = respuestas[i];
-            c.style.background = "#f6e7a1"; // 🟡 siempre amarillo mientras trabaja
+            c.style.background="#f6e7a1";
         }
 
         c.onclick = ()=> devolver(i);
@@ -198,11 +174,13 @@ function dibujarCinta(){
     }
 }
 
-/* MARCAR CASILLA */
-function marcarCasillaActual(){
+/* CASILLA ACTIVA */
+function marcarCasilla(){
+
+    if(modoLibre) return; // 🔥 no marcar en segundo intento
 
     let casillas = document.querySelectorAll(".casilla");
-    casillas.forEach(c => c.classList.remove("activa"));
+    casillas.forEach(c=>c.classList.remove("activa"));
 
     if(indiceActual < orden.length){
         casillas[orden[indiceActual]].classList.add("activa");
@@ -214,27 +192,22 @@ function marcarCasillaActual(){
 function dibujarBanco(){
 
     let banco = document.getElementById("banco");
-    banco.innerHTML = "";
+    banco.innerHTML="";
 
     let fijos = nivel === 1 ? [1,5,10] : [1,10];
 
-    let disponibles = [];
-
+    let nums=[];
     for(let i=1;i<=10;i++){
-        if(!fijos.includes(i)){
-            disponibles.push(i);
-        }
+        if(!fijos.includes(i)) nums.push(i);
     }
 
-    disponibles.sort(()=>Math.random()-0.5);
+    nums.sort(()=>Math.random()-0.5);
 
-    disponibles.forEach(num=>{
+    nums.forEach(n=>{
         let t = document.createElement("div");
-        t.className = "tarjeta";
-        t.innerText = num;
-
-        t.onclick = ()=> colocar(num, t);
-
+        t.className="tarjeta";
+        t.innerText=n;
+        t.onclick = ()=> colocar(n,t);
         banco.appendChild(t);
     });
 }
@@ -242,37 +215,39 @@ function dibujarBanco(){
 /* COLOCAR */
 function colocar(num, tarjeta){
 
-    if(indiceActual >= orden.length) return;
-
-    let pos = orden[indiceActual];
-
-    respuestas[pos] = num;
+    if(!modoLibre){
+        let pos = orden[indiceActual];
+        respuestas[pos]=num;
+        indiceActual++;
+    }else{
+        // 🔥 modo libre: buscar primera vacía
+        for(let i=0;i<10;i++){
+            if(respuestas[i]==null){
+                respuestas[i]=num;
+                break;
+            }
+        }
+    }
 
     tarjeta.remove();
-
     dibujarCinta();
-
-    indiceActual++;
-
-    if(indiceActual < orden.length){
-        marcarCasillaActual();
-    }
+    marcarCasilla();
 }
 
 /* DEVOLVER */
-function devolver(index){
+function devolver(i){
 
-    if(respuestas[index] === null) return;
+    if(respuestas[i]==null) return;
 
-    let num = respuestas[index];
-    respuestas[index] = null;
+    let num = respuestas[i];
+    respuestas[i]=null;
 
     let banco = document.getElementById("banco");
 
     let t = document.createElement("div");
-    t.className = "tarjeta";
-    t.innerText = num;
-    t.onclick = ()=> colocar(num, t);
+    t.className="tarjeta";
+    t.innerText=num;
+    t.onclick = ()=> colocar(num,t);
 
     banco.appendChild(t);
 
@@ -283,19 +258,18 @@ function devolver(index){
 function verificar(){
 
     let casillas = document.querySelectorAll(".casilla");
-    let todoBien = true;
+    let todoBien=true;
 
     for(let i=0;i<10;i++){
 
-        if(respuestas[i] !== null){
+        if(respuestas[i]!=null){
 
-            if(respuestas[i] === i+1){
+            if(respuestas[i]==i+1){
                 casillas[i].classList.add("correcto");
             }else{
                 casillas[i].classList.add("incorrecto");
-
-                devolver(i); // vuelve abajo
-                todoBien = false;
+                devolver(i);
+                todoBien=false;
             }
         }
     }
@@ -305,6 +279,7 @@ function verificar(){
         setTimeout(nuevoEjercicio,1500);
     }else{
         hablar("Inténtalo otra vez");
+        modoLibre = true; // 🔥 CAMBIO CLAVE
     }
 }
 
@@ -316,7 +291,6 @@ function final(){
     `;
 }
 
-/* INICIO */
 portada();
 
 </script>
