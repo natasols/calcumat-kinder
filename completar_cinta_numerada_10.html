@@ -26,16 +26,16 @@ body{
 }
 
 .logo{
-    width:280px;
+    width:260px;
 }
 
-/* CINTA NUMERADA */
+/* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,70px);
     margin-top:40px;
     border:3px solid #0d2b45;
-    background:#f5f5f5;
+    background:white;
 }
 
 .casilla{
@@ -53,20 +53,11 @@ body{
 }
 
 .fija{
-    background:#e0e0e0;
     font-weight:bold;
 }
 
 .vacia{
-    background:#fafafa;
-}
-
-/* BANCO */
-.banco{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    margin-top:40px;
+    border:2px dashed #ccc;
 }
 
 /* TARJETAS */
@@ -82,6 +73,14 @@ body{
     align-items:center;
     border-radius:8px;
     cursor:grab;
+}
+
+/* BANCO */
+.banco{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:40px;
 }
 
 /* BOTÓN */
@@ -111,7 +110,6 @@ body{
 
 <script>
 
-/* VOZ */
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
@@ -126,6 +124,7 @@ let total = 6;
 
 let cinta = [];
 let faltantes = [];
+let respuestas = {};
 
 /* PORTADA */
 function portada(){
@@ -133,7 +132,7 @@ function portada(){
         <div class="wrapper">
             <div class="header">
                 <img src="logo.png" class="logo">
-                <h2>Completar la cinta numerada</h2>
+                <h2>Completa la cinta numerada</h2>
                 <p>Números hasta 10</p>
             </div>
             <button class="boton" onclick="iniciar()">Iniciar</button>
@@ -146,7 +145,7 @@ function iniciar(){
     siguiente();
 }
 
-/* NIVELES */
+/* NIVEL */
 function obtenerNivel(){
     let ciclo = (ejercicio % 6);
     if(ciclo < 4) return 2;
@@ -154,7 +153,7 @@ function obtenerNivel(){
     return 6;
 }
 
-/* GENERAR EJERCICIO */
+/* NUEVO */
 function siguiente(){
 
     ejercicio++;
@@ -162,8 +161,8 @@ function siguiente(){
     let cantidadFaltantes = obtenerNivel();
 
     cinta = Array.from({length:10}, (_,i)=>i+1);
-
     faltantes = [];
+    respuestas = {};
 
     while(faltantes.length < cantidadFaltantes){
         let n = Math.floor(Math.random()*10)+1;
@@ -172,7 +171,7 @@ function siguiente(){
         }
     }
 
-    let html = `
+    document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
             <div class="header">
@@ -182,17 +181,13 @@ function siguiente(){
             </div>
 
             <div id="cinta" class="cinta"></div>
-
             <div id="banco" class="banco"></div>
 
             <button class="boton" onclick="verificar()">Verificar</button>
-
             <div id="mensaje" class="mensaje"></div>
 
         </div>
     `;
-
-    document.getElementById("app").innerHTML = html;
 
     renderCinta();
     renderBanco();
@@ -217,19 +212,16 @@ function renderCinta(){
             div.ondrop = function(e){
                 e.preventDefault();
 
-                let val = parseInt(e.dataTransfer.getData("text"));
+                let val = e.dataTransfer.getData("text");
 
-                /* VALIDACIÓN DIRECTA */
-                if(val === n){
-                    this.innerText = val;
-                    document.getElementById("num"+val).remove();
-                }else{
-                    /* rebote visual opcional */
-                    this.style.background = "#ffcdd2";
-                    setTimeout(()=>{
-                        this.style.background = "#fafafa";
-                    },300);
-                }
+                this.innerHTML = "";
+                let nueva = document.getElementById("num"+val).cloneNode(true);
+                nueva.id = "";
+                nueva.draggable = false;
+
+                this.appendChild(nueva);
+
+                respuestas[n] = parseInt(val);
             };
 
         }else{
@@ -267,9 +259,40 @@ function renderBanco(){
 /* VERIFICAR */
 function verificar(){
 
-    document.getElementById("mensaje").innerText = "Los números van en orden del 1 al 10";
+    let banco = document.getElementById("banco");
 
-    hablar("Los números van en orden del 1 al 10");
+    let incorrectos = [];
+
+    faltantes.forEach(n=>{
+        if(respuestas[n] !== n){
+            incorrectos.push(n);
+        }
+    });
+
+    /* devolver incorrectos */
+    incorrectos.forEach(n=>{
+        let cas = document.querySelector(`[data-pos='${n}']`);
+        if(cas && cas.firstChild){
+            let val = cas.firstChild.innerText;
+            let original = document.getElementById("num"+val);
+
+            if(original){
+                banco.appendChild(original);
+            }
+
+            cas.innerHTML = "";
+        }
+    });
+
+    /* voz */
+    if(faltantes.length === 1){
+        hablar(`Faltaba el ${faltantes[0]}`);
+    }else{
+        let lista = faltantes.join(" y ");
+        hablar(`Faltaban el ${lista}`);
+    }
+
+    document.getElementById("mensaje").innerText = "Revisa la cinta";
 
     setTimeout(()=>{
         if(ejercicio < total){
