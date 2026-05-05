@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – Completar cinta</title>
+
+<style>
+
+:root{
+    --tam: 90px;
+}
+
+body{
+    font-family: 'Comic Sans MS', sans-serif;
+    margin:0;
+    text-align:center;
+}
+
+/* CONTENEDOR */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HEADER */
+.header{
+    margin-top:20px;
+}
+
+.logo{
+    width:260px;
+}
+
+/* CINTA */
+.cinta{
+    display:grid;
+    grid-template-columns: repeat(6,var(--tam));
+    margin-top:40px;
+    border:3px solid #0d2b45;
+    background:white;
+}
+
+.casilla{
+    width:var(--tam);
+    height:var(--tam);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    border-right:1px solid #0d2b45;
+}
+
+.casilla:last-child{
+    border-right:none;
+}
+
+.fija{
+    font-weight:bold;
+}
+
+/* TARJETAS */
+.numero{
+    width:var(--tam);
+    height:var(--tam);
+    background:#fff3b0;
+    border:2px solid #e0c97f;
+    color:#333;
+    font-size:32px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    cursor:grab;
+}
+
+/* FEEDBACK */
+.correcto{
+    background:#a5d6a7 !important;
+}
+
+.incorrecto{
+    background:#ef9a9a !important;
+}
+
+/* BANCO */
+.banco{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:40px;
+    flex-wrap:wrap;
+    max-width:1000px;
+}
+
+/* BOTÓN */
+.boton{
+    margin:20px;
+    padding:14px 32px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+let ejercicio = 0;
+let total = 6;
+
+let cinta = [];
+let faltantes = [];
+let respuestas = {};
+
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>Completa la cinta numerada</h2>
+            </div>
+            <button class="boton" onclick="iniciar()">Iniciar</button>
+        </div>
+    `;
+}
+
+function iniciar(){
+    ejercicio = 0;
+    siguiente();
+}
+
+/* NIVEL */
+function obtenerNivel(){
+    let ciclo = (ejercicio % 6);
+    if(ciclo < 4) return 2;
+    if(ciclo === 4) return 3;
+    return 4;
+}
+
+/* NUEVO */
+function siguiente(){
+
+    ejercicio++;
+
+    let cantidadFaltantes = obtenerNivel();
+
+    cinta = Array.from({length:6}, (_,i)=>i+1);
+    faltantes = [];
+    respuestas = {};
+
+    /* 🔥 nunca falta el 1 */
+    while(faltantes.length < cantidadFaltantes){
+        let n = Math.floor(Math.random()*5)+2; // 2 a 6
+        if(!faltantes.includes(n)){
+            faltantes.push(n);
+        }
+    }
+
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+
+            <div class="header">
+                <img src="logo.png" width="140">
+                <h2>Completa la cinta</h2>
+                <p>Ejercicio ${ejercicio} de ${total}</p>
+            </div>
+
+            <div id="cinta" class="cinta"></div>
+            <div id="banco" class="banco"></div>
+
+            <div id="botonera">
+                <button class="boton" onclick="verificar()">Verificar</button>
+            </div>
+
+        </div>
+    `;
+
+    renderCinta();
+    renderBanco();
+}
+
+/* CINTA */
+function renderCinta(){
+
+    let cont = document.getElementById("cinta");
+    cont.innerHTML = "";
+
+    cinta.forEach(n=>{
+
+        let div = document.createElement("div");
+
+        if(faltantes.includes(n)){
+            div.className = "casilla";
+            div.dataset.pos = n;
+
+            div.ondragover = e => e.preventDefault();
+
+            div.ondrop = function(e){
+                e.preventDefault();
+
+                let val = e.dataTransfer.getData("text");
+
+                if(this.firstChild){
+                    devolverAlBanco(this.firstChild.innerText);
+                }
+
+                let original = document.getElementById("num"+val);
+                original.style.visibility = "hidden";
+
+                let nueva = crearTarjeta(val, false);
+
+                this.innerHTML = "";
+                this.appendChild(nueva);
+
+                respuestas[n] = parseInt(val);
+            };
+
+        }else{
+            div.className = "casilla fija";
+            div.innerText = n;
+        }
+
+        cont.appendChild(div);
+    });
+}
+
+/* CREAR TARJETA */
+function crearTarjeta(valor, draggable=true){
+
+    let div = document.createElement("div");
+    div.className = "numero";
+    div.innerText = valor;
+
+    if(draggable){
+        div.id = "num"+valor;
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+        };
+    }else{
+        div.draggable = true;
+
+        div.ondragstart = function(e){
+            e.dataTransfer.setData("text", valor);
+
+            let parent = this.parentElement;
+            parent.innerHTML = "";
+
+            delete respuestas[parent.dataset.pos];
+
+            let original = document.getElementById("num"+valor);
+            original.style.visibility = "visible";
+        };
+    }
+
+    return div;
+}
+
+/* BANCO */
+function renderBanco(){
+
+    let banco = document.getElementById("banco");
+
+    let numeros = cinta.filter(n => n !== 1).sort(()=>Math.random()-0.5);
+
+    numeros.forEach(n=>{
+        let div = crearTarjeta(n, true);
+        banco.appendChild(div);
+    });
+}
+
+/* DEVOLVER */
+function devolverAlBanco(valor){
+    let original = document.getElementById("num"+valor);
+    original.style.visibility = "visible";
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let todoCorrecto = true;
+
+    faltantes.forEach(n=>{
+
+        let cas = document.querySelector(`[data-pos='${n}']`);
+
+        if(!cas.firstChild || respuestas[n] !== n){
+
+            todoCorrecto = false;
+
+            if(cas.firstChild){
+                cas.firstChild.classList.add("incorrecto");
+
+                let val = cas.firstChild.innerText;
+
+                setTimeout(()=>{
+                    devolverAlBanco(val);
+                    cas.innerHTML = "";
+                },800);
+            }
+
+        }else{
+            cas.firstChild.classList.add("correcto");
+        }
+
+    });
+
+    let botonera = document.getElementById("botonera");
+
+    if(todoCorrecto){
+        hablar("Muy bien, ubicaste todos los números");
+
+        botonera.innerHTML = `
+            <button class="boton" onclick="avanzar()">Siguiente</button>
+        `;
+    }else{
+        hablar("Inténtalo otra vez");
+    }
+}
+
+/* AVANZAR */
+function avanzar(){
+    if(ejercicio < total){
+        siguiente();
+    }else{
+        mostrarFinal();
+    }
+}
+
+/* FINAL */
+function mostrarFinal(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>¡Muy bien!</h2>
+                <p>Completaste todas las cintas</p>
+            </div>
+            <button class="boton" onclick="iniciar()">Reiniciar</button>
+        </div>
+    `;
+}
+
+portada();
+
+</script>
+
+</body>
+</html>
