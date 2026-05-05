@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder – Número escondido</title>
+
+<style>
+body{
+    font-family: 'Comic Sans MS', sans-serif;
+    margin:0;
+    text-align:center;
+}
+
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.header{ margin-top:20px; }
+.logo{ width:200px; }
+
+.main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.animal{
+    width:420px;
+}
+
+.oculto{ visibility:hidden; }
+
+.footer{ padding:20px; }
+
+.boton{
+    padding:15px 30px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.reloj{ font-size:70px; }
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* BANCO REAL */
+let banco = {
+    2: ["2_cisne.png","2_conejo.png","2_raton.png","2_serpiente.png"],
+    3: ["3_ardilla.png","3_buho.png","3_foca.png","3_mariposa.png"],
+    4: ["4_arbol.png","4_avion.png","4_jirafa.png","4_pollo.png"],
+    5: ["5_canguro.png","5_gallo.png","5_loro.png","5_tiburon.png","5_zorro.png"],
+    6: ["6_enano.png","6_foca.png","6_gato.png","6_gusano.png"],
+    7: ["7_ardilla.png","7_helado.png","7_lagarto.png","7_raton.png","7_velero.png"],
+    8: ["8_abeja.png","8_carretera.png","8_loro.png","8_mono_nieve.png"],
+    9: ["9_buho.png","9_gato.png","9_jirafa.png","9_raton.png"],
+    10: ["10_chancho.png","10_gallina.png"]
+};
+
+let numerosDisponibles = Object.keys(banco);
+
+/* VARIABLES */
+let ejercicio = 0;
+let total = 10;
+
+let numeroActual;
+let imagenActual;
+
+let vecesVisto = 0;
+let maxVistas = 2;
+
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>Descubre el número escondido</h2>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
+        </div>
+    `;
+}
+
+/* INICIAR */
+function iniciar(){
+    ejercicio = 0;
+    siguiente();
+}
+
+/* NUEVO EJERCICIO */
+function siguiente(){
+
+    ejercicio++;
+    vecesVisto = 0;
+
+    if(ejercicio > total){
+        final();
+        return;
+    }
+
+    numeroActual = numerosDisponibles[Math.floor(Math.random()*numerosDisponibles.length)];
+    let lista = banco[numeroActual];
+    imagenActual = lista[Math.floor(Math.random()*lista.length)];
+
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>Descubre el número escondido</h2>
+                <div>Ejercicio ${ejercicio} de ${total}</div>
+            </div>
+
+            <div class="main">
+                <img id="animal" src="${imagenActual}" class="animal oculto">
+            </div>
+
+            <div id="footer" class="footer">
+                <button class="boton" onclick="mostrar()">Mostrar</button>
+            </div>
+
+        </div>
+    `;
+}
+
+/* MOSTRAR */
+function mostrar(){
+
+    vecesVisto++;
+
+    let img = document.getElementById("animal");
+    img.classList.remove("oculto");
+
+    document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
+
+    setTimeout(ocultar,5000);
+}
+
+/* OCULTAR */
+function ocultar(){
+
+    document.getElementById("animal").classList.add("oculto");
+
+    let botones = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+
+    if(vecesVisto < maxVistas){
+        botones = `
+            <button class="boton" onclick="mostrar()">Verlo otra vez</button>
+            ${botones}
+        `;
+    }
+
+    document.getElementById("footer").innerHTML = botones;
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let img = document.getElementById("animal");
+    img.classList.remove("oculto");
+
+    hablar("El número escondido era el " + numeroActual);
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="siguiente()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function final(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header">
+                <img src="logo.png" class="logo">
+                <h2>¡Muy bien!</h2>
+            </div>
+
+            <div class="footer">
+                <button class="boton" onclick="portada()">Volver</button>
+            </div>
+        </div>
+    `;
+}
+
+portada();
+
+</script>
+
+</body>
+</html>
