@@ -6,9 +6,10 @@
 
 <style>
 body{
-    font-family: 'Comic Sans MS', sans-serif;
+    font-family:'Comic Sans MS','Trebuchet MS',sans-serif;
     margin:0;
     text-align:center;
+    background:white;
 }
 
 .wrapper{
@@ -18,36 +19,78 @@ body{
     align-items:center;
 }
 
-.header{ margin-top:20px; }
-.logo{ width:200px; }
+.header{
+    margin-top:20px;
+}
+
+.logo{
+    width:220px;
+}
+
+h2{
+    font-size:32px;
+    margin:20px 0 10px 0;
+}
+
+.contador{
+    font-size:20px;
+    margin-bottom:10px;
+}
 
 .main{
     flex:1;
+    width:100%;
     display:flex;
     justify-content:center;
     align-items:center;
+    padding:10px 0;
 }
 
 .animal{
-    width:420px;
+    max-width:420px;
+    max-height:360px;
+    object-fit:contain;
 }
 
-.oculto{ visibility:hidden; }
+.oculto{
+    visibility:hidden;
+}
 
-.footer{ padding:20px; }
+.resultado{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:70px;
+}
+
+.numero-grande{
+    font-size:150px;
+    font-weight:bold;
+    color:#e53935;
+}
+
+.footer{
+    width:100%;
+    padding:15px 0 30px 0;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
 
 .boton{
-    padding:15px 30px;
-    font-size:18px;
+    padding:14px 28px;
+    font-size:20px;
     background:#4CAF50;
     color:white;
     border:none;
     border-radius:12px;
     cursor:pointer;
-    margin:5px;
 }
 
-.reloj{ font-size:70px; }
+.reloj{
+    font-size:60px;
+}
 </style>
 </head>
 
@@ -67,7 +110,7 @@ function hablar(texto){
     speechSynthesis.speak(msg);
 }
 
-/* BANCO REAL */
+/* BANCO DE IMÁGENES */
 let banco = {
     2: ["2_cisne.png","2_conejo.png","2_raton.png","2_serpiente.png"],
     3: ["3_ardilla.png","3_buho.png","3_foca.png","3_mariposa.png"],
@@ -82,7 +125,6 @@ let banco = {
 
 let numerosDisponibles = Object.keys(banco);
 
-/* VARIABLES */
 let ejercicio = 0;
 let total = 10;
 
@@ -137,7 +179,7 @@ function siguiente(){
             <div class="header">
                 <img src="logo.png" class="logo">
                 <h2>Descubre el número escondido</h2>
-                <div>Ejercicio ${ejercicio} de ${total}</div>
+                <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
             </div>
 
             <div class="main">
@@ -157,10 +199,11 @@ function mostrar(){
 
     vecesVisto++;
 
-    let img = document.getElementById("animal");
-    img.classList.remove("oculto");
+    document.getElementById("animal").classList.remove("oculto");
 
-    document.getElementById("footer").innerHTML = `<div class="reloj">⏳</div>`;
+    document.getElementById("footer").innerHTML = `
+        <div class="reloj">⏳</div>
+    `;
 
     setTimeout(ocultar,5000);
 }
@@ -187,8 +230,12 @@ function ocultar(){
 /* VERIFICAR */
 function verificar(){
 
-    let img = document.getElementById("animal");
-    img.classList.remove("oculto");
+    document.querySelector(".main").innerHTML = `
+        <div class="resultado">
+            <img src="${imagenActual}" class="animal">
+            <div class="numero-grande">${numeroActual}</div>
+        </div>
+    `;
 
     hablar("El número escondido era el " + numeroActual);
 
@@ -205,6 +252,8 @@ function final(){
                 <img src="logo.png" class="logo">
                 <h2>¡Muy bien!</h2>
             </div>
+
+            <div class="main"></div>
 
             <div class="footer">
                 <button class="boton" onclick="portada()">Volver</button>
