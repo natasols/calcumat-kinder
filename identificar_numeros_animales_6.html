@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat Kinder – ¿Qué número ves?</title>
+
+<style>
+body{
+    font-family:'Comic Sans MS','Trebuchet MS',sans-serif;
+    margin:0;
+    text-align:center;
+    background:white;
+}
+
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.header-portada{ margin-top:55px; }
+.header-app{ margin-top:14px; }
+
+.logo-portada{ width:360px; }
+.logo-app{ width:150px; }
+
+h1{
+    font-size:36px;
+    margin:22px 0 8px 0;
+}
+
+h2{
+    font-size:30px;
+    margin:10px 0 6px 0;
+}
+
+.bajada{
+    font-size:24px;
+    margin-top:0;
+}
+
+.contador{
+    font-size:18px;
+    margin-top:4px;
+}
+
+.main{
+    flex:1;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:5px 0;
+}
+
+.animal{
+    max-width:430px;
+    max-height:330px;
+    object-fit:contain;
+}
+
+.oculto{ visibility:hidden; }
+
+.resultado{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:70px;
+}
+
+.numero-grande{
+    font-size:170px;
+    font-weight:400;
+    color:#e53935;
+    line-height:1;
+}
+
+.footer{
+    width:100%;
+    min-height:90px;
+    padding:5px 0 20px 0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.boton{
+    padding:14px 28px;
+    font-size:20px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.reloj{ font-size:56px; }
+
+@media (max-height:750px){
+    .logo-app{ width:120px; }
+
+    h2{
+        font-size:26px;
+        margin:6px 0 4px 0;
+    }
+
+    .contador{ font-size:16px; }
+
+    .animal{ max-height:280px; }
+
+    .numero-grande{ font-size:150px; }
+
+    .footer{
+        min-height:75px;
+        padding-bottom:12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* VOZ */
+function hablar(texto){
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "es-CL";
+    let voz = speechSynthesis.getVoices().find(v => v.lang.includes("es"));
+    if(voz) msg.voice = voz;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* BANCO DE IMÁGENES HASTA 6 */
+let banco = {
+    2: ["2_cisne.png","2_conejo.png","2_raton.png","2_serpiente.png"],
+    3: ["3_ardilla.png","3_buho.png","3_foca.png","3_mariposa.png"],
+    4: ["4_arbol.png","4_avion.png","4_jirafa.png","4_pollo.png"],
+    5: ["5_canguro.png","5_gallo.png","5_loro.png","5_tiburon.png","5_zorro.png"],
+    6: ["6_enano.png","6_foca.png","6_gato.png","6_gusano.png"]
+};
+
+let todosLosEjercicios = [];
+let ronda = [];
+
+let ejercicio = 0;
+let total = 10;
+
+let numeroActual;
+let imagenActual;
+
+let vecesVisto = 0;
+let maxVistas = 2;
+
+/* CREAR LISTA COMPLETA */
+function prepararBanco(){
+    todosLosEjercicios = [];
+
+    Object.keys(banco).forEach(numero=>{
+        banco[numero].forEach(imagen=>{
+            todosLosEjercicios.push({
+                numero: numero,
+                imagen: imagen
+            });
+        });
+    });
+}
+
+/* MEZCLAR */
+function mezclar(lista){
+    for(let i = lista.length - 1; i > 0; i--){
+        let j = Math.floor(Math.random() * (i + 1));
+        [lista[i], lista[j]] = [lista[j], lista[i]];
+    }
+}
+
+/* PORTADA */
+function portada(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¿Qué número ves?</h1>
+                <div class="bajada">Números hasta 6</div>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
+        </div>
+    `;
+}
+
+/* INICIAR */
+function iniciar(){
+    ejercicio = 0;
+    prepararBanco();
+    ronda = [...todosLosEjercicios];
+    mezclar(ronda);
+    siguiente();
+}
+
+/* NUEVO EJERCICIO */
+function siguiente(){
+
+    ejercicio++;
+    vecesVisto = 0;
+
+    if(ejercicio > total){
+        final();
+        return;
+    }
+
+    let actual = ronda.pop();
+
+    numeroActual = actual.numero;
+    imagenActual = actual.imagen;
+
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+
+            <div class="header-app">
+                <img src="logo.png" class="logo-app">
+                <h2>¿Qué número ves?</h2>
+                <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+            </div>
+
+            <div class="main">
+                <img id="animal" src="${imagenActual}" class="animal oculto">
+            </div>
+
+            <div id="footer" class="footer">
+                <button class="boton" onclick="mostrar()">Mostrar</button>
+            </div>
+
+        </div>
+    `;
+}
+
+/* MOSTRAR */
+function mostrar(){
+    vecesVisto++;
+
+    document.getElementById("animal").classList.remove("oculto");
+
+    document.getElementById("footer").innerHTML = `
+        <div class="reloj">⏳</div>
+    `;
+
+    setTimeout(ocultar,5000);
+}
+
+/* OCULTAR */
+function ocultar(){
+    document.getElementById("animal").classList.add("oculto");
+
+    let botones = `
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+
+    if(vecesVisto < maxVistas){
+        botones = `
+            <button class="boton" onclick="mostrar()">Verlo otra vez</button>
+            ${botones}
+        `;
+    }
+
+    document.getElementById("footer").innerHTML = botones;
+}
+
+/* VERIFICAR */
+function verificar(){
+    document.querySelector(".main").innerHTML = `
+        <div class="resultado">
+            <img src="${imagenActual}" class="animal">
+            <div class="numero-grande">${numeroActual}</div>
+        </div>
+    `;
+
+    hablar("El número escondido era el " + numeroActual);
+
+    document.getElementById("footer").innerHTML = `
+        <button class="boton" onclick="siguiente()">Siguiente</button>
+    `;
+}
+
+/* FINAL */
+function final(){
+    document.getElementById("app").innerHTML = `
+        <div class="wrapper">
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¡Muy bien!</h1>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="portada()">Volver</button>
+            </div>
+        </div>
+    `;
+}
+
+portada();
+
+</script>
+
+</body>
+</html>
