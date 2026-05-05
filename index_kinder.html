@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calcumat – Kínder</title>
+
+<style>
+body{
+    font-family:'Comic Sans MS','Trebuchet MS',sans-serif;
+    margin:0;
+    background:white;
+}
+
+.wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px;
+}
+
+.logo{
+    width:300px;
+    margin:20px 0;
+}
+
+.titulo{
+    font-size:28px;
+    margin-bottom:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+    gap:20px;
+    width:100%;
+    max-width:900px;
+}
+
+.tarjeta{
+    background:#f9f9f9;
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    transition:0.2s;
+}
+
+.tarjeta:hover{
+    transform:scale(1.05);
+}
+
+.nombre{
+    font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <img src="logo.png" class="logo">
+
+    <div class="titulo">Kínder · Rutinas matemáticas</div>
+
+    <div class="grid">
+
+        <div class="tarjeta" onclick="ir('identificar_numeros_animales_10.html')">
+            <div class="nombre">¿Qué número ves?</div>
+        </div>
+
+        <div class="tarjeta" onclick="ir('completar_cinta_numerada_10.html')">
+            <div class="nombre">Completar cinta · Parte 1</div>
+        </div>
+
+        <div class="tarjeta" onclick="ir('completar_cinta_numerada_10_parte2.html')">
+            <div class="nombre">Completar cinta · Parte 2</div>
+        </div>
+
+        <!-- pendiente -->
+        <!-- <div class="tarjeta" onclick="ir('formar_dedos_hasta_10.html')">
+            <div class="nombre">Formar números con los dedos</div>
+        </div> -->
+
+        <div class="tarjeta" onclick="ir('cuantificar_10_cinta_descubierta.html')">
+            <div class="nombre">Cinta descubierta</div>
+        </div>
+
+        <div class="tarjeta" onclick="ir('cuantificar_10_cinta_cubierta.html')">
+            <div class="nombre">Cinta cubierta</div>
+        </div>
+
+        <div class="tarjeta" onclick="ir('cuantificar_hasta_10_marco_10.html')">
+            <div class="nombre">¿Cuántos hay? (marco)</div>
+        </div>
+
+        <div class="tarjeta" onclick="ir('app_completar_10.html')">
+            <div class="nombre">Completar 10</div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function ir(url){
+    window.location.href = url;
+}
+</script>
+
+</body>
+</html>
