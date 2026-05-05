@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Completar la cinta numerada hasta 6 - Parte 2</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:white;
+}
+
+.logo{
+    width:220px;
+    margin-top:30px;
+}
+
+h1{font-size:28px;}
+h2{margin-top:20px;}
+
+.boton{
+    margin-top:20px;
+    padding:15px 30px;
+    font-size:18px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* CINTA */
+.cinta{
+    display:grid;
+    grid-template-columns: repeat(6,100px);
+    justify-content:center;
+    margin-top:30px;
+}
+
+.casilla{
+    width:100px;
+    height:100px;
+    border:2px solid #1f3b57;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    background:white;
+    cursor:pointer;
+}
+
+.activa{ background:#f6e7a1; }
+
+.correcto{ background:#cfe9cf !important; }
+.incorrecto{ background:#f6caca !important; }
+
+/* BANCO */
+.banco{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:30px;
+}
+
+.tarjeta{
+    width:90px;
+    height:90px;
+    background:#f6e7a1;
+    border-radius:10px;
+    font-size:28px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:grab;
+    border:2px solid #d4c27a;
+}
+</style>
+</head>
+
+<body>
+
+<div id="pantalla"></div>
+
+<script>
+
+let ejercicio = 0;
+let total = 6;
+
+let nivel = 1;
+let orden = [];
+let indiceActual = 0;
+
+let respuestas = Array(6).fill(null);
+let modoLibre = false;
+
+let numeroArrastrado = null;
+let tarjetaActual = null;
+
+/* VOZ */
+function hablar(texto){
+    let m = new SpeechSynthesisUtterance(texto);
+    let voces = speechSynthesis.getVoices();
+    let voz = voces.find(v => v.lang === "es-CL") || voces.find(v => v.lang.startsWith("es"));
+    if(voz) m.voice = voz;
+    speechSynthesis.speak(m);
+}
+
+/* PORTADA */
+function portada(){
+    document.getElementById("pantalla").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h1>Completar la cinta numerada hasta 6</h1>
+        <h2>Parte 2</h2>
+        <button class="boton" onclick="nuevoEjercicio()">INICIAR</button>
+    `;
+}
+
+/* NUEVO */
+function nuevoEjercicio(){
+
+    ejercicio++;
+    modoLibre = false;
+
+    if(ejercicio > total){
+        final();
+        return;
+    }
+
+    nivel = ejercicio <= 3 ? 1 : 2;
+
+    respuestas = Array(6).fill(null);
+
+    let fijos = nivel === 1 ? [1,3,6] : [1,6];
+    fijos.forEach(n=> respuestas[n-1]=n);
+
+    orden = [];
+    for(let i=1;i<=6;i++){
+        if(!fijos.includes(i)) orden.push(i-1);
+    }
+
+    orden.sort(()=>Math.random()-0.5);
+    indiceActual = 0;
+
+    document.getElementById("pantalla").innerHTML = `
+        <img src="logo.png" class="logo">
+        <h2>Ubica el número que va en la posición que se indica</h2>
+        <p>Ejercicio ${ejercicio} de ${total}</p>
+        <div id="cinta" class="cinta"></div>
+        <div id="banco" class="banco"></div>
+        <button class="boton" onclick="verificar()">Verificar</button>
+    `;
+
+    dibujarCinta();
+    dibujarBanco();
+    marcarCasilla();
+
+    hablar("Ubica el número que va en la posición que se indica");
+}
+
+/* CINTA */
+function dibujarCinta(){
+
+    let cinta = document.getElementById("cinta");
+    cinta.innerHTML="";
+
+    for(let i=0;i<6;i++){
+
+        let c = document.createElement("div");
+        c.className="casilla";
+
+        c.ondragover = (e)=> e.preventDefault();
+        c.ondrop = ()=> colocarEnCasilla(i);
+
+        c.onclick = ()=>{
+            if(respuestas[i] != null){
+
+                let fijos = nivel === 1 ? [1,3,6] : [1,6];
+                if(fijos.includes(respuestas[i])) return;
+
+                devolverAlBanco(respuestas[i]);
+                respuestas[i] = null;
+
+                if(!modoLibre){
+                    indiceActual--;
+                    if(indiceActual < 0) indiceActual = 0;
+                }
+
+                dibujarCinta();
+                marcarCasilla();
+            }
+        };
+
+        if(respuestas[i]!=null){
+            c.innerText = respuestas[i];
+            c.style.background="#f6e7a1";
+        }
+
+        cinta.appendChild(c);
+    }
+}
+
+/* BANCO */
+function dibujarBanco(){
+
+    let banco = document.getElementById("banco");
+    banco.innerHTML="";
+
+    let fijos = nivel === 1 ? [1,3,6] : [1,6];
+
+    let nums=[];
+    for(let i=1;i<=6;i++){
+        if(!fijos.includes(i)) nums.push(i);
+    }
+
+    nums.sort(()=>Math.random()-0.5);
+
+    nums.forEach(n=>{
+        let t = document.createElement("div");
+        t.className="tarjeta";
+        t.innerText=n;
+        t.draggable = true;
+
+        t.ondragstart = ()=>{
+            numeroArrastrado = n;
+            tarjetaActual = t;
+        };
+
+        banco.appendChild(t);
+    });
+}
+
+/* MARCAR */
+function marcarCasilla(){
+
+    if(modoLibre) return;
+
+    let casillas = document.querySelectorAll(".casilla");
+    casillas.forEach(c=>c.classList.remove("activa"));
+
+    if(indiceActual < orden.length){
+        casillas[orden[indiceActual]].classList.add("activa");
+    }
+}
+
+/* COLOCAR */
+function colocarEnCasilla(pos){
+
+    if(numeroArrastrado === null) return;
+
+    if(!modoLibre){
+        if(pos !== orden[indiceActual]) return;
+        respuestas[pos] = numeroArrastrado;
+        indiceActual++;
+    }else{
+        if(respuestas[pos] !== null) return;
+        respuestas[pos] = numeroArrastrado;
+    }
+
+    if(tarjetaActual) tarjetaActual.remove();
+
+    numeroArrastrado = null;
+    tarjetaActual = null;
+
+    dibujarCinta();
+    marcarCasilla();
+}
+
+/* VERIFICAR */
+function verificar(){
+
+    let casillas = document.querySelectorAll(".casilla");
+    let todoBien=true;
+
+    for(let i=0;i<6;i++){
+
+        if(respuestas[i]!=null){
+
+            if(respuestas[i]==i+1){
+                casillas[i].classList.add("correcto");
+            }else{
+                casillas[i].classList.add("incorrecto");
+
+                devolverAlBanco(respuestas[i]);
+                respuestas[i]=null;
+
+                todoBien=false;
+            }
+        }
+    }
+
+    if(todoBien){
+        hablar("Muy bien, completaste la cinta");
+        setTimeout(nuevoEjercicio,1500);
+    }else{
+        hablar("Inténtalo otra vez");
+        modoLibre = true;
+        dibujarCinta();
+    }
+}
+
+/* DEVOLVER */
+function devolverAlBanco(num){
+
+    let banco = document.getElementById("banco");
+
+    let t = document.createElement("div");
+    t.className="tarjeta";
+    t.innerText=num;
+    t.draggable=true;
+
+    t.ondragstart = ()=>{
+        numeroArrastrado = num;
+        tarjetaActual = t;
+    };
+
+    banco.appendChild(t);
+}
+
+/* FINAL */
+function final(){
+    document.getElementById("pantalla").innerHTML = `
+        <h1>¡Excelente trabajo!</h1>
+        <button class="boton" onclick="portada()">Volver al inicio</button>
+    `;
+}
+
+portada();
+
+</script>
+
+</body>
+</html>
