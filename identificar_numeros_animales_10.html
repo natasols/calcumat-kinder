@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat Kinder – Número escondido</title>
+<title>Calcumat Kinder – ¿Qué número ves?</title>
 
 <style>
 body{
@@ -19,22 +19,40 @@ body{
     align-items:center;
 }
 
-.header{
-    margin-top:20px;
+.header-portada{
+    margin-top:55px;
 }
 
-.logo{
-    width:220px;
+.header-app{
+    margin-top:14px;
+}
+
+.logo-portada{
+    width:360px;
+}
+
+.logo-app{
+    width:150px;
+}
+
+h1{
+    font-size:36px;
+    margin:22px 0 8px 0;
 }
 
 h2{
-    font-size:32px;
-    margin:20px 0 10px 0;
+    font-size:30px;
+    margin:10px 0 6px 0;
+}
+
+.bajada{
+    font-size:24px;
+    margin-top:0;
 }
 
 .contador{
-    font-size:20px;
-    margin-bottom:10px;
+    font-size:18px;
+    margin-top:4px;
 }
 
 .main{
@@ -43,12 +61,12 @@ h2{
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:10px 0;
+    padding:5px 0;
 }
 
 .animal{
-    max-width:420px;
-    max-height:360px;
+    max-width:430px;
+    max-height:330px;
     object-fit:contain;
 }
 
@@ -64,16 +82,19 @@ h2{
 }
 
 .numero-grande{
-    font-size:150px;
-    font-weight:bold;
+    font-size:170px;
+    font-weight:400;
     color:#e53935;
+    line-height:1;
 }
 
 .footer{
     width:100%;
-    padding:15px 0 30px 0;
+    min-height:90px;
+    padding:5px 0 20px 0;
     display:flex;
     justify-content:center;
+    align-items:center;
     gap:15px;
     flex-wrap:wrap;
 }
@@ -89,7 +110,35 @@ h2{
 }
 
 .reloj{
-    font-size:60px;
+    font-size:56px;
+}
+
+@media (max-height:750px){
+    .logo-app{
+        width:120px;
+    }
+
+    h2{
+        font-size:26px;
+        margin:6px 0 4px 0;
+    }
+
+    .contador{
+        font-size:16px;
+    }
+
+    .animal{
+        max-height:280px;
+    }
+
+    .numero-grande{
+        font-size:150px;
+    }
+
+    .footer{
+        min-height:75px;
+        padding-bottom:12px;
+    }
 }
 </style>
 </head>
@@ -123,7 +172,8 @@ let banco = {
     10: ["10_chancho.png","10_gallina.png"]
 };
 
-let numerosDisponibles = Object.keys(banco);
+let todosLosEjercicios = [];
+let ronda = [];
 
 let ejercicio = 0;
 let total = 10;
@@ -134,13 +184,36 @@ let imagenActual;
 let vecesVisto = 0;
 let maxVistas = 2;
 
+/* CREAR LISTA COMPLETA */
+function prepararBanco(){
+    todosLosEjercicios = [];
+
+    Object.keys(banco).forEach(numero=>{
+        banco[numero].forEach(imagen=>{
+            todosLosEjercicios.push({
+                numero: numero,
+                imagen: imagen
+            });
+        });
+    });
+}
+
+/* MEZCLAR */
+function mezclar(lista){
+    for(let i = lista.length - 1; i > 0; i--){
+        let j = Math.floor(Math.random() * (i + 1));
+        [lista[i], lista[j]] = [lista[j], lista[i]];
+    }
+}
+
 /* PORTADA */
 function portada(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <div class="header">
-                <img src="logo.png" class="logo">
-                <h2>Descubre el número escondido</h2>
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¿Qué número ves?</h1>
+                <div class="bajada">Números hasta 10</div>
             </div>
 
             <div class="main"></div>
@@ -155,6 +228,11 @@ function portada(){
 /* INICIAR */
 function iniciar(){
     ejercicio = 0;
+    prepararBanco();
+
+    ronda = [...todosLosEjercicios];
+    mezclar(ronda);
+
     siguiente();
 }
 
@@ -169,16 +247,17 @@ function siguiente(){
         return;
     }
 
-    numeroActual = numerosDisponibles[Math.floor(Math.random()*numerosDisponibles.length)];
-    let lista = banco[numeroActual];
-    imagenActual = lista[Math.floor(Math.random()*lista.length)];
+    let actual = ronda.pop();
+
+    numeroActual = actual.numero;
+    imagenActual = actual.imagen;
 
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <div class="header">
-                <img src="logo.png" class="logo">
-                <h2>Descubre el número escondido</h2>
+            <div class="header-app">
+                <img src="logo.png" class="logo-app">
+                <h2>¿Qué número ves?</h2>
                 <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
             </div>
 
@@ -248,9 +327,9 @@ function verificar(){
 function final(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <div class="header">
-                <img src="logo.png" class="logo">
-                <h2>¡Muy bien!</h2>
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¡Muy bien!</h1>
             </div>
 
             <div class="main"></div>
