@@ -145,7 +145,7 @@ function nuevoEjercicio(){
 
     document.getElementById("pantalla").innerHTML = `
         <img src="logo.png" class="logo">
-        <h2>Completa la cinta</h2>
+        <h2>Ubica el número que va en la posición que se indica</h2>
         <p>Ejercicio ${ejercicio} de ${total}</p>
         <div id="cinta" class="cinta"></div>
         <div id="banco" class="banco"></div>
@@ -243,7 +243,6 @@ function marcarCasilla(){
 
     if(indiceActual < orden.length){
         casillas[orden[indiceActual]].classList.add("activa");
-        hablar("Ubica el número que va en esta posición");
     }
 }
 
