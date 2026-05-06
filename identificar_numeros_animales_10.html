@@ -20,19 +20,27 @@ body{
     position:relative;
 }
 
+/* 🔹 FLECHAS */
 .flecha-nav{
     position:absolute;
     top:18px;
-    font-size:34px;
-    color:#cfcfcf;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:16px;
+    color:#9e9e9e;
     cursor:pointer;
     user-select:none;
     transition:0.2s;
 }
 
 .flecha-nav:hover{
-    color:#9e9e9e;
-    transform:scale(1.08);
+    color:#616161;
+    transform:scale(1.05);
+}
+
+.flecha-nav span{
+    font-size:22px;
 }
 
 .flecha-indice{
@@ -43,6 +51,7 @@ body{
     right:24px;
 }
 
+/* 🔹 HEADERS */
 .header-portada{
     margin-top:55px;
 }
@@ -59,6 +68,7 @@ body{
     width:150px;
 }
 
+/* 🔹 TEXTOS */
 h1{
     font-size:36px;
     margin:22px 0 8px 0;
@@ -79,6 +89,7 @@ h2{
     margin-top:4px;
 }
 
+/* 🔹 MAIN */
 .main{
     flex:1;
     width:100%;
@@ -112,6 +123,7 @@ h2{
     line-height:1;
 }
 
+/* 🔹 FOOTER */
 .footer{
     width:100%;
     min-height:90px;
@@ -137,6 +149,7 @@ h2{
     font-size:56px;
 }
 
+/* 🔹 RESPONSIVE */
 @media (max-height:750px){
     .logo-app{
         width:120px;
@@ -173,7 +186,7 @@ h2{
 
 <script>
 
-/* NAVEGACIÓN */
+/* 🔹 NAVEGACIÓN */
 function volverIndice(){
     window.location.href = "index_kinder.html";
 }
@@ -182,7 +195,7 @@ function volverInicio(){
     portada();
 }
 
-/* VOZ */
+/* 🔹 VOZ */
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
@@ -192,7 +205,7 @@ function hablar(texto){
     speechSynthesis.speak(msg);
 }
 
-/* BANCO DE IMÁGENES */
+/* 🔹 BANCO */
 let banco = {
     2: ["2_cisne.png","2_conejo.png","2_raton.png","2_serpiente.png"],
     3: ["3_ardilla.png","3_buho.png","3_foca.png","3_mariposa.png"],
@@ -217,7 +230,7 @@ let imagenActual;
 let vecesVisto = 0;
 let maxVistas = 2;
 
-/* CREAR LISTA COMPLETA */
+/* 🔹 PREPARAR */
 function prepararBanco(){
     todosLosEjercicios = [];
 
@@ -231,7 +244,7 @@ function prepararBanco(){
     });
 }
 
-/* MEZCLAR */
+/* 🔹 MEZCLAR */
 function mezclar(lista){
     for(let i = lista.length - 1; i > 0; i--){
         let j = Math.floor(Math.random() * (i + 1));
@@ -239,14 +252,16 @@ function mezclar(lista){
     }
 }
 
-/* PORTADA */
+/* 🔹 PORTADA */
 function portada(){
     speechSynthesis.cancel();
 
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <div class="flecha-nav flecha-indice" onclick="volverIndice()">←</div>
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
+            </div>
 
             <div class="header-portada">
                 <img src="logo.png" class="logo-portada">
@@ -263,18 +278,16 @@ function portada(){
     `;
 }
 
-/* INICIAR */
+/* 🔹 INICIAR */
 function iniciar(){
     ejercicio = 0;
     prepararBanco();
-
     ronda = [...todosLosEjercicios];
     mezclar(ronda);
-
     siguiente();
 }
 
-/* NUEVO EJERCICIO */
+/* 🔹 NUEVO EJERCICIO */
 function siguiente(){
 
     ejercicio++;
@@ -293,8 +306,13 @@ function siguiente(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <div class="flecha-nav flecha-indice" onclick="volverIndice()">←</div>
-            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">↻</div>
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
+            </div>
+
+            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">
+                <span>↻</span> Inicio
+            </div>
 
             <div class="header-app">
                 <img src="logo.png" class="logo-app">
@@ -314,7 +332,7 @@ function siguiente(){
     `;
 }
 
-/* MOSTRAR */
+/* 🔹 MOSTRAR */
 function mostrar(){
 
     vecesVisto++;
@@ -328,7 +346,7 @@ function mostrar(){
     setTimeout(ocultar,5000);
 }
 
-/* OCULTAR */
+/* 🔹 OCULTAR */
 function ocultar(){
 
     document.getElementById("animal").classList.add("oculto");
@@ -347,7 +365,7 @@ function ocultar(){
     document.getElementById("footer").innerHTML = botones;
 }
 
-/* VERIFICAR */
+/* 🔹 VERIFICAR */
 function verificar(){
 
     document.querySelector(".main").innerHTML = `
@@ -364,13 +382,18 @@ function verificar(){
     `;
 }
 
-/* FINAL */
+/* 🔹 FINAL */
 function final(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <div class="flecha-nav flecha-indice" onclick="volverIndice()">←</div>
-            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">↻</div>
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
+            </div>
+
+            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">
+                <span>↻</span> Inicio
+            </div>
 
             <div class="header-portada">
                 <img src="logo.png" class="logo-portada">
