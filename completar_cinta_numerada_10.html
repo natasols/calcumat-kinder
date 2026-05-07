@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Calcumat – Completar cinta</title>
+<title>Calcumat Kinder – Completar cinta numerada</title>
 
 <style>
 
@@ -11,33 +11,105 @@
 }
 
 body{
-    font-family: 'Comic Sans MS', sans-serif;
+    font-family:'Comic Sans MS','Trebuchet MS',sans-serif;
     margin:0;
     text-align:center;
+    background:white;
 }
 
-/* CONTENEDOR */
 .wrapper{
     min-height:100vh;
     display:flex;
     flex-direction:column;
     align-items:center;
+    position:relative;
 }
 
-/* HEADER */
-.header{
-    margin-top:20px;
+/* FLECHAS */
+.flecha-nav{
+    position:absolute;
+    top:18px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:16px;
+    color:#9e9e9e;
+    cursor:pointer;
+    user-select:none;
+    transition:0.2s;
 }
 
-.logo{
-    width:260px;
+.flecha-nav:hover{
+    color:#616161;
+    transform:scale(1.05);
+}
+
+.flecha-nav span{
+    font-size:22px;
+}
+
+.flecha-indice{
+    left:24px;
+}
+
+.flecha-inicio{
+    right:24px;
+}
+
+/* HEADERS */
+.header-portada{
+    margin-top:55px;
+}
+
+.header-app{
+    margin-top:14px;
+}
+
+.logo-portada{
+    width:360px;
+}
+
+.logo-app{
+    width:150px;
+}
+
+/* TEXTOS */
+h1{
+    font-size:36px;
+    margin:22px 0 8px 0;
+}
+
+h2{
+    font-size:30px;
+    margin:10px 0 6px 0;
+}
+
+.bajada{
+    font-size:24px;
+    margin-top:0;
+}
+
+.contador{
+    font-size:18px;
+    margin-top:4px;
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:5px 0;
 }
 
 /* CINTA */
 .cinta{
     display:grid;
     grid-template-columns: repeat(10,var(--tam));
-    margin-top:40px;
+    margin-top:20px;
     border:3px solid #0d2b45;
     background:white;
 }
@@ -89,21 +161,63 @@ body{
     display:flex;
     justify-content:center;
     gap:12px;
-    margin-top:40px;
+    margin-top:35px;
     flex-wrap:wrap;
     max-width:1000px;
 }
 
-/* BOTÓN */
+/* FOOTER */
+.footer{
+    width:100%;
+    min-height:90px;
+    padding:5px 0 20px 0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
 .boton{
-    margin:20px;
-    padding:14px 32px;
-    font-size:18px;
+    padding:14px 28px;
+    font-size:20px;
     background:#4CAF50;
     color:white;
     border:none;
     border-radius:12px;
     cursor:pointer;
+}
+
+@media (max-height:750px){
+    :root{
+        --tam: 78px;
+    }
+
+    .logo-app{
+        width:120px;
+    }
+
+    h2{
+        font-size:26px;
+        margin:6px 0 4px 0;
+    }
+
+    .contador{
+        font-size:16px;
+    }
+
+    .cinta{
+        margin-top:10px;
+    }
+
+    .banco{
+        margin-top:22px;
+    }
+
+    .footer{
+        min-height:75px;
+        padding-bottom:12px;
+    }
 }
 
 </style>
@@ -115,6 +229,16 @@ body{
 
 <script>
 
+/* NAVEGACIÓN */
+function volverIndice(){
+    window.location.href = "index_kinder.html";
+}
+
+function volverInicio(){
+    portada();
+}
+
+/* VOZ */
 function hablar(texto){
     let msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "es-CL";
@@ -133,13 +257,26 @@ let respuestas = {};
 
 /* PORTADA */
 function portada(){
+    speechSynthesis.cancel();
+
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <div class="header">
-                <img src="logo.png" class="logo">
-                <h2>Completa la cinta numerada</h2>
+
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
             </div>
-            <button class="boton" onclick="iniciar()">Iniciar</button>
+
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¿Completemos la cinta numerada?</h1>
+                <div class="bajada">Completar secuencia numérica hasta 10 · Parte 1</div>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="iniciar()">Iniciar</button>
+            </div>
         </div>
     `;
 }
@@ -168,7 +305,7 @@ function siguiente(){
     faltantes = [];
     respuestas = {};
 
-    /* 🔥 CLAVE: nunca falta el 1 */
+    /* CLAVE: nunca falta el 1 */
     while(faltantes.length < cantidadFaltantes){
         let n = Math.floor(Math.random()*9)+2; // 2 a 10
         if(!faltantes.includes(n)){
@@ -179,16 +316,26 @@ function siguiente(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
 
-            <div class="header">
-                <img src="logo.png" width="140">
-                <h2>Completa la cinta</h2>
-                <p>Ejercicio ${ejercicio} de ${total}</p>
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
             </div>
 
-            <div id="cinta" class="cinta"></div>
-            <div id="banco" class="banco"></div>
+            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">
+                <span>↻</span> Inicio
+            </div>
 
-            <div id="botonera">
+            <div class="header-app">
+                <img src="logo.png" class="logo-app">
+                <h2>Completa la cinta numerada.</h2>
+                <div class="contador">Ejercicio ${ejercicio} de ${total}</div>
+            </div>
+
+            <div class="main">
+                <div id="cinta" class="cinta"></div>
+                <div id="banco" class="banco"></div>
+            </div>
+
+            <div id="botonera" class="footer">
                 <button class="boton" onclick="verificar()">Verificar</button>
             </div>
 
@@ -281,8 +428,9 @@ function crearTarjeta(valor, draggable=true){
 function renderBanco(){
 
     let banco = document.getElementById("banco");
+    banco.innerHTML = "";
 
-    /* 🔥 CLAVE: el 1 NO aparece en banco */
+    /* CLAVE: el 1 NO aparece en banco */
     let numeros = cinta.filter(n => n !== 1).sort(()=>Math.random()-0.5);
 
     numeros.forEach(n=>{
@@ -349,16 +497,30 @@ function avanzar(){
     }
 }
 
-/* 🎉 FINAL */
+/* FINAL */
 function mostrarFinal(){
     document.getElementById("app").innerHTML = `
         <div class="wrapper">
-            <div class="header">
-                <img src="logo.png" class="logo">
-                <h2>¡Muy bien!</h2>
-                <p>Completaste todas las cintas</p>
+
+            <div class="flecha-nav flecha-indice" onclick="volverIndice()">
+                <span>←</span> Índice
             </div>
-            <button class="boton" onclick="iniciar()">Reiniciar</button>
+
+            <div class="flecha-nav flecha-inicio" onclick="volverInicio()">
+                <span>↻</span> Inicio
+            </div>
+
+            <div class="header-portada">
+                <img src="logo.png" class="logo-portada">
+                <h1>¡Muy bien!</h1>
+                <div class="bajada">Completaste todas las cintas</div>
+            </div>
+
+            <div class="main"></div>
+
+            <div class="footer">
+                <button class="boton" onclick="portada()">Volver</button>
+            </div>
         </div>
     `;
 }
